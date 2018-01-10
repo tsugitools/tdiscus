@@ -4,10 +4,6 @@ if ( ! isset($CFG) ) return; // Don't allow direct calls
 use \Tsugi\Core\LTIX;
 
 $LAUNCH = LTIX::requireData();
-if ( ! $USER->instructor ) {
-    $OUTPUT->jsonError('not authorized');
-    return;
-}
 
 $rows = $PDOX->allRowsDie("SELECT *
     FROM {$CFG->dbprefix}tdiscus_thread
