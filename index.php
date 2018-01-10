@@ -34,7 +34,6 @@ if ( $USER->instructor ) {
         echo('<a href="analytics" class="btn btn-default">Launches</a> ');
     }
 }
-$OUTPUT->exitButton();
 SettingsForm::button();
 echo('</span>');
 
@@ -45,56 +44,9 @@ SettingsForm::dueDate();
 SettingsForm::end();
 ?>
 <h1>Teaching and Threading...</h1>
-<p>Test in-line <?= U::__('Time to create the form') ?></p>
-<!--
-<template id="template">
-  <style>
-    ...
-  </style>
-  <div>
-    <h1>Web Components</h1>
-    <img src="http://webcomponents.org/img/logo.svg">
-  </div>
-  <script>
-    alert('yada');
-  </script>
-</template>
--->
 <div id="threads-div"><img src="<?= $OUTPUT->getSpinnerUrl() ?>"></div>
-<div id="host"></div>
-<!--
-<script>
-  var template = document.querySelector('#template');
-  var clone = document.importNode(template.content, true);
-  var host = document.querySelector('#host');
-  alert('zap');
-  host.appendChild(clone);
-</script>
--->
-
-<!--
-<script>
-    // var link = document.querySelector('link[rel="import"]');
-    var link = document.querySelector('#test2');
-    console.log(link);
-    var content = link.import;
-
-    // Grab DOM from warning.html's document.
-    var el = content.querySelector('#nothreads');
-    console.log(el);
-    console.log(el.content);
-
-  var compile = Handlebars.compile(el.content);
-  var html = template(context);
-  var render = document.querySelector('#host');
-  alert('zap');
-  host.appendChild(render);
-    // document.body.appendChild(el.cloneNode(true));
-  </script>
--->
 <?php
 $OUTPUT->footerStart();
-// $OUTPUT->templateInclude(array('nothreads'));
 ?>
 <script>
 var _TDISCUS = {
