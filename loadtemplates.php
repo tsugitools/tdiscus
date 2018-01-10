@@ -1,8 +1,13 @@
 <?php
 
 use \Tsugi\Util\U;
+use \Tsugi\UI\Output;
 
 require_once "../config.php";
+
+if ( $CFG->localhost() ) {
+    Output::maxCacheHeader(3600*24); // 1 day
+}
 
 $rest_path = U::rest_path();
 
