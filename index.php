@@ -1,13 +1,10 @@
 <?php
 require_once "../config.php";
 
-// The Tsugi PHP API Documentation is available at:
-// http://do1.dr-chuck.com/tsugi/phpdoc
-
-use \Tsugi\Core\Settings;
-use \Tsugi\Core\LTIX;
-use \Tsugi\Util\Net;
 use \Tsugi\Util\U;
+use \Tsugi\Util\Net;
+use \Tsugi\Core\LTIX;
+use \Tsugi\Core\Settings;
 use \Tsugi\UI\SettingsForm;
 
 // No parameter means we require CONTEXT, USER, and LINK
@@ -20,9 +17,8 @@ if ( SettingsForm::handleSettingsPost() ) {
 
 // View
 $OUTPUT->header();
-$templates = "load_templates/".$USER->locale;
 ?>
-<link rel=import href="<?= $templates ?>" id="handlebars-templates">
+<link rel=import href="load_templates/<?= $USER->locale ?>" id="handlebars-templates">
 <?php
 $OUTPUT->bodyStart();
 $OUTPUT->flashMessages();
