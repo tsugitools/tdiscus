@@ -1,0 +1,20 @@
+<form method="post">
+{{__ "Enter code:" }}
+{{#if instructor }}
+    <input type="text" name="code" value="{{ old_code }}">
+    <input type="submit" class="btn btn-normal" name="set" value="{{__ 'Update code'}}">
+    <input type="submit" class="btn btn-warning" name="clear" value="{{__ 'Clear data'}}"><br/>
+{{else}}
+    <input type="text" name="code" value="">
+    <input type="submit" class="btn btn-normal" name="set" value="{{__ 'Record attendance'}}"><br/>
+{{/if}}
+</form>
+
+{{#if rows.length }}
+    <table border="1">
+    <tr><th>{{__ "User" }}</th><th>{{__ "Attendance" }}</th><th>{{__ "IP Address" }}</th></tr>
+    {{#each rows}}
+        <tr><td>{{ user_id }}</td><td>{{ attend }}</td><td>{{ ipaddr }}</td></tr>
+    {{/each}}
+    </table>
+{{/if}}
