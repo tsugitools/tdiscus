@@ -20,7 +20,7 @@ if ( SettingsForm::handleSettingsPost() ) {
 
 // View
 $OUTPUT->header();
-$templates = "loadtemplates/".$USER->locale;
+$templates = "load_templates/".$USER->locale;
 ?>
 <link rel=import href="<?= $templates ?>" id="handlebars-templates">
 <?php
