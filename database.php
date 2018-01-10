@@ -29,6 +29,11 @@ array( "{$CFG->dbprefix}tdiscus_thread",
     json        TEXT NULL,
     settings    TEXT NULL,
 
+    pin         INTEGER NOT NULL,
+    rank        INTEGER NOT NULL,
+    upvote      INTEGER NOT NULL,
+    downvote    INTEGER NOT NULL,
+
     updated_at  TIMESTAMP NULL,
     created_at  TIMESTAMP NOT NULL,
 
@@ -50,6 +55,11 @@ array( "{$CFG->dbprefix}tdiscus_comment",
     body        TEXT NULL,
     json        TEXT NULL,
     settings    TEXT NULL,
+
+    pin         INTEGER NOT NULL,
+    rank        INTEGER NOT NULL,
+    upvote      INTEGER NOT NULL,
+    downvote    INTEGER NOT NULL,
 
     updated_at  TIMESTAMP NULL,
     created_at  TIMESTAMP NOT NULL,

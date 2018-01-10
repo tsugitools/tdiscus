@@ -18,33 +18,15 @@ $p = $CFG->dbprefix;
 $OUTPUT->header();
 $OUTPUT->bodyStart();
 $OUTPUT->flashMessages();
-
-echo("<!-- Handlebars version of the tool -->\n");
-echo('<div id="attend-div"><img src="'.$OUTPUT->getSpinnerUrl().'"></div>'."\n");
-
+?>
+<h1>Teaching and Threading...</h1>
+<p>
+Some cool stuff will go here.
+</p>
+<p>
+<a href="jsontest">JSON Testing</a>
+</p>
+<?php
 $OUTPUT->footerStart();
 $OUTPUT->templateInclude(array('attend'));
-
-if ( $USER->instructor ) {
-?>
-<script>
-$(document).ready(function(){
-    $.getJSON('<?= addSession('getrows.php') ?>', function(rows) {
-        window.console && console.log(rows);
-        context = { 'rows' : rows,
-            'instructor' : true,
-            'old_code' : '<?= $old_code ?>'
-        };
-        tsugiHandlebarsToDiv('attend-div', 'attend', context);
-    }).fail( function() { alert('getJSON fail'); } );
-});
-</script>
-<?php } else { ?>
-<script>
-$(document).ready(function(){
-    tsugiHandlebarsToDiv('attend-div', 'attend', {});
-});
-</script>
-<?php
-} // End $USER->instructor
 $OUTPUT->footerEnd();
