@@ -40,7 +40,7 @@ SettingsForm::dueDate();
 SettingsForm::end();
 ?>
 <h1>Teaching and Threading...</h1>
-<div id="threads-div"><img src="<?= $OUTPUT->getSpinnerUrl() ?>"></div>
+<div id="main-div"><img src="<?= $OUTPUT->getSpinnerUrl() ?>"></div>
 <?php
 $OUTPUT->footerStart();
 ?>
@@ -50,15 +50,7 @@ var _TDISCUS = {
     multi: <?= json_encode(Settings::linkGet('multi')) ?>,
 };
 $(document).ready(function(){
-    $.getJSON('<?= addSession('threads') ?>', function(threads) {
-        window.console && console.log(threads);
-        context = { 
-            'tsugi' : _TSUGI,
-            'tdiscus' : _TDISCUS,
-            'threads' : threads
-        };
-        tsugiHandlebarsToDiv('threads-div', 'nothreads', context);
-    }).fail( function() { alert('getJSON fail'); } );
+    tsugiHandlebarsToDiv('main-div', 'main', { 'tsugi' : _TSUGI, 'tdiscus' : _TDISCUS });
 });
 </script>
 <?php

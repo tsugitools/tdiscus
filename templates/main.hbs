@@ -1,0 +1,13 @@
+<div id="threads-div"><img src="{{ tsugi.spinnerUrl }}"></div>
+<script>
+    var url = 'threads{{#if tsugi.ajax_session }}?{{{ tsugi.ajax_session }}}{{/if}}';
+    $.getJSON(url, function(threads) {
+        window.console && console.log(threads);
+        context = { 
+            'tsugi' : _TSUGI,
+            'tdiscus' : _TDISCUS,
+            'threads' : threads
+        };
+        tsugiHandlebarsToDiv('threads-div', 'nothreads', context);
+    }).fail( function() { alert('getJSON fail'); } );
+</script>
