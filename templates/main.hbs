@@ -1,7 +1,6 @@
 <div id="threads-div"><img src="{{ tsugi.spinnerUrl }}"></div>
 <script>
-    var url = 'threads{{#if tsugi.ajax_session }}?{{{ tsugi.ajax_session }}}{{/if}}';
-    $.getJSON(url, function(threads) {
+    $.getJSON(addSession('threads'), function(threads) {
         window.console && console.log(threads);
         context = { 
             'tsugi' : _TSUGI,
