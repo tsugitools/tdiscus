@@ -18,7 +18,8 @@ if ( SettingsForm::handleSettingsPost() ) {
 // View
 $OUTPUT->header();
 ?>
-<link rel=import href="load_templates/<?= $USER->locale ?>" id="handlebars-templates">
+<link rel=import href="load_templates/<?= $USER->locale ?>">
+<link rel=import href="<?= $CFG->staticroot ?>/webcomponents/tsugi/hello-world3.html">
 <?php
 $OUTPUT->bodyStart();
 $OUTPUT->flashMessages();
@@ -50,7 +51,10 @@ var _TDISCUS = {
     multi: <?= json_encode(Settings::linkGet('multi')) ?>,
 };
 $(document).ready(function(){
-    tsugiHandlebarsToDiv('main-div', 'main', { 'tsugi' : _TSUGI, 'tdiscus' : _TDISCUS });
+    // Nothing in particular to do here...
+});
+window.addEventListener('WebComponentsReady', function() {
+    tsugiHandlebarsToDiv('main-div', 'tdiscus-main', { 'tsugi' : _TSUGI, 'tdiscus' : _TDISCUS });
 });
 </script>
 <?php
