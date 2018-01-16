@@ -7,6 +7,10 @@ use \Tsugi\Core\LTIX;
 use \Tsugi\Core\Settings;
 use \Tsugi\UI\SettingsForm;
 
+use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\MessageSelector;
+use Symfony\Component\Translation\Loader\MoFileLoader;
+
 // No parameter means we require CONTEXT, USER, and LINK
 $LAUNCH = LTIX::requireData();
 
@@ -39,10 +43,12 @@ SettingsForm::checkbox('grade',__('Give a 100% grade for a student making a post
 SettingsForm::checkbox('multi',__('Allow more than one thread.'));
 SettingsForm::dueDate();
 SettingsForm::end();
+
+$OUTPUT->welcomeUserCourse();
 ?>
-<h1>Teaching and Threading...</h1>
 <div id="main-div"><img src="<?= $OUTPUT->getSpinnerUrl() ?>"></div>
 <?php
+
 $OUTPUT->footerStart();
 ?>
 <script>
