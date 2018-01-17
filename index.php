@@ -23,7 +23,6 @@ if ( SettingsForm::handleSettingsPost() ) {
 $OUTPUT->header();
 ?>
 <link rel=import href="load_templates/<?= $USER->locale ?>">
-<link rel=import href="<?= $CFG->staticroot ?>/webcomponents/tsugi/hello-world3.html">
 <?php
 $OUTPUT->bodyStart();
 $OUTPUT->flashMessages();
@@ -60,7 +59,7 @@ $(document).ready(function(){
     // Nothing in particular to do here...
 });
 window.addEventListener('WebComponentsReady', function() {
-    tsugiHandlebarsToDiv('main-div', 'tdiscus-main', { 'tsugi' : _TSUGI, 'tdiscus' : _TDISCUS });
+    tsugiHandlebarsToDiv('main-div', 'tdiscus-c-main', { 'tsugi' : _TSUGI, 'tdiscus' : _TDISCUS });
 });
 </script>
 <?php
