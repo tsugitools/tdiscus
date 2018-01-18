@@ -1,0 +1,82 @@
+<p>
+<form id="main-form">
+<input type="text" name="search" id="search-text">
+<input type="submit" id="search" value="{{__ 'Search' }}">
+<input type="submit" id="clear-search" value="{{__ 'Clear Search' }}">
+<input type="submit" id="add-disussion" value="{{__ '+ Discussion' }}"
+  onclick="showModal('New Discussion','add-discussion-div'); return false;" >
+</form>
+</p>
+
+<!-- Flash messages -->
+{{>> tdiscus-flash-messages.hbs }}
+
+<!-- The New Discussion Modal -->
+<div id="add-discussion-div" title="{{__ "New Discussion" }}" 
+        style="display: none;">
+<form id="add-discussion-form">
+<p>{{__ "Title:" }} <br/>
+<input type="text" name="title" class="form-control">
+</p>
+<p>{{__ "Description:" }} <br/>
+<textarea name="body" class="form-control">
+</textarea>
+</p>
+<p>
+<input type="submit" id="add-discussion-submit" value="{{__ '+ Discussion' }}" >
+<span id="add-discussion-feedback"></span>
+</p>
+</form>
+</div>
+
+<!-- The space for the thread listing -->
+<div id="threads-div"><img src="{{ tsugi.spinnerUrl }}"></div>
+<script>
+    $('#add-discussion-submit').click(function(ev) {
+        ev.preventDefault()
+        var ser = $(ev.target.form).serialize();
+        $('#add-discussion-feedback').empty().append('<img src="{{ tsugi.spinnerUrl }}">').show();
+        $.post(addSession('add-discussion'), ser)
+            .done( function(data) {
+                $('#add-discussion-feedback').hide();
+                $('#add-discussion-div').dialog('close');
+                $('#alert-success-text').empty().append('{{__ 'Success' }}');
+                $('#alert-success').show();
+                loadThreads();
+                return false;
+            })
+            .error( function(xhr, status, error) {
+                console.log(xhr);
+                console.log(status);
+                console.log(error);
+                $('#add-discussion-feedback').empty()
+                    .append('<span class="text-danger">{{__ 'Request Failed' }}</span>');
+            });
+    });
+
+    $('#search').click(function(ev){
+        ev.preventDefault();
+        alert('search');
+    });
+
+    $('#clear-search').click(function(ev){
+        ev.preventDefault();
+        alert('clear-search');
+    });
+
+    function loadThreads() {
+        $.getJSON(addSession('threads'), function(threads) {
+            window.console && console.log(threads);
+            context = { 
+                'tsugi' : _TSUGI,
+                'tdiscus' : _TDISCUS,
+                'threads' : threads
+            };
+            tsugiHandlebarsToDiv('threads-div', 'tdiscus-c-threads', context);
+        }).fail( function() { 
+            $('#alert-danger-text').empty().append('{{__ 'Unable to retrieve threads' }}');
+            $('#alert-danger').show();
+        } );
+    }
+    loadThreads();
+</script>
