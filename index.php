@@ -50,6 +50,8 @@ $OUTPUT->welcomeUserCourse();
 
 $OUTPUT->footerStart();
 ?>
+<script src="<?= $CFG->staticroot ?>/util/ckeditor_4.8.0/ckeditor.js"></script>
+
 <script>
 var _TDISCUS = {
     grade: <?= json_encode(Settings::linkGet('grade')) ?>,

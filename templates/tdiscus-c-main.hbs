@@ -19,7 +19,7 @@
 <input type="text" name="title" class="form-control">
 </p>
 <p>{{__ "Description:" }} <br/>
-<textarea name="body" class="form-control">
+<textarea id="editor" name="body" class="form-control">
 </textarea>
 </p>
 <p>
@@ -36,7 +36,7 @@
         ev.preventDefault()
         var ser = $(ev.target.form).serialize();
         $('#add-discussion-feedback').empty().append('<img src="{{ tsugi.spinnerUrl }}">').show();
-        $.post(addSession('add-discussion'), ser)
+        $.post(addSession('api/add-discussion'), ser)
             .done( function(data) {
                 $('#add-discussion-feedback').hide();
                 $('#add-discussion-div').dialog('close');
@@ -65,7 +65,7 @@
     });
 
     function loadThreads() {
-        $.getJSON(addSession('threads'), function(threads) {
+        $.getJSON(addSession('api/threads'), function(threads) {
             window.console && console.log(threads);
             context = { 
                 'tsugi' : _TSUGI,
@@ -79,4 +79,8 @@
         } );
     }
     loadThreads();
+
+    // Replace the <textarea id="editor1"> with a CKEditor
+    // instance, using default configuration.
+    // CKEDITOR.inline( 'editor' );
 </script>
