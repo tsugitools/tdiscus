@@ -50,9 +50,20 @@ $OUTPUT->welcomeUserCourse();
 
 $OUTPUT->footerStart();
 ?>
-<script src="<?= $CFG->staticroot ?>/util/ckeditor_4.8.0/ckeditor.js"></script>
+<script src="<?= $CFG->staticroot ?>/util/js-xss/dist/xss.js"></script>
 
 <script>
+// Set up XSS processing
+var whiteList = filterXSS.getDefaultWhiteList();
+console.log(whiteList);
+whiteList.div = ['style'];
+whiteList.span = ['style'];
+var options = {
+  whiteList: whiteList,
+  stripIgnoreTagBody: ["script"] // the script tag is a special case, we need
+}; 
+var TsugiXSS = new filterXSS.FilterXSS(options);
+console.log(TsugiXSS);
 var _TDISCUS = {
     grade: <?= json_encode(Settings::linkGet('grade')) ?>,
     multi: <?= json_encode(Settings::linkGet('multi')) ?>,

@@ -29,6 +29,9 @@ onclick='window.location.href=addSession("{{ tsugi.rest_path.parent }}/new");ret
     function loadThreads() {
         $.getJSON(addSession('api/threads'), function(threads) {
             window.console && console.log(threads);
+            for(i=0; i<threads.length;i++) {
+                threads[i].body = TsugiXSS.process(threads[i].body);
+            }
             context = { 
                 'tsugi' : _TSUGI,
                 'tdiscus' : _TDISCUS,
