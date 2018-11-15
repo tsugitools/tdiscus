@@ -34,8 +34,8 @@ array( "{$CFG->dbprefix}tdiscus_thread",
     upvote      INTEGER NOT NULL,
     downvote    INTEGER NOT NULL,
 
+    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP NULL,
-    created_at  TIMESTAMP NOT NULL,
 
     CONSTRAINT `{$CFG->dbprefix}tdiscus_thread_ibfk_1`
         FOREIGN KEY (`link_id`)
@@ -61,8 +61,8 @@ array( "{$CFG->dbprefix}tdiscus_comment",
     upvote      INTEGER NOT NULL,
     downvote    INTEGER NOT NULL,
 
+    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP NULL,
-    created_at  TIMESTAMP NOT NULL,
 
     CONSTRAINT `{$CFG->dbprefix}tdiscus_comment_ibfk_1`
         FOREIGN KEY (`thread_id`)
@@ -85,8 +85,9 @@ array( "{$CFG->dbprefix}tdiscus_closure",
     parent_id   INTEGER NOT NULL,
     child_id    INTEGER NOT NULL,
     depth       INTEGER NOT NULL,
+    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP NULL,
-
+    
     CONSTRAINT `{$CFG->dbprefix}tdiscus_closure_ibfk_1`
         FOREIGN KEY (`parent_id`)
         REFERENCES `{$CFG->dbprefix}tdiscus_comment` (`comment_id`)
