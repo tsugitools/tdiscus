@@ -5,14 +5,15 @@ use \Tsugi\Util\Net;
 use \Tsugi\Core\LTIX;
 
 // No parameter means we require CONTEXT, USER, and LINK
-$LAUNCH = LTIX::requireData();
+$LTI = LTIX::requireData();
 
 if ( U::get($_POST, 'title') && U::get($_POST, 'body') ) {
     $retval = $PDOX->queryReturnError("INSERT INTO {$CFG->dbprefix}tdiscus_thread
-        (link_id, title, body) VALUES 
-        (:LI, :TITLE, :BODY)",
+        (link_id, user_id, title, body) VALUES 
+        (:LI, :UI, :TITLE, :BODY)",
         array(
-            ':LI' => $LINK->id,
+            ':LI' => $LTI->link->id,
+            ':UI' => $LTI->user->id,
             ':TITLE' => $_POST['title'],
             ':BODY' => $_POST['body']
         )
