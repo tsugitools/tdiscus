@@ -40,6 +40,7 @@ echo('</span>');
 SettingsForm::start();
 SettingsForm::checkbox('grade',__('Give a 100% grade for a student making a post or a comment.'));
 SettingsForm::checkbox('multi',__('Allow more than one thread.'));
+SettingsForm::checkbox('nested',__('Allow nested comments.'));
 SettingsForm::dueDate();
 SettingsForm::end();
 
@@ -67,6 +68,7 @@ console.log(TsugiXSS);
 var _TDISCUS = {
     grade: <?= json_encode(Settings::linkGet('grade')) ?>,
     multi: <?= json_encode(Settings::linkGet('multi')) ?>,
+    nested: <?= json_encode(Settings::linkGet('nested')) ?>,
 };
 $(document).ready(function(){
     // Nothing in particular to do here...

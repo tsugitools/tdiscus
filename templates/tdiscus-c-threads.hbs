@@ -1,6 +1,8 @@
 {{#if threads.length}}
   {{#each threads}}
-  <p><b>{{ title }}</b><br/><div style="padding-left: 10px;">{{{ body }}}</div>
+      <p><a href="{{ ../tsugi.rest_path.parent }}/thread/{{ thread_id }}"
+            onclick="alert(addSession(this.href));window.location=addSession(this.href); return false;">
+  <b>{{ title }}</b></a><br/><div style="padding-left: 10px;">{{{ body }}}</div>
   </p>
   {{/each}}
 {{else}}
