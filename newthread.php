@@ -44,7 +44,7 @@ $(document).ready(function(){
     // Nothing in particular to do here...
 });
 window.addEventListener('WebComponentsReady', function() {
-    tsugiHandlebarsToDiv('main-div', 'tdiscus-c-new', { 'tsugi' : _TSUGI, 'tdiscus' : _TDISCUS });
+    tsugiHandlebarsToDiv('main-div', 'tdiscus-c-newthread', { 'tsugi' : _TSUGI, 'tdiscus' : _TDISCUS });
 });
 </script>
 <?php

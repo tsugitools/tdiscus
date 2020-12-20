@@ -1,15 +1,15 @@
 <!-- Flash messages -->
 {{>> tdiscus-flash-messages.hbs }}
 
-<!-- The New Discussion Modal -->
-<div id="add-discussion-div" title="{{__ "New Discussion" }}" >
-<form id="add-discussion-form">
+<!-- The New Thread Modal -->
+<div id="add-thread-div" title="{{__ "New Thread" }}" >
+<form id="add-thread-form">
 <p>
-<input type="submit" id="add-discussion-submit" value="{{__ '+ Discussion' }}" >
-<input type="submit" id="add-discussion-cancel" value="{{__ 'Cancel' }}" 
+<input type="submit" id="add-thread-submit" value="{{__ '+ Thread' }}" >
+<input type="submit" id="add-thread-cancel" value="{{__ 'Cancel' }}" 
 onclick='window.location.href=addSession("{{ tsugi.rest_path.parent }}");return false;'
 >
-<span id="add-discussion-feedback"></span>
+<span id="add-thread-feedback"></span>
 </p>
 <p>{{__ "Title:" }} <br/>
 <input type="text" name="title" class="form-control">
@@ -22,16 +22,16 @@ onclick='window.location.href=addSession("{{ tsugi.rest_path.parent }}");return 
 </div>
 
 <script>
-    $('#add-discussion-submit').click(function(ev) {
+    $('#add-thread-submit').click(function(ev) {
         ev.preventDefault()
         for ( instance in CKEDITOR.instances )
             CKEDITOR.instances[instance].updateElement();
         var ser = $(ev.target.form).serialize();
-        $('#add-discussion-feedback').empty().append('<img src="{{ tsugi.spinnerUrl }}">').show();
-        $.post(addSession('{{ tsugi.rest_path.parent }}/api/add-discussion'), ser)
+        $('#add-thread-feedback').empty().append('<img src="{{ tsugi.spinnerUrl }}">').show();
+        $.post(addSession('{{ tsugi.rest_path.parent }}/api/add-thread'), ser)
             .done( function(data) {
-                // $('#add-discussion-feedback').hide();
-                // $('#add-discussion-div').dialog('close');
+                // $('#add-thread-feedback').hide();
+                // $('#add-thread-div').dialog('close');
                 // $('#alert-success-text').empty().append('{{__ 'Success' }}');
                 // $('#alert-success').show();
                 window.location.href=addSession("{{ tsugi.rest_path.parent }}");
@@ -40,7 +40,7 @@ onclick='window.location.href=addSession("{{ tsugi.rest_path.parent }}");return 
                 console.log(xhr);
                 console.log(status);
                 console.log(error);
-                $('#add-discussion-feedback').empty()
+                $('#add-thread-feedback').empty()
                     .append('<span class="text-danger">{{__ 'Request Failed' }}</span>');
             });
     });
