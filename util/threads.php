@@ -13,7 +13,7 @@ global $TOOL_ROOT;
 
 class Threads {
 
-    public static function loadThread($thread_id) {
+    public static function threadLoad($thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
         $row = $PDOX->rowDie("SELECT *, COALESCE(T.updated_at, T.created_at) AS modified_at,
@@ -26,15 +26,15 @@ class Threads {
         return $row;
     }
 
-    public static function loadThreadForUpdate($thread_id) {
+    public static function threadLoadForUpdate($thread_id) {
 
-        $row = self::loadThread($thread_id);
+        $row = self::threadLoad($thread_id);
         if ( $row['owned'] != 1 ) return null;
 
         return $row;
     }
 
-    public static function replaceThread($thread_id, $data=false) {
+    public static function threadUpdate($thread_id, $data=false) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
         if ( $data == null ) $data = $_POST;
@@ -59,7 +59,7 @@ class Threads {
         );
     }
 
-    public static function deleteThread($thread_id) {
+    public static function threadDelete($thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
         $stmt = $PDOX->queryDie("DELETE FROM {$CFG->dbprefix}tdiscus_thread 
@@ -92,7 +92,7 @@ class Threads {
         return $rows;
     }
 
-    public static function addThread($data=null) {
+    public static function threadInsert($data=null) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
         if ( $data == null ) $data = $_POST;
         $title = U::get($data, 'title');

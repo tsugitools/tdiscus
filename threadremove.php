@@ -25,7 +25,7 @@ $thread_id = null;
 $old_thread = null;
 if ( isset($rest_path->action) && is_numeric($rest_path->action) ) {
     $thread_id = intval($rest_path->action);
-    $old_thread = $THREADS->loadThreadForUpdate($thread_id);
+    $old_thread = $THREADS->threadLoadForUpdate($thread_id);
 }
 
 if ( ! $old_thread ) {
@@ -35,14 +35,14 @@ if ( ! $old_thread ) {
 }
 
 if ( count($_POST) > 0 ) {
-    $retval = $THREADS->deleteThread($thread_id);
+    $retval = $THREADS->threadDelete($thread_id);
     if ( is_string($retval) ) {
         $_SESSION['error'] = $retval;
         header( 'Location: '.addSession($TOOL_ROOT . '/' . $come_back) ) ;
         return;
     }
 
-    $_SESSION['success'] = __('Thread updated');
+    $_SESSION['success'] = __('Thread deleted');
     header( 'Location: '.addSession($TOOL_ROOT) ) ;
     return;
 }

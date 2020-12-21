@@ -26,7 +26,7 @@ $thread_id = null;
 $old_thread = null;
 if ( isset($rest_path->action) && is_numeric($rest_path->action) ) {
     $thread_id = intval($rest_path->action);
-    $old_thread = $THREADS->loadThreadForUpdate($thread_id);
+    $old_thread = $THREADS->threadLoadForUpdate($thread_id);
     if ( ! is_array($old_thread) ) {
         $_SESSION['error'] = __('Could not load thread');
         header( 'Location: '.addSession('threadform') ) ;
@@ -37,7 +37,7 @@ if ( isset($rest_path->action) && is_numeric($rest_path->action) ) {
 
 if ( count($_POST) > 0 ) {
     if ( $old_thread ) {
-        $retval = $THREADS->replaceThread($thread_id, $_POST);
+        $retval = $THREADS->threadUpdate($thread_id, $_POST);
         if ( is_string($retval) ) {
             $_SESSION['error'] = $retval;
             header( 'Location: '.addSession($TOOL_ROOT . '/' . $come_back) ) ;
@@ -47,7 +47,7 @@ if ( count($_POST) > 0 ) {
         $_SESSION['success'] = __('Thread updated');
         header( 'Location: '.addSession($TOOL_ROOT) ) ;
     } else {
-        $retval = $THREADS->addThread($_POST);
+        $retval = $THREADS->threadInsert($_POST);
         if ( is_string($retval) ) {
             $_SESSION['error'] = $retval;
             header( 'Location: '.addSession($TOOL_ROOT . '/' . $come_back) ) ;
