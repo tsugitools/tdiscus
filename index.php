@@ -1,6 +1,7 @@
 <?php
 require_once "../config.php";
-require_once "tdiscus.php";
+require_once "util/tdiscus.php";
+require_once "util/threads.php";
 
 use \Tsugi\Util\U;
 use \Tsugi\Util\Net;
@@ -8,6 +9,7 @@ use \Tsugi\Core\LTIX;
 use \Tsugi\Core\Settings;
 use \Tsugi\UI\SettingsForm;
 use \Tdiscus\Tdiscus;
+use \Tdiscus\Threads;
 
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\MessageSelector;
@@ -16,19 +18,19 @@ use Symfony\Component\Translation\Loader\MoFileLoader;
 // No parameter means we require CONTEXT, USER, and LINK
 $LAUNCH = LTIX::requireData();
 
+$config = HTMLPurifier_Config::createDefault();
+$purifier = new HTMLPurifier($config);
+
 if ( SettingsForm::handleSettingsPost() ) {
     header( 'Location: '.addSession('index') ) ;
     return;
 }
 
-global $TOOL_ROOT;
-if ( ! isset($TOOL_ROOT) ) $TOOL_ROOT = dirname($_SERVER['SCRIPT_NAME']);
-// View
-$OUTPUT->header();
-Tdiscus::load_templates();
-Tdiscus::setup_tdiscuss();
+$THREADS = new Threads();
+
+Tdiscus::header();
+
 $OUTPUT->bodyStart();
-$OUTPUT->flashMessages();
 
 echo('<span style="float: right; margin-bottom: 10px;">');
 if ( $USER->instructor ) {
@@ -48,10 +50,33 @@ SettingsForm::dueDate();
 SettingsForm::end();
 
 $OUTPUT->welcomeUserCourse();
-Tdiscus::main_div();
-$OUTPUT->footerStart();
+$OUTPUT->flashMessages();
 
-Tdiscus::load_xss();
-Tdiscus::render('tdiscus-c-index');
+$threads = $THREADS->threads();
 
-$OUTPUT->footerEnd();
+?>
+<p>
+<form id="main-form">
+<input type="text" name="search" id="search-text">
+<input type="submit" id="search" value="<?= __( 'Search') ?>">
+<input type="submit" id="clear-search" value="<?= __( 'Clear Search') ?>">
+<input type="submit" id="add-thread" value="<?= __( '+ Thread') ?>"
+onclick='window.location.href="<?= U::addSession($TOOL_ROOT.'/newthread') ?>";return false;'>
+</form>
+</p>
+<?php
+if ( count($threads) < 1 ) {
+    echo("<p>".__('No threads')."</p>\n");
+} else {
+    foreach($threads as $thread ) {
+?>
+  <p><a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
+  <b><?= htmlentities($thread['title']) ?></b></a><br/><div style="padding-left: 10px;"><?= $purifier->purify($thread['body']) ?></div>
+  </p>
+<?php 
+    }
+}
+
+Tdiscus::footerStart();
+
+Tdiscus::footerEnd();

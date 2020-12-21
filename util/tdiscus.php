@@ -13,6 +13,26 @@ global $TOOL_ROOT;
 
 class Tdiscus {
 
+    public static function header() {
+        global $OUTPUT, $TOOL_ROOT;
+        if ( ! isset($TOOL_ROOT) ) $TOOL_ROOT = dirname($_SERVER['SCRIPT_NAME']);
+        $OUTPUT->header();
+        self::load_templates();
+        self::setup_tdiscuss();
+    }
+
+    public static function footerStart() {
+        global $OUTPUT;
+        $OUTPUT->footerStart();
+        self::load_xss();
+        self::load_ckeditor();
+    }
+
+    public static function footerEnd() {
+        global $OUTPUT;
+        $OUTPUT->footerEnd();
+    }
+
     public static function load_templates() {
         global $TOOL_ROOT, $USER;
         echo('<link rel=import href="'.$TOOL_ROOT."/load_templates/".$USER->locale.'">'."\n");

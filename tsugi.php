@@ -1,7 +1,7 @@
 <?php
 
 require_once('../config.php');
-require_once('tdiscus.php');
+require_once('util/tdiscus.php');
 
 use \Tsugi\Util\U;
 use \Tsugi\Core\LTIX;
