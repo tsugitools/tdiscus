@@ -3,6 +3,9 @@
 <input type="text" name="search" id="search-text">
 <input type="submit" id="search" value="{{__ 'Search' }}">
 <input type="submit" id="clear-search" value="{{__ 'Clear Search' }}">
+<input type="submit" id="add-thread-cancel" value="{{__ 'All Threads' }}"
+onclick='window.location.href=addSession("{{ tdiscus.tool_root }}");return false;'
+
 </form>
 </p>
 
@@ -24,13 +27,13 @@
     });
 
     function loadThread() {
-        $.getJSON(addSession('{{ tdiscus.tool_root }}/api/thread/{{ tsugi.rest_path.action }}'), function(thread) {
-            window.console && console.log(thread);
-            thread.body = TsugiXSS.process(thread.body);
+        $.getJSON(addSession('{{ tdiscus.tool_root }}/api/thread/{{ tsugi.rest_path.action }}'), function(data) {
+            window.console && console.log(data);
+            data.thread.body = TsugiXSS.process(data.thread.body);
             var context = { 
                 'tsugi' : _TSUGI,
                 'tdiscus' : _TDISCUS,
-                'thread' : thread,
+                'data' : data,
             };
             tsugiHandlebarsToDiv('thread-div', 'tdiscus-c-thread-fragment', context);
         }).fail( function() { 

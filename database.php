@@ -49,10 +49,9 @@ array( "{$CFG->dbprefix}tdiscus_comment",
     comment_id  INTEGER NOT NULL KEY AUTO_INCREMENT,
     thread_id   INTEGER NOT NULL,
     user_id     INTEGER NOT NULL,
-    depth       INTEGER NOT NULL,
+    depth       INTEGER NOT NULL DEFAULT 0,
 
-    title       TEXT NULL,
-    body        TEXT NULL,
+    comment     TEXT NULL,
     json        TEXT NULL,
     settings    TEXT NULL,
 
