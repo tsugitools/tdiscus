@@ -1,11 +1,13 @@
 <?php
 require_once "../config.php";
+require_once "render.php";
 
 use \Tsugi\Util\U;
 use \Tsugi\Util\Net;
 use \Tsugi\Core\LTIX;
 use \Tsugi\Core\Settings;
 use \Tsugi\UI\SettingsForm;
+use \Tdiscus\Render;
 
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\MessageSelector;
@@ -19,11 +21,12 @@ if ( SettingsForm::handleSettingsPost() ) {
     return;
 }
 
+global $TOOL_ROOT;
+if ( ! isset($TOOL_ROOT) ) $TOOL_ROOT = dirname($_SERVER['SCRIPT_NAME']);
 // View
 $OUTPUT->header();
-?>
-<link rel=import href="load_templates/<?= $USER->locale ?>">
-<?php
+Render::load_templates();
+Render::setup_tdiscuss();
 $OUTPUT->bodyStart();
 $OUTPUT->flashMessages();
 
@@ -45,37 +48,10 @@ SettingsForm::dueDate();
 SettingsForm::end();
 
 $OUTPUT->welcomeUserCourse();
-?>
-<div id="main-div"><img src="<?= $OUTPUT->getSpinnerUrl() ?>"></div>
-<?php
-
+Render::main_div();
 $OUTPUT->footerStart();
-?>
-<script src="<?= $CFG->staticroot ?>/util/js-xss/dist/xss.js"></script>
 
-<script>
-// Set up XSS processing
-var whiteList = filterXSS.getDefaultWhiteList();
-console.log(whiteList);
-whiteList.div = ['style'];
-whiteList.span = ['style'];
-var options = {
-  whiteList: whiteList,
-  stripIgnoreTagBody: ["script"] // the script tag is a special case, we need
-}; 
-var TsugiXSS = new filterXSS.FilterXSS(options);
-console.log(TsugiXSS);
-var _TDISCUS = {
-    grade: <?= json_encode(Settings::linkGet('grade')) ?>,
-    multi: <?= json_encode(Settings::linkGet('multi')) ?>,
-    nested: <?= json_encode(Settings::linkGet('nested')) ?>,
-};
-$(document).ready(function(){
-    // Nothing in particular to do here...
-});
-window.addEventListener('WebComponentsReady', function() {
-    tsugiHandlebarsToDiv('main-div', 'tdiscus-c-main', { 'tsugi' : _TSUGI, 'tdiscus' : _TDISCUS });
-});
-</script>
-<?php
+Render::load_xss();
+Render::render('tdiscus-c-main');
+
 $OUTPUT->footerEnd();
