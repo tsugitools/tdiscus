@@ -17,7 +17,7 @@ class Threads {
         global $PDOX, $LINK, $CFG;
         $rows = $PDOX->allRowsDie("SELECT *
             FROM {$CFG->dbprefix}tdiscus_thread
-            WHERE link_id = :LI ORDER BY pin, rank, updated_at DESC",
+            WHERE link_id = :LI ORDER BY pin, rank, created_at DESC",
             array(':LI' => $LINK->id)
         );
         return $rows;

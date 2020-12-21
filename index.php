@@ -4,16 +4,11 @@ require_once "util/tdiscus.php";
 require_once "util/threads.php";
 
 use \Tsugi\Util\U;
-use \Tsugi\Util\Net;
 use \Tsugi\Core\LTIX;
 use \Tsugi\Core\Settings;
 use \Tsugi\UI\SettingsForm;
 use \Tdiscus\Tdiscus;
 use \Tdiscus\Threads;
-
-use Symfony\Component\Translation\Translator;
-use Symfony\Component\Translation\MessageSelector;
-use Symfony\Component\Translation\Loader\MoFileLoader;
 
 // No parameter means we require CONTEXT, USER, and LINK
 $LAUNCH = LTIX::requireData();
@@ -61,7 +56,7 @@ $threads = $THREADS->threads();
 <input type="submit" id="search" value="<?= __( 'Search') ?>">
 <input type="submit" id="clear-search" value="<?= __( 'Clear Search') ?>">
 <input type="submit" id="add-thread" value="<?= __( '+ Thread') ?>"
-onclick='window.location.href="<?= U::addSession($TOOL_ROOT.'/newthread') ?>";return false;'>
+onclick='window.location.href="<?= U::addSession($TOOL_ROOT.'/threadform') ?>";return false;'>
 </form>
 </p>
 <?php
@@ -71,7 +66,10 @@ if ( count($threads) < 1 ) {
     foreach($threads as $thread ) {
 ?>
   <p><a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
-  <b><?= htmlentities($thread['title']) ?></b></a><br/><div style="padding-left: 10px;"><?= $purifier->purify($thread['body']) ?></div>
+  <b><?= htmlentities($thread['title']) ?></b></a>
+  (<time class="timeago" datetime="<?= $thread['created_at'] ?>"><?= $thread['created_at'] ?></time>)
+  <br/>
+  <div style="padding-left: 10px;"><?= $purifier->purify($thread['body']) ?></div>
   </p>
 <?php 
     }

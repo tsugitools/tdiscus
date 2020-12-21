@@ -24,8 +24,8 @@ class Tdiscus {
     public static function footerStart() {
         global $OUTPUT;
         $OUTPUT->footerStart();
-        self::load_xss();
         self::load_ckeditor();
+        echo('<script>$(document).ready(function() { jQuery("time.timeago").timeago(); });</script>'."\n");
     }
 
     public static function footerEnd() {
