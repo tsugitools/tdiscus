@@ -214,5 +214,21 @@ class Threads {
         return $stmt;
     }
 
+    public static function commentUpdateDao($comment_id, $comment) {
+        global $PDOX, $TSUGI_LAUNCH, $CFG;
+        if ( strlen($comment) < 1 ) {
+            return __('Non-empty comment required');
+        }
+
+
+        $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_comment SET
+            comment = :COM, updated_at = NOW()
+            WHERE comment_id = :TID",
+            array(
+                ':TID' => $comment_id,
+                ':COM' => $comment,
+            )
+        );
+    }
 
 }
