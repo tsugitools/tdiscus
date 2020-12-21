@@ -19,26 +19,12 @@ $purifier = new HTMLPurifier($config);
 $THREADS = new Threads();
 
 if ( count($_POST) > 0 ) {
-    $title = U::get($_POST, 'title');
-    $body = U::get($_POST, 'body');
-
-    if ( strlen($title) < 1 || strlen($body) < 1 ) {
-        $_SESSION['error'] = __('Title and body are required');
+    $retval = $THREADS->addThread($_POST);
+    if ( is_string($retval) ) {
+        $_SESSION['error'] = $retval;
         header( 'Location: '.addSession('threadform') ) ;
         return;
     }
-
-    // TODO: Purify pre-insert?
-    $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_thread
-        (link_id, user_id, title, body) VALUES 
-        (:LI, :UI, :TITLE, :BODY)",
-        array(
-            ':LI' => $LAUNCH->link->id,
-            ':UI' => $LAUNCH->user->id,
-            ':TITLE' => $title,
-            ':BODY' => $body
-        )
-    );
 
     $_SESSION['success'] = __('Thread added');
     header( 'Location: '.addSession('index') ) ;

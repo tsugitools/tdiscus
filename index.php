@@ -40,7 +40,9 @@ echo('</span>');
 SettingsForm::start();
 SettingsForm::checkbox('grade',__('Give a 100% grade for a student making a post or a comment.'));
 SettingsForm::checkbox('multi',__('Allow more than one thread.'));
+SettingsForm::checkbox('studentthread',__('Allow learners to create a thread.'));
 SettingsForm::checkbox('nested',__('Allow nested comments.'));
+SettingsForm::number('lockminutes',__('Number of minutes before posts are locked.'));
 SettingsForm::dueDate();
 SettingsForm::end();
 
@@ -67,7 +69,7 @@ if ( count($threads) < 1 ) {
 ?>
   <p><a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
   <b><?= htmlentities($thread['title']) ?></b></a>
-  (<time class="timeago" datetime="<?= $thread['created_at'] ?>"><?= $thread['created_at'] ?></time>)
+  (<time class="timeago" datetime="<?= $thread['modified_at'] ?>"><?= $thread['modified_at'] ?></time>)
   <br/>
   <div style="padding-left: 10px;"><?= $purifier->purify($thread['body']) ?></div>
   </p>
