@@ -15,11 +15,8 @@ $LAUNCH = LTIX::requireData();
 $config = HTMLPurifier_Config::createDefault();
 $purifier = new HTMLPurifier($config);
 
-
 $THREADS = new Threads();
-
 $rest_path = U::rest_path();
-error_log("thread ".$rest_path->action);
 
 $come_back = 'threadform';
 $thread_id = null;
