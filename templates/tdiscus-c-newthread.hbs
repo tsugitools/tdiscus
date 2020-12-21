@@ -28,13 +28,13 @@ onclick='window.location.href=addSession("{{ tdiscus.tool_root }}");return false
             CKEDITOR.instances[instance].updateElement();
         var ser = $(ev.target.form).serialize();
         $('#add-thread-feedback').empty().append('<img src="{{ tsugi.spinnerUrl }}">').show();
-        $.post(addSession('{{ tsugi.rest_path.parent }}/api/add-thread'), ser)
+        $.post(addSession('{{ tdiscus.tool_root }}/api/add-thread'), ser)
             .done( function(data) {
                 // $('#add-thread-feedback').hide();
                 // $('#add-thread-div').dialog('close');
                 // $('#alert-success-text').empty().append('{{__ 'Success' }}');
                 // $('#alert-success').show();
-                window.location.href=addSession("{{ tsugi.rest_path.parent }}");
+                window.location.href=addSession("{{ tdiscus.tool_root }}");
             })
             .error( function(xhr, status, error) {
                 console.log(xhr);

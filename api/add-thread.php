@@ -7,6 +7,8 @@ use \Tsugi\Core\LTIX;
 // No parameter means we require CONTEXT, USER, and LINK
 $LTI = LTIX::requireData();
 
+error_log('add-thread');
+
 if ( U::get($_POST, 'title') && U::get($_POST, 'body') ) {
     $retval = $PDOX->queryReturnError("INSERT INTO {$CFG->dbprefix}tdiscus_thread
         (link_id, user_id, title, body) VALUES 
