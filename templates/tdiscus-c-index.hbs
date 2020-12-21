@@ -32,7 +32,7 @@ onclick='window.location.href=addSession("{{ tsugi.rest_path.parent }}/newthread
             for(i=0; i<threads.length;i++) {
                 threads[i].body = TsugiXSS.process(threads[i].body);
             }
-            context = { 
+            var context = { 
                 'tsugi' : _TSUGI,
                 'tdiscus' : _TDISCUS,
                 'threads' : threads
@@ -43,5 +43,5 @@ onclick='window.location.href=addSession("{{ tsugi.rest_path.parent }}/newthread
             $('#alert-danger').show();
         } );
     }
-    loadThreads();
+    $(document).ready (function () { loadThreads(); } );
 </script>
