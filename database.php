@@ -26,6 +26,7 @@ array( "{$CFG->dbprefix}tdiscus_thread",
 
     title       TEXT NULL,
     body        TEXT NULL,
+    cleaned     TINYINT(1) NOT NULL DEFAULT 0,
     json        TEXT NULL,
     settings    TEXT NULL,
 
