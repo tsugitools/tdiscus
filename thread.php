@@ -34,6 +34,7 @@ if ( ! $old_thread ) {
 }
 
 $come_back = $TOOL_ROOT . '/thread/' . $thread_id;
+$all_done = $TOOL_ROOT;
 
 if ( count($_POST) > 0 ) {
     $retval = $THREADS->commentInsertDao($thread_id, U::get($_POST, 'comment') );
@@ -54,7 +55,13 @@ Tdiscus::header();
 $OUTPUT->bodyStart();
 $OUTPUT->flashMessages();
 ?>
-
+<form id="main-form">
+<input type="text" name="search" id="search-text">
+<input type="submit" id="search" value="<?= __( 'Search') ?>">
+<input type="submit" id="clear-search" value="<?= __( 'Clear Search') ?>">
+<input type="submit" id="add-thread" value="<?= __( 'All Threads') ?>"
+onclick='window.location.href="<?= U::addSession($all_done) ?>";return false;'>
+</form>
 <p><?= __("Title:") ?> <br/>
 <?php 
 echo('<b>'.htmlentities($old_thread['title']).'</b></br>');
