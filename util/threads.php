@@ -81,12 +81,17 @@ class Threads {
 
     public static function threads() {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
-        $rows = $PDOX->allRowsDie("SELECT *, COALESCE(T.updated_at, T.created_at) AS modified_at,
+        $rows = $PDOX->allRowsDie("SELECT T.thread_id AS thread_id, body, title,
+            COALESCE(T.updated_at, T.created_at) AS modified_at,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned,
-            (COALESCE(upvote, 0)-COALESCE(downvote, 0)) AS netvote
+            (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote,
+            COUNT(C.thread_id) AS comment_count
             FROM {$CFG->dbprefix}tdiscus_thread AS T
+            LEFT JOIN {$CFG->dbprefix}tdiscus_comment AS C ON  C.thread_id = T.thread_id
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = T.user_id
-            WHERE link_id = :LID ORDER BY pin DESC, rank DESC, modified_at DESC, netvote DESC",
+            WHERE link_id = :LID
+            GROUP BY T.thread_id, C.thread_id
+            ORDER BY T.pin DESC, T.rank DESC, modified_at DESC, netvote DESC",
             array(':UID' => $TSUGI_LAUNCH->user->id, ':LID' => $TSUGI_LAUNCH->link->id)
         );
         return $rows;
@@ -116,5 +121,98 @@ class Threads {
 
         return intval($PDOX->lastInsertId());
     }
+
+    public static function comments($thread_id) {
+        global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        $comments = $PDOX->allRowsDie("SELECT comment_id, comment, displayname,
+            C.updated_at AS updated_at, C.created_at AS created_at,
+            COALESCE(C.updated_at, C.created_at) AS modified_at,
+            CASE WHEN C.user_id = :UID THEN TRUE ELSE FALSE END AS owned
+            FROM {$CFG->dbprefix}tdiscus_comment AS C
+            JOIN {$CFG->dbprefix}tdiscus_thread AS T ON  C.thread_id = T.thread_id
+            JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = C.user_id
+            WHERE T.link_id = :LI AND C.thread_id = :TID
+            ORDER BY C.created_at DESC",
+            array(
+                ':UID' => $TSUGI_LAUNCH->user->id,
+                ':LI' => $TSUGI_LAUNCH->link->id,
+                ':TID' => $thread_id
+            )
+        );
+        return($comments);
+    }
+
+    public static function commentInsertDao($thread_id, $comment) {
+        global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        if ( strlen($comment) < 1 ) {
+            return __('Non-empty comment required');
+        }
+
+        $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_thread
+            (link_id, user_id, title, body) VALUES
+            (:LID, :UID, :TITLE, :BODY)",
+            array(
+                ':LID' => $TSUGI_LAUNCH->link->id,
+                ':UID' => $TSUGI_LAUNCH->user->id,
+                ':TITLE' => $title,
+                ':BODY' => $body
+            )
+        );
+
+         $retval = $PDOX->queryReturnError("INSERT INTO {$CFG->dbprefix}tdiscus_comment
+            (thread_id, user_id, comment) VALUES
+            (:TH, :UI, :COM)",
+            array(
+                ':TH' => $thread_id,
+                ':UI' => $TSUGI_LAUNCH->user->id,
+                ':COM' => $comment,
+            )
+        );
+
+        return intval($PDOX->lastInsertId());
+    }
+
+    public static function commentLoad($comment_id) {
+        global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        $row = $PDOX->rowDie("SELECT *, COALESCE(C.updated_at, C.created_at) AS modified_at,
+            CASE WHEN C.user_id = :UID THEN TRUE ELSE FALSE END AS owned
+            FROM {$CFG->dbprefix}tdiscus_comment AS C
+            JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = C.user_id
+            JOIN {$CFG->dbprefix}tdiscus_thread AS T ON  C.thread_id = T.thread_id
+            WHERE link_id = :LID AND comment_id = :CID",
+            array(':LID' => $TSUGI_LAUNCH->link->id,  ':UID' => $TSUGI_LAUNCH->user->id, ':CID' => $comment_id)
+        );
+        return $row;
+    }
+
+    public static function commentLoadForUpdate($comment_id) {
+
+        $row = self::commentLoad($comment_id);
+        if ( $row['owned'] != 1 ) return null;
+
+        return $row;
+    }
+
+    public static function commentDeleteDao($comment_id) {
+        global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        $stmt = $PDOX->queryDie("DELETE FROM {$CFG->dbprefix}tdiscus_comment 
+            WHERE comment_id = :CID",
+            array(
+                ':CID' => $comment_id,
+            )
+        );
+
+        if (isset($stmt->rowCount)) {
+            if ( $stmt->rowCount == 0 ) {
+                return __('Unable to delete comment');
+            }
+        }
+        return $stmt;
+    }
+
 
 }
