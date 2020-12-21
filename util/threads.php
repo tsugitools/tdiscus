@@ -150,18 +150,7 @@ class Threads {
             return __('Non-empty comment required');
         }
 
-        $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_thread
-            (link_id, user_id, title, body) VALUES
-            (:LID, :UID, :TITLE, :BODY)",
-            array(
-                ':LID' => $TSUGI_LAUNCH->link->id,
-                ':UID' => $TSUGI_LAUNCH->user->id,
-                ':TITLE' => $title,
-                ':BODY' => $body
-            )
-        );
-
-         $retval = $PDOX->queryReturnError("INSERT INTO {$CFG->dbprefix}tdiscus_comment
+         $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_comment
             (thread_id, user_id, comment) VALUES
             (:TH, :UI, :COM)",
             array(
