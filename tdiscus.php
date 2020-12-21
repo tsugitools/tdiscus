@@ -11,7 +11,7 @@ use Symfony\Component\Translation\Loader\MoFileLoader;
 
 global $TOOL_ROOT;
 
-class Render {
+class Tdiscus {
 
     public static function load_templates() {
         global $TOOL_ROOT, $USER;

@@ -1,13 +1,13 @@
 <?php
 require_once "../config.php";
-require_once "render.php";
+require_once "tdiscus.php";
 
 use \Tsugi\Util\U;
 use \Tsugi\Util\Net;
 use \Tsugi\Core\LTIX;
 use \Tsugi\Core\Settings;
 use \Tsugi\UI\SettingsForm;
-use \Tdiscus\Render;
+use \Tdiscus\Tdiscus;
 
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\MessageSelector;
@@ -25,8 +25,8 @@ global $TOOL_ROOT;
 if ( ! isset($TOOL_ROOT) ) $TOOL_ROOT = dirname($_SERVER['SCRIPT_NAME']);
 // View
 $OUTPUT->header();
-Render::load_templates();
-Render::setup_tdiscuss();
+Tdiscus::load_templates();
+Tdiscus::setup_tdiscuss();
 $OUTPUT->bodyStart();
 $OUTPUT->flashMessages();
 
@@ -48,10 +48,10 @@ SettingsForm::dueDate();
 SettingsForm::end();
 
 $OUTPUT->welcomeUserCourse();
-Render::main_div();
+Tdiscus::main_div();
 $OUTPUT->footerStart();
 
-Render::load_xss();
-Render::render('tdiscus-c-main');
+Tdiscus::load_xss();
+Tdiscus::render('tdiscus-c-index');
 
 $OUTPUT->footerEnd();
