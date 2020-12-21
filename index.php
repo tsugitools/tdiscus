@@ -70,6 +70,10 @@ if ( count($threads) < 1 ) {
   <p><a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
   <b><?= htmlentities($thread['title']) ?></b></a>
   (<time class="timeago" datetime="<?= $thread['modified_at'] ?>"><?= $thread['modified_at'] ?></time>)
+  <?php if ( $thread['owned'] || $LAUNCH->user->instructor ) { ?>
+    <a href="<?= $TOOL_ROOT ?>/threadform/<?= $thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>
+    <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
+  <?php } ?>
   <br/>
   <div style="padding-left: 10px;"><?= $purifier->purify($thread['body']) ?></div>
   </p>

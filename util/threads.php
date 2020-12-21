@@ -13,12 +13,61 @@ global $TOOL_ROOT;
 
 class Threads {
 
+    public static function loadThread($thread_id) {
+        global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        $row = $PDOX->rowDie("SELECT *, COALESCE(T.updated_at, T.created_at) AS modified_at,
+            CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned
+            FROM {$CFG->dbprefix}tdiscus_thread AS T
+            JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = T.user_id
+            WHERE link_id = :LID AND thread_id = :TID",
+            array(':LID' => $TSUGI_LAUNCH->link->id,  ':UID' => $TSUGI_LAUNCH->user->id, ':TID' => $thread_id)
+        );
+        return $row;
+    }
+
+    public static function loadThreadForUpdate($thread_id) {
+
+        $row = self::loadThread($thread_id);
+        if ( $row['owned'] != 1 ) return null;
+
+        return $row;
+    }
+
+    public static function replaceThread($thread_id, $data=false) {
+        global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        if ( $data == null ) $data = $_POST;
+        $title = U::get($data, 'title');
+        $body = U::get($data, 'body');
+
+        if ( strlen($title) < 1 || strlen($body) < 1 ) {
+            return __('Title and body are required');
+        }
+
+        // TODO: Purify pre-update
+        $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_thread SET
+            body = :BODY , title= :TITLE, updated_at = NOW()
+            WHERE link_id = :LID AND thread_id = :TID AND user_id = :UID",
+            array(
+                ':LID' => $TSUGI_LAUNCH->link->id,
+                ':UID' => $TSUGI_LAUNCH->user->id,
+                ':TID' => $thread_id,
+                ':TITLE' => $title,
+                ':BODY' => $body
+            )
+        );
+
+    }
+
     public static function threads() {
-        global $PDOX, $LINK, $CFG;
-        $rows = $PDOX->allRowsDie("SELECT *, COALESCE(updated_at, created_at) AS modified_at
-            FROM {$CFG->dbprefix}tdiscus_thread
-            WHERE link_id = :LI ORDER BY pin, rank, modified_at DESC",
-            array(':LI' => $LINK->id)
+        global $PDOX, $TSUGI_LAUNCH, $CFG;
+        $rows = $PDOX->allRowsDie("SELECT *, COALESCE(T.updated_at, T.created_at) AS modified_at,
+            CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned
+            FROM {$CFG->dbprefix}tdiscus_thread AS T
+            JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = T.user_id
+            WHERE link_id = :LID ORDER BY pin, rank, modified_at DESC",
+            array(':UID' => $TSUGI_LAUNCH->user->id, ':LID' => $TSUGI_LAUNCH->link->id)
         );
         return $rows;
     }
@@ -36,10 +85,10 @@ class Threads {
         // TODO: Purify pre-insert?
         $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_thread
             (link_id, user_id, title, body) VALUES
-            (:LI, :UI, :TITLE, :BODY)",
+            (:LID, :UID, :TITLE, :BODY)",
             array(
-                ':LI' => $TSUGI_LAUNCH->link->id,
-                ':UI' => $TSUGI_LAUNCH->user->id,
+                ':LID' => $TSUGI_LAUNCH->link->id,
+                ':UID' => $TSUGI_LAUNCH->user->id,
                 ':TITLE' => $title,
                 ':BODY' => $body
             )
