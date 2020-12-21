@@ -15,7 +15,15 @@
 
 {{#if data.comments.length}}
   {{#each data.comments}}
-      <p>{{ comment }}</p>
+      <p><b>{{ displayname }}</b> (<time class="timeago" datetime="{{ created_at }}">{{ created_at }}</time>)
+      {{#if edit }}
+          <i class="fa fa-pencil"></i>
+      {{/if}}
+      {{#if delete }}
+          <i class="fa fa-trash"></i>
+      {{/if}}
+      <br/>
+      {{ comment }}</p>
   {{/each}}
 {{else}}
 No length
@@ -43,5 +51,7 @@ No length
                     .append('<span class="text-danger">{{__ 'Request Failed' }}</span>');
             });
     });
+
+    $(document).ready(function() { jQuery("time.timeago").timeago(); });
 </script>
 
