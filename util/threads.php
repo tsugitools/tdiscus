@@ -57,16 +57,36 @@ class Threads {
                 ':BODY' => $body
             )
         );
+    }
 
+    public static function deleteThread($thread_id) {
+        global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        $stmt = $PDOX->queryDie("DELETE FROM {$CFG->dbprefix}tdiscus_thread 
+            WHERE link_id = :LID AND thread_id = :TID AND user_id = :UID",
+            array(
+                ':LID' => $TSUGI_LAUNCH->link->id,
+                ':UID' => $TSUGI_LAUNCH->user->id,
+                ':TID' => $thread_id,
+            )
+        );
+
+        if (isset($stmt->rowCount)) {
+            if ( $stmt->rowCount == 0 ) {
+                return __('Unable to delete thread');
+            }
+        }
+        return $stmt;
     }
 
     public static function threads() {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
         $rows = $PDOX->allRowsDie("SELECT *, COALESCE(T.updated_at, T.created_at) AS modified_at,
-            CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned
+            CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned,
+            (COALESCE(upvote, 0)-COALESCE(downvote, 0)) AS netvote
             FROM {$CFG->dbprefix}tdiscus_thread AS T
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = T.user_id
-            WHERE link_id = :LID ORDER BY pin, rank, modified_at DESC",
+            WHERE link_id = :LID ORDER BY pin DESC, rank DESC, modified_at DESC, netvote DESC",
             array(':UID' => $TSUGI_LAUNCH->user->id, ':LID' => $TSUGI_LAUNCH->link->id)
         );
         return $rows;
@@ -83,7 +103,7 @@ class Threads {
         }
 
         // TODO: Purify pre-insert?
-        $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_thread
+        $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_thread
             (link_id, user_id, title, body) VALUES
             (:LID, :UID, :TITLE, :BODY)",
             array(

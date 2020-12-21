@@ -68,7 +68,7 @@ $OUTPUT->flashMessages();
 <div id="add-thread-div" title="<?= __("New Thread") ?>" >
 <form id="add-thread-form" method="post">
 <p>
-<input type="submit" id="add-thread-submit" value="<?= __('+ Thread') ?>" >
+<input type="submit" id="add-thread-submit" value="<?= ($old_thread ? __('Update') : __('+ Thread')) ?>" >
 <input type="submit" id="add-thread-cancel" value="<?= __('Cancel') ?>"
 onclick='window.location.href="<?= addSession($TOOL_ROOT) ?>";return false;'
 >
