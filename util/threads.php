@@ -48,8 +48,10 @@ class Threads {
 
         $count = $stmt->rowCount();
         if ( $count > 0 ) {
+            $staffread = "";
+            if ( $TSUGI_LAUNCH->user->instructor ) $staffread = ", staffread=1";
             $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_thread
-                SET views=views+1
+                SET views=views+1 $staffread
                 WHERE thread_id = :TID",
                 array(
                     ':TID' => $thread_id,
@@ -96,7 +98,7 @@ class Threads {
     public static function threadDelete($thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
-        $stmt = $PDOX->queryDie("DELETE FROM {$CFG->dbprefix}tdiscus_thread 
+        $stmt = $PDOX->queryDie("DELETE FROM {$CFG->dbprefix}tdiscus_thread
             WHERE link_id = :LID AND thread_id = :TID AND user_id = :UID",
             array(
                 ':LID' => $TSUGI_LAUNCH->link->id,
@@ -115,7 +117,8 @@ class Threads {
 
     public static function threads() {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
-        $rows = $PDOX->allRowsDie("SELECT T.thread_id AS thread_id, body, title, views,
+        $rows = $PDOX->allRowsDie("SELECT T.thread_id AS thread_id, body, title,
+            views, staffread, staffanswer,
             COALESCE(T.updated_at, T.created_at) AS modified_at,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned,
             (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote,
@@ -194,7 +197,24 @@ class Threads {
             )
         );
 
-        return intval($PDOX->lastInsertId());
+        $retval = intval($PDOX->lastInsertId());
+
+        // Update the thread
+        // TODO: ?? Count comments here?
+        if ( $retval > 0 ) {
+            $staffanswer = "";
+            if ( $TSUGI_LAUNCH->user->instructor ) $staffanswer = ", staffanswer=1";
+
+            $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_thread
+                SET updated_at=NOW() $staffanswer
+                WHERE thread_id = :TID",
+                array(
+                    ':TID' => $thread_id,
+                 )
+            );
+        }
+
+        return $retval;
     }
 
     public static function commentLoad($comment_id) {
@@ -222,7 +242,7 @@ class Threads {
     public static function commentDeleteDao($comment_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
-        $stmt = $PDOX->queryDie("DELETE FROM {$CFG->dbprefix}tdiscus_comment 
+        $stmt = $PDOX->queryDie("DELETE FROM {$CFG->dbprefix}tdiscus_comment
             WHERE comment_id = :CID",
             array(
                 ':CID' => $comment_id,

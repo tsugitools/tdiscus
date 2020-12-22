@@ -73,7 +73,10 @@ if ( count($threads) < 1 ) {
   <span class="threadcount"><?= $thread['comment_count'] ?> comments </span>
   <?php } ?>
   (Updated: <time class="timeago" datetime="<?= $thread['modified_at'] ?>"><?= $thread['modified_at'] ?></time>
-   Views: <?= $thread['views'] ?>)
+   Views: <?= $thread['views'] ?>
+<?php if ( $thread['staffread'] > 0 ) echo(" -Staff Read- "); ?>
+<?php if ( $thread['staffanswer'] > 0 ) echo(" -Staff Answer- "); ?>
+)
   <?php if ( $thread['owned'] || $LAUNCH->user->instructor ) { ?>
     <a href="<?= $TOOL_ROOT ?>/threadform/<?= $thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>
     <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
