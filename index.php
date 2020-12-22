@@ -30,8 +30,7 @@ $OUTPUT->bodyStart();
 echo('<span style="float: right; margin-bottom: 10px;">');
 if ( $USER->instructor ) {
     if ( $CFG->launchactivity ) {
-        echo('<a href="jsontest" target="_blank" class="btn btn-default">Test JSON</a> ');
-        echo('<a href="analytics" class="btn btn-default">Launches</a> ');
+        echo('<a href="analytics" class="btn btn-default">Analytics</a> ');
     }
 }
 SettingsForm::button();
@@ -47,6 +46,7 @@ SettingsForm::dueDate();
 SettingsForm::end();
 
 echo("<h1>".htmlentities($LAUNCH->link->title)."</h1>\n");
+
 $OUTPUT->flashMessages();
 
 $threads = $THREADS->threads();
