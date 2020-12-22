@@ -59,18 +59,15 @@ if ( count($_POST) > 0 ) {
 
 Tdiscus::header();
 
+$menu = new \Tsugi\UI\MenuSet();
+$menu->addLeft(__('All Threads'), $TOOL_ROOT);
+
 $OUTPUT->bodyStart();
+$OUTPUT->topNav($menu);
 $OUTPUT->flashMessages();
 ?>
 <div id="add-thread-div" title="<?= __("New Thread") ?>" >
 <form id="add-thread-form" method="post">
-<p>
-<input type="submit" id="add-thread-submit" value="<?= ($old_thread ? __('Update') : __('+ Thread')) ?>" >
-<input type="submit" id="add-thread-cancel" value="<?= __('Cancel') ?>"
-onclick='window.location.href="<?= addSession($TOOL_ROOT) ?>";return false;'
->
-<span id="add-thread-feedback"></span>
-</p>
 <p><?= __("Title:") ?> <br/>
 <input type="text" name="title" class="form-control"
 <?php 
@@ -88,6 +85,12 @@ if ( $old_thread ) {
 }
 ?>
 </textarea>
+</p>
+<p>
+<input type="submit" id="add-thread-submit" value="<?= ($old_thread ? __('Update') : __('+ Thread')) ?>" >
+<input type="submit" id="add-thread-cancel" value="<?= __('Cancel') ?>"
+onclick='window.location.href="<?= addSession($TOOL_ROOT) ?>";return false;'
+>
 </p>
 </form>
 </div>

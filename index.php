@@ -25,16 +25,21 @@ $THREADS = new Threads();
 
 Tdiscus::header();
 
-$OUTPUT->bodyStart();
-
-echo('<span style="float: right; margin-bottom: 10px;">');
+$menu = new \Tsugi\UI\MenuSet();
+$menu->addLeft(__('Add Thread'), $TOOL_ROOT.'/threadform');
 if ( $USER->instructor ) {
     if ( $CFG->launchactivity ) {
-        echo('<a href="analytics" class="btn btn-default">Analytics</a> ');
+        $menu->addRight('Analytics', 'analytics');
     }
+    $menu->addRight('Settings', '#', /* push */ false, SettingsForm::attr());
 }
-SettingsForm::button();
-echo('</span>');
+
+$OUTPUT->bodyStart();
+$OUTPUT->topNav($menu);
+
+Tdiscus::search_box();
+
+echo("<h3>".htmlentities($LAUNCH->link->title)."</h3>\n");
 
 SettingsForm::start();
 SettingsForm::checkbox('grade',__('Give a 100% grade for a student making a post or a comment.'));
@@ -45,23 +50,10 @@ SettingsForm::number('lockminutes',__('Number of minutes before posts are locked
 SettingsForm::dueDate();
 SettingsForm::end();
 
-echo("<h1>".htmlentities($LAUNCH->link->title)."</h1>\n");
-
 $OUTPUT->flashMessages();
 
 $threads = $THREADS->threads();
 
-?>
-<p>
-<form id="main-form">
-<input type="text" name="search" id="search-text">
-<input type="submit" id="search" value="<?= __( 'Search') ?>">
-<input type="submit" id="clear-search" value="<?= __( 'Clear Search') ?>">
-<input type="submit" id="add-thread" value="<?= __( '+ Thread') ?>"
-onclick='window.location.href="<?= U::addSession($TOOL_ROOT.'/threadform') ?>";return false;'>
-</form>
-</p>
-<?php
 if ( count($threads) < 1 ) {
     echo("<p>".__('No threads')."</p>\n");
 } else {

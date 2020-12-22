@@ -52,22 +52,18 @@ $comments = $THREADS->comments($thread_id);
 
 Tdiscus::header();
 
+$menu = new \Tsugi\UI\MenuSet();
+$menu->addLeft(__('All Threads'), $TOOL_ROOT);
+
 $OUTPUT->bodyStart();
+$OUTPUT->topNav($menu);
+Tdiscus::search_box();
 $OUTPUT->flashMessages();
 ?>
-<form id="main-form">
-<input type="text" name="search" id="search-text">
-<input type="submit" id="search" value="<?= __( 'Search') ?>">
-<input type="submit" id="clear-search" value="<?= __( 'Clear Search') ?>">
-<input type="submit" id="add-thread" value="<?= __( 'All Threads') ?>"
-onclick='window.location.href="<?= U::addSession($all_done) ?>";return false;'>
-</form>
-<p><?= __("Title:") ?> <br/>
 <?php 
-echo('<b>'.htmlentities($old_thread['title']).'</b></br>');
+echo('<h3>'.htmlentities($old_thread['title']).'</h3></br>');
 ?>
 </p>
-<p><?= __("Description:") ?> <br/>
 <?= $purifier->purify($old_thread['body']) ?>
 </p>
 

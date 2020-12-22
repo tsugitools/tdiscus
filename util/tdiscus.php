@@ -36,4 +36,20 @@ class Tdiscus {
         echo('<script src="'.$CFG->staticroot.'/util/ckeditor_4.8.0/ckeditor.js"></script>'."\n");
     }
 
+    public static function search_box() {
+        $searchvalue = U::get($_GET,'search') ? 'value="'.htmlentities(U::get($_GET,'search')).'" ' : "";
+?>
+<div style="float:right">
+<!-- https://www.w3schools.com/howto/howto_css_search_button.asp -->
+<form>
+  <input type="text" placeholder="Search.." name="search"
+  <?= $searchvalue ?>
+  >
+  <button type="submit"><i class="fa fa-search"></i></button>
+  <a href="<?= $TOOL_ROOT ?>"><i class="fa fa-undo"></i></a>
+</form>
+</div>
+<?php
+    }
+
 }
