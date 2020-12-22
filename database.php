@@ -13,7 +13,9 @@ $DATABASE_UNINSTALL = array(
 "drop table if exists {$CFG->dbprefix}tdiscus_flag",
 "drop table if exists {$CFG->dbprefix}tdiscus_closure",
 "drop table if exists {$CFG->dbprefix}tdiscus_comment",
-"drop table if exists {$CFG->dbprefix}tdiscus_thread"
+"drop table if exists {$CFG->dbprefix}tdiscus_thread",
+"drop table if exists {$CFG->dbprefix}tdiscus_read_thread",
+"drop table if exists {$CFG->dbprefix}tdiscus_read_comment",
 );
 
 // Creating tables
@@ -30,10 +32,12 @@ array( "{$CFG->dbprefix}tdiscus_thread",
     json        TEXT NULL,
     settings    TEXT NULL,
 
+    frozen      TINYINT(1) NOT NULL DEFAULT 0,
+    views       INTEGER NOT NULL DEFAULT 0,
     pin         INTEGER NULL,
     rank        INTEGER NULL,
-    upvote      INTEGER NULL,
-    downvote    INTEGER NULL,
+    upvote      INTEGER NOT NULL DEFAULT 0,
+    downvote    INTEGER NOT NULL DEFAULT 0,
 
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP NULL,
@@ -41,6 +45,27 @@ array( "{$CFG->dbprefix}tdiscus_thread",
     CONSTRAINT `{$CFG->dbprefix}tdiscus_thread_ibfk_1`
         FOREIGN KEY (`link_id`)
         REFERENCES `{$CFG->dbprefix}lti_link` (`link_id`)
+        ON DELETE CASCADE ON UPDATE CASCADE
+
+) ENGINE = InnoDB DEFAULT CHARSET=utf8"),
+
+array( "{$CFG->dbprefix}tdiscus_read_thread",
+"create table {$CFG->dbprefix}tdiscus_read_thread (
+    thread_id   INTEGER NOT NULL,
+    user_id     INTEGER NOT NULL,
+    vote        TINYINT(1) NOT NULL DEFAULT 0,
+
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_read_thread_ibfk_1`
+        UNIQUE (`thread_id`, `user_id`),
+
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_read_thread_ibfk_2`
+        FOREIGN KEY (`thread_id`)
+        REFERENCES `{$CFG->dbprefix}tdiscus_thread` (`thread_id`)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_read_thread_ibfk_3`
+        FOREIGN KEY (`user_id`)
+        REFERENCES `{$CFG->dbprefix}lti_user` (`user_id`)
         ON DELETE CASCADE ON UPDATE CASCADE
 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8"),
@@ -67,6 +92,27 @@ array( "{$CFG->dbprefix}tdiscus_comment",
     CONSTRAINT `{$CFG->dbprefix}tdiscus_comment_ibfk_1`
         FOREIGN KEY (`thread_id`)
         REFERENCES `{$CFG->dbprefix}tdiscus_thread` (`thread_id`)
+        ON DELETE CASCADE ON UPDATE CASCADE
+
+) ENGINE = InnoDB DEFAULT CHARSET=utf8"),
+
+array( "{$CFG->dbprefix}tdiscus_read_comment",
+"create table {$CFG->dbprefix}tdiscus_read_comment (
+    comment_id   INTEGER NOT NULL,
+    user_id     INTEGER NOT NULL,
+    vote        TINYINT(1) NOT NULL DEFAULT 0,
+
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_read_comment_ibfk_1`
+        UNIQUE (`comment_id`, `user_id`),
+
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_read_comment_ibfk_2`
+        FOREIGN KEY (`comment_id`)
+        REFERENCES `{$CFG->dbprefix}tdiscus_comment` (`comment_id`)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_read_comment_ibfk_3`
+        FOREIGN KEY (`user_id`)
+        REFERENCES `{$CFG->dbprefix}lti_user` (`user_id`)
         ON DELETE CASCADE ON UPDATE CASCADE
 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8"),

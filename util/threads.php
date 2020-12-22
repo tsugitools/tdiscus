@@ -26,6 +26,40 @@ class Threads {
         return $row;
     }
 
+    public static function threadLoadMarkRead($thread_id) {
+        global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        // This also makes sure we can see the thread_id
+        $row = self::threadLoad($thread_id);
+        if ( ! $row ) return $row;
+
+        // With ON DUPLICATE KEY UPDATE, the affected-rows value per row is 1 if the row
+        // is inserted as a new row, 2 if an existing row is updated, and 0 if an existing
+        // row is set to its current value
+        // https://dev.mysql.com/doc/refman/5.6/en/insert-on-duplicate.html
+        $stmt = $PDOX->queryDie("INSERT IGNORE INTO {$CFG->dbprefix}tdiscus_read_thread
+            (thread_id, user_id) VALUES
+            (:TID, :UID)",
+            array(
+                ':TID' => $thread_id,
+                ':UID' => $TSUGI_LAUNCH->user->id,
+            )
+        );
+
+        $count = $stmt->rowCount();
+        if ( $count > 0 ) {
+            $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_thread
+                SET views=views+1
+                WHERE thread_id = :TID",
+                array(
+                    ':TID' => $thread_id,
+                )
+            );
+       }
+
+       return $row;
+    }
+
     public static function threadLoadForUpdate($thread_id) {
 
         $row = self::threadLoad($thread_id);
@@ -81,7 +115,7 @@ class Threads {
 
     public static function threads() {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
-        $rows = $PDOX->allRowsDie("SELECT T.thread_id AS thread_id, body, title,
+        $rows = $PDOX->allRowsDie("SELECT T.thread_id AS thread_id, body, title, views,
             COALESCE(T.updated_at, T.created_at) AS modified_at,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned,
             (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote,

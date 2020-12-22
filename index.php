@@ -46,7 +46,7 @@ SettingsForm::number('lockminutes',__('Number of minutes before posts are locked
 SettingsForm::dueDate();
 SettingsForm::end();
 
-$OUTPUT->welcomeUserCourse();
+echo("<h1>".htmlentities($LAUNCH->link->title)."</h1>\n");
 $OUTPUT->flashMessages();
 
 $threads = $THREADS->threads();
@@ -72,7 +72,8 @@ if ( count($threads) < 1 ) {
   <?php if ( $thread['comment_count'] > 0 ) { ?>
   <span class="threadcount"><?= $thread['comment_count'] ?> comments </span>
   <?php } ?>
-  (<time class="timeago" datetime="<?= $thread['modified_at'] ?>"><?= $thread['modified_at'] ?></time>)
+  (Updated: <time class="timeago" datetime="<?= $thread['modified_at'] ?>"><?= $thread['modified_at'] ?></time>
+   Views: <?= $thread['views'] ?>)
   <?php if ( $thread['owned'] || $LAUNCH->user->instructor ) { ?>
     <a href="<?= $TOOL_ROOT ?>/threadform/<?= $thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>
     <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
