@@ -118,7 +118,8 @@ class Threads {
     public static function threads() {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
         $rows = $PDOX->allRowsDie("SELECT T.thread_id AS thread_id, body, title,
-            views, staffread, staffanswer, comments,
+            views, staffcreate, staffread, staffanswer, comments, displayname,
+            T.created_at AS created_at, T.updated_at AS updated_at,
             COALESCE(T.updated_at, T.created_at) AS modified_at,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned,
             (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote
@@ -141,13 +142,15 @@ class Threads {
             return __('Title and body are required');
         }
 
+        $staffcreate = $TSUGI_LAUNCH->user->instructor ? 1 : 0;
         // TODO: Purify pre-insert?
         $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_thread
-            (link_id, user_id, title, body) VALUES
-            (:LID, :UID, :TITLE, :BODY)",
+            (link_id, user_id, staffcreate, title, body) VALUES
+            (:LID, :UID, :STAFF, :TITLE, :BODY)",
             array(
                 ':LID' => $TSUGI_LAUNCH->link->id,
                 ':UID' => $TSUGI_LAUNCH->user->id,
+                ':STAFF' => $staffcreate,
                 ':TITLE' => $title,
                 ':BODY' => $body
             )

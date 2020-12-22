@@ -59,9 +59,14 @@ $OUTPUT->bodyStart();
 $OUTPUT->topNav($menu);
 Tdiscus::search_box();
 $OUTPUT->flashMessages();
-?>
-<?php 
-echo('<h3>'.htmlentities($old_thread['title']).'</h3></br>');
+  if ( $old_thread['owned'] || $LAUNCH->user->instructor ) { ?>
+    <span class="tsugi-thread-owned-menu">
+    <a href="<?= $TOOL_ROOT ?>/threadform/<?= $old_thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>
+    <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $old_thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
+    </span>
+  <?php } 
+
+echo('<div class="tsugi-thread-title">'.htmlentities($old_thread['title']).'</div>');
 ?>
 </p>
 <?= $purifier->purify($old_thread['body']) ?>

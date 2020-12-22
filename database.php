@@ -34,6 +34,7 @@ array( "{$CFG->dbprefix}tdiscus_thread",
 
     views       INTEGER NOT NULL DEFAULT 0,
     comments    INTEGER NOT NULL DEFAULT 0,
+    staffcreate TINYINT(1) NOT NULL DEFAULT 0,
     staffread   TINYINT(1) NOT NULL DEFAULT 0,
     staffanswer TINYINT(1) NOT NULL DEFAULT 0,
     frozen      TINYINT(1) NOT NULL DEFAULT 0,

@@ -13,9 +13,6 @@ use \Tdiscus\Threads;
 // No parameter means we require CONTEXT, USER, and LINK
 $LAUNCH = LTIX::requireData();
 
-$config = HTMLPurifier_Config::createDefault();
-$purifier = new HTMLPurifier($config);
-
 if ( SettingsForm::handleSettingsPost() ) {
     header( 'Location: '.addSession('index') ) ;
     return;
@@ -37,9 +34,8 @@ if ( $USER->instructor ) {
 $OUTPUT->bodyStart();
 $OUTPUT->topNav($menu);
 
-Tdiscus::search_box();
 
-echo("<h3>".htmlentities($LAUNCH->link->title)."</h3>\n");
+echo('<div class="tsugi-threads-title">'.htmlentities($LAUNCH->link->title)."</div>\n");
 
 SettingsForm::start();
 SettingsForm::checkbox('grade',__('Give a 100% grade for a student making a post or a comment.'));
@@ -54,31 +50,45 @@ $OUTPUT->flashMessages();
 
 $threads = $THREADS->threads();
 
+
+Tdiscus::search_box(true);
+
 if ( count($threads) < 1 ) {
     echo("<p>".__('No threads')."</p>\n");
 } else {
+    echo('<ul class="tsugi-threads-list">');
     foreach($threads as $thread ) {
 ?>
-  <p><a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
+  <li class="tsugi-thread-item">
+  <div class="tsugi-thread-item-left">
+  <p class="tsugi-thread-item-title"><a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
   <b><?= htmlentities($thread['title']) ?></b></a>
-  <?php if ( $thread['comments'] > 0 ) { ?>
-  <span class="threadcount"><?= $thread['comments'] ?> comments </span>
-  <?php } ?>
-  (Updated: <time class="timeago" datetime="<?= $thread['modified_at'] ?>"><?= $thread['modified_at'] ?></time>
-   Views: <?= $thread['views'] ?>
-<?php if ( $thread['staffread'] > 0 ) echo(" -Staff Read- "); ?>
-<?php if ( $thread['staffanswer'] > 0 ) echo(" -Staff Answer- "); ?>
-)
-  <?php if ( $thread['owned'] || $LAUNCH->user->instructor ) { ?>
-    <a href="<?= $TOOL_ROOT ?>/threadform/<?= $thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>
-    <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
-  <?php } ?>
-  <br/>
-  <div style="padding-left: 10px;"><?= $purifier->purify($thread['body']) ?></div>
   </p>
+<?php
+    if ( $thread['staffcreate'] > 0 ) {
+        echo('<span class="tsugi-staff-created">Staff Created</span>');
+        echo(" Created by ".htmlentities($thread['displayname']));
+        echo(' at <time class="timeago" datetime="'.$thread['created_at'].'">'.$thread['created_at'].'</time>');
+    } else {
+        if ( $thread['staffread'] > 0 ) echo('<span class="tsugi-staff-read">'.__('Staff Read')."</span>\n");
+        if ( $thread['staffanswer'] > 0 ) echo('<span class="tsugi-staff-answer">'.__('Staff Answer')."</span>\n");
+        echo(__("Last post").' <time class="timeago" datetime="'.$thread['modified_at'].'">'.$thread['modified_at']."</time>\n");
+    }
+
+?>
+  </div>
+  <div class="tsugi-thread-item-right" >
+<center>
+   Views: <?= $thread['views'] ?><br/>
+   Comments: <?= $thread['comments'] ?>
+</center>
+  </div>
+  </li>
 <?php 
     }
+  echo("</ul>");
 }
+echo('</div">');
 
 Tdiscus::footerStart();
 
