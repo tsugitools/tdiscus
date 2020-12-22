@@ -118,16 +118,13 @@ class Threads {
     public static function threads() {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
         $rows = $PDOX->allRowsDie("SELECT T.thread_id AS thread_id, body, title,
-            views, staffread, staffanswer,
+            views, staffread, staffanswer, comments,
             COALESCE(T.updated_at, T.created_at) AS modified_at,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned,
-            (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote,
-            COUNT(C.thread_id) AS comment_count
+            (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote
             FROM {$CFG->dbprefix}tdiscus_thread AS T
-            LEFT JOIN {$CFG->dbprefix}tdiscus_comment AS C ON  C.thread_id = T.thread_id
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = T.user_id
             WHERE link_id = :LID
-            GROUP BY T.thread_id, C.thread_id
             ORDER BY T.pin DESC, T.rank DESC, modified_at DESC, netvote DESC",
             array(':UID' => $TSUGI_LAUNCH->user->id, ':LID' => $TSUGI_LAUNCH->link->id)
         );
@@ -200,13 +197,14 @@ class Threads {
         $retval = intval($PDOX->lastInsertId());
 
         // Update the thread
-        // TODO: ?? Count comments here?
         if ( $retval > 0 ) {
             $staffanswer = "";
-            if ( $TSUGI_LAUNCH->user->instructor ) $staffanswer = ", staffanswer=1";
+            if ( $TSUGI_LAUNCH->user->instructor ) $staffanswer = "staffanswer=1, ";
 
+            // A little denormalization saves a COUNT / GROUP BY and makes sorting super fast
             $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_thread
-                SET updated_at=NOW() $staffanswer
+                SET $staffanswer comments=(SELECT count(comment_id) FROM {$CFG->dbprefix}tdiscus_comment
+                     WHERE thread_id = :TID), updated_at=NOW()
                 WHERE thread_id = :TID",
                 array(
                     ':TID' => $thread_id,
@@ -239,7 +237,7 @@ class Threads {
         return $row;
     }
 
-    public static function commentDeleteDao($comment_id) {
+    public static function commentDeleteDao($comment_id, $thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
         $stmt = $PDOX->queryDie("DELETE FROM {$CFG->dbprefix}tdiscus_comment
@@ -254,6 +252,17 @@ class Threads {
                 return __('Unable to delete comment');
             }
         }
+
+        // A little denormalization saves a COUNT / GROUP BY and makes sorting super fast
+        $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_thread
+            SET comments=(SELECT count(comment_id) FROM {$CFG->dbprefix}tdiscus_comment
+                 WHERE thread_id = :TID)
+            WHERE thread_id = :TID",
+            array(
+                ':TID' => $thread_id,
+             )
+        );
+
         return $stmt;
     }
 

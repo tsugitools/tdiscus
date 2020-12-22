@@ -37,6 +37,7 @@ class Tdiscus {
     }
 
     public static function search_box() {
+        global $TOOL_ROOT;
         $searchvalue = U::get($_GET,'search') ? 'value="'.htmlentities(U::get($_GET,'search')).'" ' : "";
 ?>
 <div style="float:right">

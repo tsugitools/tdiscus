@@ -61,8 +61,8 @@ if ( count($threads) < 1 ) {
 ?>
   <p><a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
   <b><?= htmlentities($thread['title']) ?></b></a>
-  <?php if ( $thread['comment_count'] > 0 ) { ?>
-  <span class="threadcount"><?= $thread['comment_count'] ?> comments </span>
+  <?php if ( $thread['comments'] > 0 ) { ?>
+  <span class="threadcount"><?= $thread['comments'] ?> comments </span>
   <?php } ?>
   (Updated: <time class="timeago" datetime="<?= $thread['modified_at'] ?>"><?= $thread['modified_at'] ?></time>
    Views: <?= $thread['views'] ?>

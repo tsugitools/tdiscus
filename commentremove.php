@@ -34,7 +34,7 @@ $all_done = $TOOL_ROOT.'/thread/'.$thread_id;
 
 if ( count($_POST) > 0 ) {
     // With the successful LoadForUpdate above, we can use the Dao
-    $retval = $THREADS->commentDeleteDao($comment_id);
+    $retval = $THREADS->commentDeleteDao($comment_id, $thread_id);
     if ( is_string($retval) ) {
         $_SESSION['error'] = $retval;
         header( 'Location: '.addSession($come_back) ) ;
