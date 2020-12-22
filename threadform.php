@@ -23,7 +23,9 @@ $thread_id = null;
 $old_thread = null;
 if ( isset($rest_path->action) && is_numeric($rest_path->action) ) {
     $thread_id = intval($rest_path->action);
+    error_log("thread_id = $thread_id");
     $old_thread = $THREADS->threadLoadForUpdate($thread_id);
+    var_dump($old_thread);
     if ( ! is_array($old_thread) ) {
         $_SESSION['error'] = __('Could not load thread');
         header( 'Location: '.addSession('threadform') ) ;

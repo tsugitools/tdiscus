@@ -34,10 +34,12 @@ if ( $USER->instructor ) {
 $OUTPUT->bodyStart();
 $OUTPUT->topNav($menu);
 
+$title = strlen(Settings::linkget('title')) > 0 ? Settings::linkget('title') : $LAUNCH->link->title;
 
-echo('<div class="tsugi-threads-title">'.htmlentities($LAUNCH->link->title)."</div>\n");
+echo('<div class="tsugi-threads-title">'.htmlentities($title)."</div>\n");
 
 SettingsForm::start();
+SettingsForm::text('title',__('Thread title.'));
 SettingsForm::checkbox('grade',__('Give a 100% grade for a student making a post or a comment.'));
 SettingsForm::checkbox('multi',__('Allow more than one thread.'));
 SettingsForm::checkbox('studentthread',__('Allow learners to create a thread.'));
