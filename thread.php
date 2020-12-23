@@ -55,14 +55,16 @@ Tdiscus::header();
 $menu = new \Tsugi\UI\MenuSet();
 $menu->addLeft(__('All Threads'), $TOOL_ROOT);
 
+$commenttop = (Settings::linkGet('commenttop') == 1);
+
 $OUTPUT->bodyStart();
 $OUTPUT->topNav($menu);
-Tdiscus::search_box();
+$sortable = $THREADS->commentsSortableBy();
 $OUTPUT->flashMessages();
-echo('<div class="tsugi-thread-container">'."\n");
-echo('<p class="tsugi-thread-title">'.htmlentities($thread['title']).'</p>');
+echo('<div class="tdiscus-thread-container">'."\n");
+echo('<p class="tdiscus-thread-title">'.htmlentities($thread['title']).'</p>');
 ?>
-<p class="tsugi-thread-info">
+<p class="tdiscus-thread-info">
 <?= $thread['displayname'] ?>
  -
 <time class="timeago" datetime="<?= $thread['modified_at'] ?>"><?= $thread['modified_at'] ?></time>
@@ -70,18 +72,26 @@ echo('<p class="tsugi-thread-title">'.htmlentities($thread['title']).'</p>');
     echo(" - ".__("edited"));
 } ?>
 </p>
-<p class="tsugi-thread-body">
+<p class="tdiscus-thread-body">
 <?= $purifier->purify($thread['body']) ?>
 </p>
 <p>
 <?= $thread['netvote'] ?> Upvotes
 <i class="fa fa-arrow-up"></i>
 <a href="#reply"
-onclick="document.querySelector('#add-comment-div').scrollIntoView({ behavior: 'smooth' });"
+onclick="document.querySelector('#tdiscus-add-comment-div').scrollIntoView({ behavior: 'smooth' });"
 ><?= __('Reply') ?>
 <i class="fa fa-reply-all"></i>
 </a>
 </div>
+<div class="tdiscus-comments-container">
+<div class="tdiscus-comments-sort">
+<?php
+Tdiscus::search_box($sortable);
+if ( $commenttop ) Tdiscus::add_comment();
+?>
+</div>
+<div class="tdiscus-comments-list">
 
 <?php
 if ( count($comments) < 1 ) {
@@ -90,7 +100,7 @@ if ( count($comments) < 1 ) {
     foreach($comments as $comment ) {
 ?>
   <b><?= htmlentities($comment['displayname']) ?></b>
-  (time class="timeago" datetime="<?= $comment['modified_at'] ?>"><?= $comment['modified_at'] ?></time>)
+  <time class="timeago" datetime="<?= $comment['modified_at'] ?>"><?= $comment['modified_at'] ?></time>
   <?php if ( $comment['owned'] || $LAUNCH->user->instructor ) { ?>
     <a href="<?= $TOOL_ROOT ?>/commentform/<?= $comment['comment_id'] ?>"><i class="fa fa-pencil"></i></a>
     <a href="<?= $TOOL_ROOT ?>/commentremove/<?= $comment['comment_id'] ?>"><i class="fa fa-trash"></i></a>
@@ -102,18 +112,11 @@ if ( count($comments) < 1 ) {
     }
 }
 ?>
-<div id="add-comment-div" title="<?= __("Reply") ?>" >
-<form id="add-comment-form" method="post">
-<p>
-<span id="add-comment-feedback"></span>
-<input type="text" name="comment" class="form-control">
-</p>
-<p>
-<input type="submit" id="add-comment-submit" name="submit" value="<?= __('Reply') ?>" >
-</p>
-</form>
-</div>
+</div> <!-- tdiscus-comments-list -->
+</div> <!-- tdiscus-comments-container -->
 <?php
+
+if ( ! $commenttop ) Tdiscus::add_comment();
 
 Tdiscus::footerStart();
 

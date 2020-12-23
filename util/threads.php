@@ -152,9 +152,10 @@ class Threads {
         );
     }
 
-    /*
-     * sort=latest|popular|unanswered|top|latest
-     */
+    public static function threadsSortableBy() {
+        return array('latest', 'unanswered', 'popular', 'active', 'votes');
+    }
+
     public static function threads($info=false) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
         if ( ! is_array($info) ) $info = $_GET;
@@ -171,7 +172,7 @@ class Threads {
         } else if ( $sort == "active" ) {
             $order_by = "comments DESC, views DESC, netvote DESC, modified_at DESC";
         } else if ( $sort == "votes" ) {
-            $order_by = "netvote, DESC, comments DESC, views DESC, modified_at DESC";
+            $order_by = "netvote DESC, comments DESC, views DESC, modified_at DESC";
         }
 
         $subst = array(':UID' => $TSUGI_LAUNCH->user->id, ':LID' => $TSUGI_LAUNCH->link->id);
@@ -244,6 +245,10 @@ class Threads {
         );
 
 
+    }
+
+    public static function commentsSortableBy() {
+        return array('most recent', 'top', 'earliest');
     }
 
     public static function comments($thread_id) {

@@ -45,23 +45,23 @@ class Tdiscus {
         $selectedlatest = $sortvalue == "latest" ? 'selected="selected"' : "";
         $selectedunanswered = $sortvalue == "unanswered" ? 'selected="selected"' : "";
         // https://www.w3schools.com/howto/howto_css_search_button.asp
-        echo('<div class="tsugi-tdiscus-search-sort"><form>'."\n");
-        if ( $sortby ) {
-
+        echo('<div class="tdiscus-threads-search-sort"><form>'."\n");
+        if ( is_array($sortby) ) {
 ?>
-<div class="tsugi-tdiscus-sort">
+<div class="tdiscus-threads-sort">
 <label for="sort"><?= __("Sort by") ?></label>
 <select name="sort" id="sort" onclick="this.form.submit();">
-  <option value="latest" <?= ($sortvalue == "latest" ? 'selected="selected"' : "") ?>><?= __("Latest") ?></option>
-  <option value="popular" <?= ($sortvalue == "popular" ? 'selected="selected"' : "") ?>><?= __("Popular") ?></option>
-  <option value="active" <?= ($sortvalue == "active" ? 'selected="selected"' : "") ?>><?= __("Active") ?></option>
-  <option value="unanswered" <?= ($sortvalue == "unamswered" ? 'selected="selected"' : "") ?>><?= __("Unanswered") ?></option>
+<?php
+foreach($sortby as $sort) {
+  echo('<option value="'.$sort.'" '.($sortvalue == $sort ? 'selected="selected"' : '').' >'.__(ucfirst($sort)).'</option>'."\n");
+}
+?>
 </select>
 </div>
 <?php
         }
 ?>
-<div class="tsugi-tdiscus-search">
+<div class="tdiscus-threads-search">
   <input type="text" placeholder="Search.." name="search"
   <?= $searchvalue ?>
   >
@@ -70,6 +70,21 @@ class Tdiscus {
 </div>
 <?php
         echo("</form></div>\n");
+    }
+
+    public static function add_comment() {
+?>
+<div id="tdiscus-add-comment-div" class="tdiscus-add-comment-container" title="<?= __("Comment") ?>" >
+<form id="tdiscus-add-comment-form" method="post">
+<p>
+<input type="text" name="comment" class="form-control">
+</p>
+<p>
+<input type="submit" id="tdiscus-add-comment-submit" name="submit" value="<?= __('Comment') ?>" >
+</p>
+</form>
+</div>
+<?php
     }
 
 }

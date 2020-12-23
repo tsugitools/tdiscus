@@ -1,80 +1,93 @@
 
-.tsugi-threads-title {
+.tdiscus-threads-title {
     font-size: 2em;
 }
 
-.tsugi-tdiscus-search-sort {
+.tdiscus-threads-search-sort {
     padding: 10px;
     width: 100%;
 }
 
-.tsugi-tdiscus-sort {
+.tdiscus-threads-sort {
   display: inline-block;
   vertical-align: middle;
 }
 
-.tsugi-tdiscus-search {
+.tdiscus-threads-search {
     display: inline-block;
     float: right;
 }
 
 
-.tsugi-threads-list {
+.tdiscus-threads-list {
     border: 1px grey solid;
     list-style-type: none;
     margin: 0;
     padding: 0;
 }
 
-.tsugi-thread-item {
+.tdiscus-thread-item {
     padding: 10px;
     border: 1px grey solid;
     display: flex;
 }
 
-.tsugi-thread-item-left {
+.tdiscus-thread-item-left {
     flex: 1;
 }
 
-.tsugi-thread-item-right {
+.tdiscus-thread-item-right {
     margin-right: 20px;
 }
 
-.tsugi-thread-item-title {
+.tdiscus-thread-item-title {
     font-size: 1.5em;
 }
 
-.tsugi-staff-created {
+.tdiscus-staff-created {
     color: #8a6219;
     background-color: #ece9e3;
     padding: 2px 8px;
 }
 
-.tsugi-staff-read {
+.tdiscus-staff-read {
     color: #8a6219;
     background-color: #ece9e3;
     padding: 2px 8px;
 }
 
-.tsugi-staff-answer {
+.tdiscus-staff-answer {
     color: #8a6219;
     background-color: #ece9e3;
     padding: 2px 8px;
 }
 
-.tsugi-thread-owned-menu {
+.tdiscus-thread-owned-menu {
     font-size: 0.66em;
     padding: 10px;
 }
 
-.tsugi-thread-container {
+.tdiscus-thread-container {
     padding: 10px;
     border: 1px grey solid;
 }
 
-.tsugi-thread-title {
+.tdiscus-thread-title {
     font-size: 2em;
 }
 
-.tsugi-thread-body {
+.tdiscus-thread-body {
 }
+
+.tdiscus-comments-list {
+    padding: 10px;
+    border: 1px grey solid;
+}
+
+.tdiscus-add-comment-container {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px grey solid;
+}
+
