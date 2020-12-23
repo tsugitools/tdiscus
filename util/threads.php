@@ -114,6 +114,29 @@ class Threads {
         return $stmt;
     }
 
+    public static function threadSetPin($thread_id, $pin) {
+        global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        if ( ! is_numeric($thread_id) ) {
+            return __('Incorrect or missing thread_id');
+        }
+
+        $old_thread = self::threadLoadForUpdate($thread_id);
+
+        if ( ! is_array($old_thread) ) {
+            return __('Could not load thread for update');
+        }
+
+        $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_thread SET
+            pin=:PIN
+            WHERE thread_id = :TID",
+            array(
+                ':PIN' => $pin,
+                ':TID' => $thread_id,
+            )
+        );
+    }
+
     /*
      * sort=latest|popular|unanswered|top|latest
      */

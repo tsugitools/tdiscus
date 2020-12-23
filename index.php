@@ -65,18 +65,29 @@ if ( count($threads) < 1 ) {
   <li class="tsugi-thread-item">
   <div class="tsugi-thread-item-left">
   <p class="tsugi-thread-item-title">
-<?php if ( $pin > 0 ) { ?>
-    <a href="<?= $TOOL_ROOT ?>/threadunpin/<?= $thread['thread_id'] ?>"><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></a>
-<?php } ?>
+  <?php if ( $LAUNCH->user->instructor ) { ?>
+  <a href="#" id="threadunpin_<?= $thread['thread_id'] ?>" 
+        endpoint="threadunpin/<?= $thread['thread_id'] ?>"
+        thread="<?= $thread['thread_id'] ?>"
+        title="<?= __("Unpin Thread") ?>" 
+         <?= ($pin == 0 ? "style=display:none;" : "") ?> 
+        class="tsugi-api-call"><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></a>
+  <?php } else { ?>
+        <span <?= ($pin == 0 ? "style=display:none;" : "") ?><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></span>
+  <?php } ?>
   <a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
   <b><?= htmlentities($thread['title']) ?></b></a>
-<?php
-  if ( $thread['owned'] || $LAUNCH->user->instructor ) { ?>
+<?php if ( $thread['owned'] || $LAUNCH->user->instructor ) { ?>
     <span class="tsugi-thread-owned-menu">
     <a href="<?= $TOOL_ROOT ?>/threadform/<?= $thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>
     <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
-<?php if ( $pin <= 0 ) { ?>
-    <a href="<?= $TOOL_ROOT ?>/threadpin/<?= $thread['thread_id'] ?>" title="<?= __("Pin Thread") ?>"><i class="fa fa-thumb-tack"></i></a>
+<?php if ( $LAUNCH->user->instructor ) { ?>
+    <a href="#" id="threadpin_<?= $thread['thread_id'] ?>" 
+            endpoint="threadpin/<?= $thread['thread_id'] ?>"
+            thread="<?= $thread['thread_id'] ?>"
+            title="<?= __("Pin Thread") ?>" 
+           <?= ($pin == 1 ? "style=display:none;" : "") ?> 
+           class="tsugi-api-call"><i class="fa fa-thumb-tack"></i></a>
 <?php } ?>
     </span>
 <?php } ?>
@@ -108,5 +119,28 @@ if ( count($threads) < 1 ) {
 echo('</div">');
 
 Tdiscus::footerStart();
+?>
+<script>
+$(document).ready( function() {
+   $('.tsugi-api-call').click(function(ev) {
+        ev.preventDefault()
+        var endpoint = $(this).attr('endpoint');
+        var thread = $(this).attr('thread');
+        console.log('endpoint', endpoint);
+        $.post(addSession('<?= $TOOL_ROOT ?>'+'/api/'+endpoint))
+            .done( function(data) {
+                $('#threadpin_'+thread).toggle();
+                $('#threadunpin_'+thread).toggle();
+            })
+            .error( function(xhr, status, error) {
+                console.log(xhr);
+                console.log(status);
+                console.log(error);
+                alert('<?= htmlentities(__('Request Failed')) ?>');
+            });
+    });
+});
+</script>
+<?php
 
 Tdiscus::footerEnd();
