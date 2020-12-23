@@ -67,6 +67,14 @@
     padding: 10px;
 }
 
+.tsugi-thread-container {
+    padding: 10px;
+    border: 1px grey solid;
+}
+
 .tsugi-thread-title {
     font-size: 2em;
+}
+
+.tsugi-thread-body {
 }

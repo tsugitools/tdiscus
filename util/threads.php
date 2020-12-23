@@ -17,6 +17,7 @@ class Threads {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
         $row = $PDOX->rowDie("SELECT *, COALESCE(T.updated_at, T.created_at) AS modified_at,
+            (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned
             FROM {$CFG->dbprefix}tdiscus_thread AS T
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = T.user_id
@@ -216,6 +217,7 @@ class Threads {
         $comments = $PDOX->allRowsDie("SELECT comment_id, comment, displayname,
             C.updated_at AS updated_at, C.created_at AS created_at,
             COALESCE(C.updated_at, C.created_at) AS modified_at,
+            (COALESCE(C.upvote, 0)-COALESCE(C.downvote, 0)) AS netvote,
             CASE WHEN C.user_id = :UID THEN TRUE ELSE FALSE END AS owned
             FROM {$CFG->dbprefix}tdiscus_comment AS C
             JOIN {$CFG->dbprefix}tdiscus_thread AS T ON  C.thread_id = T.thread_id

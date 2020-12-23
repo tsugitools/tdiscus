@@ -21,13 +21,13 @@ $THREADS = new Threads();
 $rest_path = U::rest_path();
 
 $thread_id = null;
-$old_thread = null;
+$thread = null;
 if ( isset($rest_path->action) && is_numeric($rest_path->action) ) {
     $thread_id = intval($rest_path->action);
-    $old_thread = $THREADS->threadLoadMarkRead($thread_id);
+    $thread = $THREADS->threadLoadMarkRead($thread_id);
 }
 
-if ( ! $old_thread ) {
+if ( ! $thread ) {
     $_SESSION['error'] = __('Could not load thread');
     header( 'Location: '.addSession($TOOL_ROOT) ) ;
     return;
@@ -59,27 +59,30 @@ $OUTPUT->bodyStart();
 $OUTPUT->topNav($menu);
 Tdiscus::search_box();
 $OUTPUT->flashMessages();
-echo('<div class="tsugi-thread-title">'.htmlentities($old_thread['title']).'</div>');
+echo('<div class="tsugi-thread-container">'."\n");
+echo('<p class="tsugi-thread-title">'.htmlentities($thread['title']).'</p>');
 ?>
+<p class="tsugi-thread-info">
+<?= $thread['displayname'] ?>
+ -
+<time class="timeago" datetime="<?= $thread['modified_at'] ?>"><?= $thread['modified_at'] ?></time>
 </p>
-<?= $purifier->purify($old_thread['body']) ?>
-</p>
-
-<div id="add-comment-div" title="<?= __("New Comment") ?>" >
-<form id="add-comment-form" method="post">
-<p>
-<span id="add-comment-feedback"></span>
-<input type="text" name="comment" class="form-control">
+<p class="tsugi-thread-body">
+<?= $purifier->purify($thread['body']) ?>
 </p>
 <p>
-<input type="submit" id="add-comment-submit" name="submit" value="<?= __('Comment') ?>" >
-</p>
-</form>
+<?= $thread['netvote'] ?> Upvotes
+<i class="fa fa-arrow-up"></i>
+<a href="#reply"
+onclick="document.querySelector('#add-comment-div').scrollIntoView({ behavior: 'smooth' });"
+><?= __('Reply') ?>
+<i class="fa fa-reply-all"></i>
+</a>
 </div>
 
 <?php
 if ( count($comments) < 1 ) {
-    echo("<p>".__('No comments')."</p>\n");
+    echo("<p>".__('No replies yet')."</p>\n");
 } else {
     foreach($comments as $comment ) {
 ?>
@@ -95,6 +98,19 @@ if ( count($comments) < 1 ) {
 <?php
     }
 }
+?>
+<div id="add-comment-div" title="<?= __("Reply") ?>" >
+<form id="add-comment-form" method="post">
+<p>
+<span id="add-comment-feedback"></span>
+<input type="text" name="comment" class="form-control">
+</p>
+<p>
+<input type="submit" id="add-comment-submit" name="submit" value="<?= __('Reply') ?>" >
+</p>
+</form>
+</div>
+<?php
 
 Tdiscus::footerStart();
 
