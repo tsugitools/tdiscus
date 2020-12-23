@@ -180,7 +180,7 @@ class Threads {
             FROM {$CFG->dbprefix}tdiscus_thread AS T
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = T.user_id
             WHERE link_id = :LID $whereclause
-            ORDER BY T.pin DESC, T.rank DESC, $order_by",
+            ORDER BY T.pin DESC, T.rank_value DESC, $order_by",
             $subst
         );
         return $rows;
