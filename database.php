@@ -115,6 +115,7 @@ array( "{$CFG->dbprefix}tdiscus_user_comment",
     user_id     INTEGER NOT NULL,
     vote        TINYINT(1) NOT NULL DEFAULT 0,
     report      TINYINT(1) NOT NULL DEFAULT 0,
+    favorite    TINYINT(1) NOT NULL DEFAULT 0,
     read_at     TIMESTAMP NULL,
 
     CONSTRAINT `{$CFG->dbprefix}tdiscus_user_comment_ibfk_1`
@@ -137,7 +138,6 @@ array( "{$CFG->dbprefix}tdiscus_user_user",
     user_id     INTEGER NOT NULL,
     other_user_id  INTEGER NOT NULL,
     mute        TINYINT(1) NOT NULL DEFAULT 0,
-    favorite    TINYINT(1) NOT NULL DEFAULT 0,
     report      TINYINT(1) NOT NULL DEFAULT 0,
 
     CONSTRAINT `{$CFG->dbprefix}tdiscus_user_user_ibfk_1`

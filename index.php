@@ -67,7 +67,7 @@ if ( count($threads) < 1 ) {
   <p class="tsugi-thread-item-title">
   <?php if ( $LAUNCH->user->instructor ) { ?>
   <a href="#" id="threadunpin_<?= $thread['thread_id'] ?>"
-        data-endpoint="threadunpin/<?= $thread['thread_id'] ?>"
+        data-endpoint="threadsetboolean/<?= $thread['thread_id'] ?>/pin/0"
         data-thread="<?= $thread['thread_id'] ?>"
         title="<?= __("Unpin Thread") ?>"
          <?= ($pin == 0 ? 'style="display:none;"' : '') ?>
@@ -83,7 +83,7 @@ if ( count($threads) < 1 ) {
     <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
 <?php if ( $LAUNCH->user->instructor ) { ?>
     <a href="#" id="threadpin_<?= $thread['thread_id'] ?>"
-            data-endpoint="threadpin/<?= $thread['thread_id'] ?>"
+            data-endpoint="threadsetboolean/<?= $thread['thread_id'] ?>/pin/1"
             data-thread="<?= $thread['thread_id'] ?>"
             title="<?= __("Pin Thread") ?>"
            <?= ($pin == 1 ? 'style="display:none;"' : '') ?>
@@ -125,7 +125,7 @@ $(document).ready( function() {
         ev.preventDefault()
         var endpoint = $(this).attr('data-endpoint');
         console.log('endpoint', endpoint)
-        if ( endpoint.includes('unpin') ) {
+        if ( endpoint.includes('pin/0') ) {
             if ( ! confirm('<?= htmlentities(__('Do you want to unpin this thread?')) ?>') ) return;
         } else {
             if ( ! confirm('<?= htmlentities(__('Do you want to pin this thread?')) ?>') ) return;
@@ -139,8 +139,12 @@ $(document).ready( function() {
             .error( function(xhr, status, error) {
                 console.log(xhr);
                 console.log(status);
+                var message = '<?= htmlentities(__('Request Failed')) ?>';
+                if ( error && error.length > 0 ) {
+                    message = message + ": "+error.substring(0,40);
+                }
                 console.log(error);
-                alert('<?= htmlentities(__('Request Failed')) ?>');
+                alert(message);
             });
     });
 });

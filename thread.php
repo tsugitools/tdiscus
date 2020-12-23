@@ -90,7 +90,7 @@ if ( count($comments) < 1 ) {
     foreach($comments as $comment ) {
 ?>
   <b><?= htmlentities($comment['displayname']) ?></b>
-  (Modified: <time class="timeago" datetime="<?= $comment['modified_at'] ?>"><?= $comment['modified_at'] ?></time>)
+  (time class="timeago" datetime="<?= $comment['modified_at'] ?>"><?= $comment['modified_at'] ?></time>)
   <?php if ( $comment['owned'] || $LAUNCH->user->instructor ) { ?>
     <a href="<?= $TOOL_ROOT ?>/commentform/<?= $comment['comment_id'] ?>"><i class="fa fa-pencil"></i></a>
     <a href="<?= $TOOL_ROOT ?>/commentremove/<?= $comment['comment_id'] ?>"><i class="fa fa-trash"></i></a>

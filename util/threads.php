@@ -117,24 +117,36 @@ class Threads {
         return $stmt;
     }
 
-    public static function threadSetPin($thread_id, $pin) {
+    public static function threadSetBoolean($thread_id, $column, $value) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        $valid_columns = array(
+            'staffcreate', 'staffread', 'staffanswer', 'frozen', 'edited', 'pin'
+        );
+
+        if ( ! in_array($column, $valid_columns) ) {
+            return __("Column $column not allowed");
+        }
+
+        if ( $value != 1 && $value != 0 ) {
+            return __("Column $column requires boolean (0 or 1)");
+        }
 
         if ( ! is_numeric($thread_id) ) {
             return __('Incorrect or missing thread_id');
         }
 
-        $old_thread = self::threadLoadForUpdate($thread_id);
+        $thread = self::threadLoadForUpdate($thread_id);
 
-        if ( ! is_array($old_thread) ) {
+        if ( ! is_array($thread) ) {
             return __('Could not load thread for update');
         }
 
         $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_thread SET
-            pin=:PIN
+            $column=:VALUE
             WHERE thread_id = :TID",
             array(
-                ':PIN' => $pin,
+                ':VALUE' => $value,
                 ':TID' => $thread_id,
             )
         );
@@ -211,6 +223,27 @@ class Threads {
         );
 
         return intval($PDOX->lastInsertId());
+    }
+
+    public static function threadUserSetBoolean($thread_id, $column, $value)
+    {
+        $thread = self::threadLoad($thread_id);
+        if ( ! is_array($thread) ) {
+            return __('Could not load thread for update');
+        }
+
+        $stmt = $PDOX->queryDie("INSERT IGNORE INTO {$CFG->dbprefix}tdiscus_user_thread
+            (thread_id, user_id, $column) VALUES
+            (:TID, :UID, :VALUE)
+            ON DUPLICATE KEY UPDATE read_at = NOW()",
+            array(
+                ':TID' => $thread_id,
+                ':UID' => $TSUGI_LAUNCH->user->id,
+                ':VALUE' => $value,
+            )
+        );
+
+
     }
 
     public static function comments($thread_id) {
