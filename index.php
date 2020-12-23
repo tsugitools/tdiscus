@@ -66,14 +66,14 @@ if ( count($threads) < 1 ) {
   <div class="tsugi-thread-item-left">
   <p class="tsugi-thread-item-title">
   <?php if ( $LAUNCH->user->instructor ) { ?>
-  <a href="#" id="threadunpin_<?= $thread['thread_id'] ?>" 
-        endpoint="threadunpin/<?= $thread['thread_id'] ?>"
-        thread="<?= $thread['thread_id'] ?>"
-        title="<?= __("Unpin Thread") ?>" 
-         <?= ($pin == 0 ? "style=display:none;" : "") ?> 
+  <a href="#" id="threadunpin_<?= $thread['thread_id'] ?>"
+        data-endpoint="threadunpin/<?= $thread['thread_id'] ?>"
+        data-thread="<?= $thread['thread_id'] ?>"
+        title="<?= __("Unpin Thread") ?>"
+         <?= ($pin == 0 ? 'style="display:none;"' : '') ?>
         class="tsugi-api-call"><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></a>
   <?php } else { ?>
-        <span <?= ($pin == 0 ? "style=display:none;" : "") ?><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></span>
+        <span <?= ($pin == 0 ? 'style="display:none;"' : '') ?><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></span>
   <?php } ?>
   <a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
   <b><?= htmlentities($thread['title']) ?></b></a>
@@ -82,11 +82,11 @@ if ( count($threads) < 1 ) {
     <a href="<?= $TOOL_ROOT ?>/threadform/<?= $thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>
     <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
 <?php if ( $LAUNCH->user->instructor ) { ?>
-    <a href="#" id="threadpin_<?= $thread['thread_id'] ?>" 
-            endpoint="threadpin/<?= $thread['thread_id'] ?>"
-            thread="<?= $thread['thread_id'] ?>"
-            title="<?= __("Pin Thread") ?>" 
-           <?= ($pin == 1 ? "style=display:none;" : "") ?> 
+    <a href="#" id="threadpin_<?= $thread['thread_id'] ?>"
+            data-endpoint="threadpin/<?= $thread['thread_id'] ?>"
+            data-thread="<?= $thread['thread_id'] ?>"
+            title="<?= __("Pin Thread") ?>"
+           <?= ($pin == 1 ? 'style="display:none;"' : '') ?>
            class="tsugi-api-call"><i class="fa fa-thumb-tack"></i></a>
 <?php } ?>
     </span>
@@ -112,11 +112,10 @@ if ( count($threads) < 1 ) {
 </center>
   </div>
   </li>
-<?php 
+<?php
     }
   echo("</ul>");
 }
-echo('</div">');
 
 Tdiscus::footerStart();
 ?>
@@ -124,9 +123,14 @@ Tdiscus::footerStart();
 $(document).ready( function() {
    $('.tsugi-api-call').click(function(ev) {
         ev.preventDefault()
-        var endpoint = $(this).attr('endpoint');
-        var thread = $(this).attr('thread');
-        console.log('endpoint', endpoint);
+        var endpoint = $(this).attr('data-endpoint');
+        console.log('endpoint', endpoint)
+        if ( endpoint.includes('unpin') ) {
+            if ( ! confirm('<?= htmlentities(__('Do you want to unpin this thread?')) ?>') ) return;
+        } else {
+            if ( ! confirm('<?= htmlentities(__('Do you want to pin this thread?')) ?>') ) return;
+        }
+        var thread = $(this).attr('data-thread');
         $.post(addSession('<?= $TOOL_ROOT ?>'+'/api/'+endpoint))
             .done( function(data) {
                 $('#threadpin_'+thread).toggle();

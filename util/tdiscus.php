@@ -16,8 +16,8 @@ class Tdiscus {
     public static function header() {
         global $OUTPUT, $TOOL_ROOT;
         if ( ! isset($TOOL_ROOT) ) $TOOL_ROOT = dirname($_SERVER['SCRIPT_NAME']);
-        echo('<link href="'.$TOOL_ROOT.'/static/coursera.css" rel="stylesheet">'."\n");
         $OUTPUT->header();
+        echo('<link href="'.$TOOL_ROOT.'/static/coursera.css" rel="stylesheet">'."\n");
     }
 
     public static function footerStart() {
