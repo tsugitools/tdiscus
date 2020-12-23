@@ -85,7 +85,7 @@ class Threads {
 
         // TODO: Purify pre-update
         $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_thread SET
-            body = :BODY , title= :TITLE, updated_at = NOW()
+            body = :BODY , title= :TITLE, updated_at = NOW(), edited=1
             WHERE link_id = :LID AND thread_id = :TID AND user_id = :UID",
             array(
                 ':LID' => $TSUGI_LAUNCH->link->id,

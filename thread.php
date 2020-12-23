@@ -66,6 +66,9 @@ echo('<p class="tsugi-thread-title">'.htmlentities($thread['title']).'</p>');
 <?= $thread['displayname'] ?>
  -
 <time class="timeago" datetime="<?= $thread['modified_at'] ?>"><?= $thread['modified_at'] ?></time>
+<?php if ( $thread['edited'] == 1 ) {
+    echo(" - ".__("edited"));
+} ?>
 </p>
 <p class="tsugi-thread-body">
 <?= $purifier->purify($thread['body']) ?>
