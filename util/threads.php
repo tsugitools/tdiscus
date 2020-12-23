@@ -21,6 +21,7 @@ class Threads {
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned
             FROM {$CFG->dbprefix}tdiscus_thread AS T
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = T.user_id
+            LEFT JOIN {$CFG->dbprefix}tdiscus_user_user AS O ON O.user_id = :UID
             WHERE link_id = :LID AND thread_id = :TID",
             array(':LID' => $TSUGI_LAUNCH->link->id,  ':UID' => $TSUGI_LAUNCH->user->id, ':TID' => $thread_id)
         );
@@ -34,21 +35,22 @@ class Threads {
         $row = self::threadLoad($thread_id);
         if ( ! $row ) return $row;
 
-        // With ON DUPLICATE KEY UPDATE, the affected-rows value per row is 1 if the row
-        // is inserted as a new row, 2 if an existing row is updated, and 0 if an existing
-        // row is set to its current value
-        // https://dev.mysql.com/doc/refman/5.6/en/insert-on-duplicate.html
-        $stmt = $PDOX->queryDie("INSERT IGNORE INTO {$CFG->dbprefix}tdiscus_read_thread
-            (thread_id, user_id) VALUES
-            (:TID, :UID)",
+        $stmt = $PDOX->queryDie("INSERT IGNORE INTO {$CFG->dbprefix}tdiscus_user_thread
+            (thread_id, user_id, read_at) VALUES
+            (:TID, :UID, NOW())
+            ON DUPLICATE KEY UPDATE read_at = NOW()",
             array(
                 ':TID' => $thread_id,
                 ':UID' => $TSUGI_LAUNCH->user->id,
             )
         );
 
+        // With ON DUPLICATE KEY UPDATE, the affected-rows value per row is 1 if the row
+        // is inserted as a new row, 2 if an existing row is updated, and 0 if an existing
+        // row is set to its current value
+        // https://dev.mysql.com/doc/refman/5.6/en/insert-on-duplicate.html
         $count = $stmt->rowCount();
-        if ( $count > 0 ) {
+        if ( $count == 1 ) {
             $staffread = "";
             if ( $TSUGI_LAUNCH->user->instructor ) $staffread = ", staffread=1";
             $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_thread

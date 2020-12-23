@@ -14,8 +14,9 @@ $DATABASE_UNINSTALL = array(
 "drop table if exists {$CFG->dbprefix}tdiscus_closure",
 "drop table if exists {$CFG->dbprefix}tdiscus_comment",
 "drop table if exists {$CFG->dbprefix}tdiscus_thread",
-"drop table if exists {$CFG->dbprefix}tdiscus_read_thread",
-"drop table if exists {$CFG->dbprefix}tdiscus_read_comment",
+"drop table if exists {$CFG->dbprefix}tdiscus_user_thread",
+"drop table if exists {$CFG->dbprefix}tdiscus_user_comment",
+"drop table if exists {$CFG->dbprefix}tdiscus_user_user",
 );
 
 // Creating tables
@@ -53,21 +54,27 @@ array( "{$CFG->dbprefix}tdiscus_thread",
 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8"),
 
-array( "{$CFG->dbprefix}tdiscus_read_thread",
-"create table {$CFG->dbprefix}tdiscus_read_thread (
+array( "{$CFG->dbprefix}tdiscus_user_thread",
+"create table {$CFG->dbprefix}tdiscus_user_thread (
     thread_id   INTEGER NOT NULL,
     user_id     INTEGER NOT NULL,
+    views       INTEGER NOT NULL DEFAULT 0,
+    comments    INTEGER NOT NULL DEFAULT 0,
     vote        TINYINT(1) NOT NULL DEFAULT 0,
+    mute        TINYINT(1) NOT NULL DEFAULT 0,
+    favorite    TINYINT(1) NOT NULL DEFAULT 0,
+    report      TINYINT(1) NOT NULL DEFAULT 0,
+    read_at     TIMESTAMP NULL,
 
-    CONSTRAINT `{$CFG->dbprefix}tdiscus_read_thread_ibfk_1`
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_user_thread_ibfk_1`
         UNIQUE (`thread_id`, `user_id`),
 
-    CONSTRAINT `{$CFG->dbprefix}tdiscus_read_thread_ibfk_2`
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_user_thread_ibfk_2`
         FOREIGN KEY (`thread_id`)
         REFERENCES `{$CFG->dbprefix}tdiscus_thread` (`thread_id`)
         ON DELETE CASCADE ON UPDATE CASCADE,
 
-    CONSTRAINT `{$CFG->dbprefix}tdiscus_read_thread_ibfk_3`
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_user_thread_ibfk_3`
         FOREIGN KEY (`user_id`)
         REFERENCES `{$CFG->dbprefix}lti_user` (`user_id`)
         ON DELETE CASCADE ON UPDATE CASCADE
@@ -100,26 +107,52 @@ array( "{$CFG->dbprefix}tdiscus_comment",
 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8"),
 
-array( "{$CFG->dbprefix}tdiscus_read_comment",
-"create table {$CFG->dbprefix}tdiscus_read_comment (
-    comment_id   INTEGER NOT NULL,
+array( "{$CFG->dbprefix}tdiscus_user_comment",
+"create table {$CFG->dbprefix}tdiscus_user_comment (
+    comment_id  INTEGER NOT NULL,
     user_id     INTEGER NOT NULL,
     vote        TINYINT(1) NOT NULL DEFAULT 0,
+    report      TINYINT(1) NOT NULL DEFAULT 0,
+    read_at     TIMESTAMP NULL,
 
-    CONSTRAINT `{$CFG->dbprefix}tdiscus_read_comment_ibfk_1`
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_user_comment_ibfk_1`
         UNIQUE (`comment_id`, `user_id`),
 
-    CONSTRAINT `{$CFG->dbprefix}tdiscus_read_comment_ibfk_2`
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_user_comment_ibfk_2`
         FOREIGN KEY (`comment_id`)
         REFERENCES `{$CFG->dbprefix}tdiscus_comment` (`comment_id`)
         ON DELETE CASCADE ON UPDATE CASCADE,
 
-    CONSTRAINT `{$CFG->dbprefix}tdiscus_read_comment_ibfk_3`
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_user_comment_ibfk_3`
         FOREIGN KEY (`user_id`)
         REFERENCES `{$CFG->dbprefix}lti_user` (`user_id`)
         ON DELETE CASCADE ON UPDATE CASCADE
 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8"),
+
+array( "{$CFG->dbprefix}tdiscus_user_user",
+"create table {$CFG->dbprefix}tdiscus_user_user (
+    user_id     INTEGER NOT NULL,
+    other_user_id  INTEGER NOT NULL,
+    mute        TINYINT(1) NOT NULL DEFAULT 0,
+    favorite    TINYINT(1) NOT NULL DEFAULT 0,
+    report      TINYINT(1) NOT NULL DEFAULT 0,
+
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_user_user_ibfk_1`
+        UNIQUE (`user_id`, `other_user_id`),
+
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_user_user_ibfk_2`
+        FOREIGN KEY (`user_id`)
+        REFERENCES `{$CFG->dbprefix}lti_user` (`user_id`)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+
+    CONSTRAINT `{$CFG->dbprefix}tdiscus_user_user_ibfk_3`
+        FOREIGN KEY (`other_user_id`)
+        REFERENCES `{$CFG->dbprefix}lti_user` (`user_id`)
+        ON DELETE CASCADE ON UPDATE CASCADE
+
+) ENGINE = InnoDB DEFAULT CHARSET=utf8"),
+
 
 /*
 https://stackoverflow.com/questions/192220/what-is-the-most-efficient-elegant-way-to-parse-a-flat-table-into-a-tree/192462#192462
