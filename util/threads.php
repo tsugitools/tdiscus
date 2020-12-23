@@ -146,7 +146,7 @@ class Threads {
         }
 
         $rows = $PDOX->allRowsDie("SELECT T.thread_id AS thread_id, body, title,
-            views, staffcreate, staffread, staffanswer, comments, displayname,
+            pin, views, staffcreate, staffread, staffanswer, comments, displayname,
             T.created_at AS created_at, T.updated_at AS updated_at,
             COALESCE(T.updated_at, T.created_at) AS modified_at,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned,
