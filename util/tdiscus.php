@@ -74,13 +74,13 @@ foreach($sortby as $sort) {
 
     public static function add_comment() {
 ?>
-<div id="tdiscus-add-comment-div" class="tdiscus-add-comment-container" title="<?= __("Comment") ?>" >
+<div id="tdiscus-add-comment-div" class="tdiscus-add-comment-container" title="<?= __("Reply") ?>" >
 <form id="tdiscus-add-comment-form" method="post">
 <p>
 <input type="text" name="comment" class="form-control">
 </p>
 <p>
-<input type="submit" id="tdiscus-add-comment-submit" name="submit" value="<?= __('Comment') ?>" >
+<input type="submit" id="tdiscus-add-comment-submit" name="submit" value="<?= __('Reply') ?>" >
 </p>
 </form>
 </div>
