@@ -52,9 +52,10 @@ class Tdiscus {
 <div class="tsugi-tdiscus-sort">
 <label for="sort"><?= __("Sort by") ?></label>
 <select name="sort" id="sort" onclick="this.form.submit();">
-  <option value="top" <?= $selectedtop ?>><?= __("Top") ?></option>
-  <option value="latest" <?= $selectedlatest ?>><?= __("Latest") ?></option>
-  <option value="unanswered" <?=$selectedunanswered ?>><?= __("Unanswered") ?></option>
+  <option value="latest" <?= ($sortvalue == "latest" ? 'selected="selected"' : "") ?>><?= __("Latest") ?></option>
+  <option value="popular" <?= ($sortvalue == "popular" ? 'selected="selected"' : "") ?>><?= __("Popular") ?></option>
+  <option value="active" <?= ($sortvalue == "active" ? 'selected="selected"' : "") ?>><?= __("Active") ?></option>
+  <option value="unanswered" <?= ($sortvalue == "unamswered" ? 'selected="selected"' : "") ?>><?= __("Unanswered") ?></option>
 </select>
 </div>
 <?php

@@ -114,8 +114,37 @@ class Threads {
         return $stmt;
     }
 
-    public static function threads() {
+    /*
+     * sort=latest|popular|unanswered|top|latest
+     */
+    public static function threads($info=false) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
+        if ( ! is_array($info) ) $info = $_GET;
+
+        // Default is latest
+        $order_by = "modified_at DESC, netvote DESC";
+        $sort = U::get($info, "sort");
+        if ( $sort == "latest" ) {
+            $order_by = "modified_at DESC, netvote DESC";
+        } else if ( $sort == "unanswered" ) {
+            $order_by = "comments ASC, netvote DESC, modified_at DESC";
+        } else if ( $sort == "popular" ) {
+            $order_by = "views DESC, comments DESC, netvote DESC, modified_at DESC";
+        } else if ( $sort == "active" ) {
+            $order_by = "comments DESC, views DESC, netvote DESC, modified_at DESC";
+        } else if ( $sort == "votes" ) {
+            $order_by = "netvote, DESC, comments DESC, views DESC, modified_at DESC";
+        }
+
+        $subst = array(':UID' => $TSUGI_LAUNCH->user->id, ':LID' => $TSUGI_LAUNCH->link->id);
+
+        $search = U::get($info, "search");
+        $whereclause = "";
+        if ( strlen(trim($search)) > 0 ) {
+            $whereclause = " AND (LOWER(title) LIKE :SEARCH OR LOWER(body) LIKE :SEARCH) ";
+            $subst[':SEARCH'] = '%'.strtolower($search).'%';
+        }
+
         $rows = $PDOX->allRowsDie("SELECT T.thread_id AS thread_id, body, title,
             views, staffcreate, staffread, staffanswer, comments, displayname,
             T.created_at AS created_at, T.updated_at AS updated_at,
@@ -124,9 +153,9 @@ class Threads {
             (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote
             FROM {$CFG->dbprefix}tdiscus_thread AS T
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = T.user_id
-            WHERE link_id = :LID
-            ORDER BY T.pin DESC, T.rank DESC, modified_at DESC, netvote DESC",
-            array(':UID' => $TSUGI_LAUNCH->user->id, ':LID' => $TSUGI_LAUNCH->link->id)
+            WHERE link_id = :LID $whereclause
+            ORDER BY T.pin DESC, T.rank DESC, $order_by",
+            $subst
         );
         return $rows;
     }
