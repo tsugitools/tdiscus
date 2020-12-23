@@ -49,17 +49,13 @@ if ( count($_POST) > 0 ) {
 
 Tdiscus::header();
 
+$menu = new \Tsugi\UI\MenuSet();
+$menu->addLeft(__('All Threads'), $TOOL_ROOT);
+
 $OUTPUT->bodyStart();
 $OUTPUT->flashMessages();
+$OUTPUT->topNav($menu);
 ?>
-<div id="delete-thread-div" title="<?= __("Delete thread") ?>" >
-<form id="delete-thread-form" method="post">
-<p>
-<input type="submit" id="delete-thread-submit" value="<?= __('Delete') ?>" >
-<input type="submit" id="delete-thread-cancel" value="<?= __('Cancel') ?>"
-onclick='window.location.href="<?= addSession($TOOL_ROOT) ?>";return false;'
->
-</p>
 <p><?= __("Title:") ?> <br/>
 <?php 
 echo('<b>'.htmlentities($old_thread['title']).'</b></br>');
@@ -67,6 +63,14 @@ echo('<b>'.htmlentities($old_thread['title']).'</b></br>');
 </p>
 <p><?= __("Description:") ?> <br/>
 <?= $purifier->purify($old_thread['body']) ?>
+</p>
+<div id="delete-thread-div" title="<?= __("Delete thread") ?>" >
+<form id="delete-thread-form" method="post">
+<p>
+<input type="submit" id="delete-thread-submit" value="<?= __('Delete') ?>" >
+<input type="submit" id="delete-thread-cancel" value="<?= __('Cancel') ?>"
+onclick='window.location.href="<?= addSession($TOOL_ROOT) ?>";return false;'
+>
 </p>
 </form>
 </div>

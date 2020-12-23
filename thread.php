@@ -59,26 +59,6 @@ $OUTPUT->bodyStart();
 $OUTPUT->topNav($menu);
 Tdiscus::search_box();
 $OUTPUT->flashMessages();
-$threadpin = $TOOL_ROOT. '/threadpin/' . $old_thread['thread_id'];
-  if ( $old_thread['owned'] || $LAUNCH->user->instructor ) { ?>
-    <span class="tsugi-thread-owned-menu">
-    <a href="<?= $TOOL_ROOT ?>/threadform/<?= $old_thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>
-    <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $old_thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
-    <a href="#" title="<?= __("Pin Thread") ?>"
-  onclick="showModalIframeUrl(this.title, 'iframe-dialog', 'iframe-frame',
-     '<?= addSession($threadpin) ?>', _TSUGI.spinnerUrl, true); return false;" >
-     <i class="fa fa-thumb-tack"></i>
-  </a>
-    </span>
-
-<div id="iframe-dialog" title="Read Only Dialog" style="display: none;">
-   <img src="<?= $OUTPUT->getSpinnerUrl() ?>" id="iframe-spinner"><br/>
-   <iframe name="iframe-frame" style="height:600px" id="iframe-frame"
-    onload="document.getElementById('iframe-spinner').style.display='none';">
-   </iframe>
-</div>
-  <?php } 
-
 echo('<div class="tsugi-thread-title">'.htmlentities($old_thread['title']).'</div>');
 ?>
 </p>

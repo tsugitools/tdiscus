@@ -65,7 +65,27 @@ if ( count($threads) < 1 ) {
   <div class="tsugi-thread-item-left">
   <p class="tsugi-thread-item-title"><a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
   <b><?= htmlentities($thread['title']) ?></b></a>
-  </p>
+<?php
+$threadpin = $TOOL_ROOT. '/threadpin/' . $thread['thread_id'];
+  if ( $thread['owned'] || $LAUNCH->user->instructor ) { ?>
+    <span class="tsugi-thread-owned-menu">
+    <a href="<?= $TOOL_ROOT ?>/threadform/<?= $thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>
+    <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
+    <a href="#" title="<?= __("Pin Thread") ?>"
+  onclick="showModalIframeUrl(this.title, 'iframe-dialog', 'iframe-frame',
+     '<?= addSession($threadpin) ?>', _TSUGI.spinnerUrl, true); return false;" >
+     <i class="fa fa-thumb-tack"></i>
+  </a>
+    </span>
+
+<div id="iframe-dialog" title="Read Only Dialog" style="display: none;">
+   <img src="<?= $OUTPUT->getSpinnerUrl() ?>" id="iframe-spinner"><br/>
+   <iframe name="iframe-frame" style="height:600px" id="iframe-frame"
+    onload="document.getElementById('iframe-spinner').style.display='none';">
+   </iframe>
+<?php } ?>
+</div>
+</p>
 <?php
     if ( $thread['staffcreate'] > 0 ) {
         echo('<span class="tsugi-staff-created">Staff Created</span>');

@@ -63,8 +63,7 @@
 }
 
 .tsugi-thread-owned-menu {
-    float: right;
-    clear: both;
+    font-size: 0.66em;
     padding: 10px;
 }
 

@@ -63,11 +63,10 @@ class Threads {
     }
 
     public static function threadLoadForUpdate($thread_id) {
-
+        global $TSUGI_LAUNCH;
         $row = self::threadLoad($thread_id);
-        if ( $row['owned'] != 1 ) return null;
-
-        return $row;
+        if ( $row['owned'] > 0 || $TSUGI_LAUNCH->user->instructor ) return $row;
+        return null;
     }
 
     public static function threadUpdate($thread_id, $data=false) {
