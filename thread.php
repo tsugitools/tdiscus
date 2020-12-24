@@ -48,7 +48,8 @@ if ( count($_POST) > 0 ) {
     return;
 }
 
-$comments = $THREADS->comments($thread_id);
+$retval = $THREADS->comments($thread_id);
+$comments = $retval->rows;
 
 Tdiscus::header();
 

@@ -178,8 +178,6 @@ class Threads {
         $subst = array(':UID' => $TSUGI_LAUNCH->user->id, ':LID' => $TSUGI_LAUNCH->link->id);
 
         $search = U::get($info, "search");
-        $start = intval(U::get($info, "start", 0));
-        $pagesize = intval(U::get($info, "pagesize", 0));
 
         $whereclause = "";
         if ( strlen(trim($search)) > 0 ) {
@@ -207,15 +205,26 @@ class Threads {
             ORDER BY T.pin DESC, T.rank_value DESC, $order_by
         ";
 
-        // https://dev.mysql.com/doc/refman/8.0/en/information-functions.html#function_found-rows
+        return self::pagedQuery($fields, $from, $subst, $info);
+    }
+
+    // https://dev.mysql.com/doc/refman/8.0/en/information-functions.html#function_found-rows
+    public static function pagedQuery($fields, $from, $vars, $info=false)
+    {
+        global $PDOX;
 
         $retval = new \stdClass();
         $retval->more = false;
         $retval->next = -1;
 
+        $start = intval(U::get($info, "start", 0));
+        $pagesize = intval(U::get($info, "pagesize", 0));
+
+        $pagesize=10;
+
         if ( $pagesize == 0 ) {
             $sql = "SELECT ".$fields.$from;
-            $rows = $PDOX->allRowsDie($sql, $subst);
+            $rows = $PDOX->allRowsDie($sql, $vars);
             $retval->total = count($rows);
             return $retval;
         }
@@ -224,13 +233,13 @@ class Threads {
         $from .= " LIMIT $start, ".($pagesize+1);
         if ( $PDOX->versionAtLeast('9.0.0') ) {
             $sql = "SELECT ".$fields.$from;
-            $rows = $PDOX->allRowsDie($sql, $subst);
+            $rows = $PDOX->allRowsDie($sql, $vars);
             $sql = "SELECT count(thread_id) AS total".$fields.$from;
             $row2 = $PDOX->rowDie($sql);
             $retval->total = intval($row2['total']);
         } else {
             $sql = "SELECT SQL_CALC_FOUND_ROWS ".$fields.$from;
-            $rows = $PDOX->allRowsDie($sql, $subst);
+            $rows = $PDOX->allRowsDie($sql, $vars);
             $row2 = $PDOX->rowDie('SELECT FOUND_ROWS() AS total');
             $retval->total = intval($row2['total']);
         }
@@ -241,7 +250,7 @@ class Threads {
             $retval->more = true;
             $retval->next = $start + $pagesize;
         }
-        $retval->threads = $rows;
+        $retval->rows = $rows;
 
         return $retval;
     }
@@ -298,32 +307,38 @@ class Threads {
         return array('most recent', 'top', 'earliest');
     }
 
-    public static function comments($thread_id) {
+    public static function comments($thread_id, $info=false) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        if ( ! is_array($info) ) $info = $_GET;
 
         $whereclause = "";
         if ( ! $TSUGI_LAUNCH->user->instructor ) {
             $whereclause = " AND (COALESCE(deleted, 0) = 0 ) ";
         }
 
-        $comments = $PDOX->allRowsDie("SELECT comment_id, comment, displayname,
-            edited, deleted,
+        $fields = "
+            comment_id, comment, displayname, C.edited AS edited, C.deleted AS deleted,
             C.updated_at AS updated_at, C.created_at AS created_at,
             COALESCE(C.updated_at, C.created_at) AS modified_at,
             (COALESCE(C.upvote, 0)-COALESCE(C.downvote, 0)) AS netvote,
             CASE WHEN C.user_id = :UID THEN TRUE ELSE FALSE END AS owned
+        ";
+
+        $from = "
             FROM {$CFG->dbprefix}tdiscus_comment AS C
             JOIN {$CFG->dbprefix}tdiscus_thread AS T ON  C.thread_id = T.thread_id
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = C.user_id
             WHERE T.link_id = :LI AND C.thread_id = :TID $whereclause
-            ORDER BY C.created_at DESC",
-            array(
+            ORDER BY C.created_at DESC
+        ";
+        $subst =  array(
                 ':UID' => $TSUGI_LAUNCH->user->id,
                 ':LI' => $TSUGI_LAUNCH->link->id,
                 ':TID' => $thread_id
-            )
         );
-        return($comments);
+
+        return self::pagedQuery($fields, $from, $subst, $info);
     }
 
     public static function commentInsertDao($thread_id, $comment) {
