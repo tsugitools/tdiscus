@@ -51,7 +51,8 @@ SettingsForm::end();
 
 $OUTPUT->flashMessages();
 
-$threads = $THREADS->threads();
+$retval = $THREADS->threads();
+$threads = $retval->threads;
 
 
 $sortable = $THREADS->threadsSortableBy();
@@ -61,6 +62,7 @@ if ( count($threads) < 1 ) {
     echo("<p>".__('No threads')."</p>\n");
 } else {
     echo('<ul class="tdiscus-threads-list">');
+    // echo('<p>Total: '.$retval->total." next=".$retval->next."</p>\n");
     foreach($threads as $thread ) {
         $pin = $thread['pin'];
 ?>
