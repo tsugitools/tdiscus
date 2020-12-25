@@ -218,9 +218,7 @@ class Threads {
         $retval->next = -1;
 
         $start = intval(U::get($info, "start", 0));
-        $pagesize = intval(U::get($info, "pagesize", 0));
-
-        $pagesize=10;
+        $pagesize = intval(U::get($info, "pagesize", 3));
 
         if ( $pagesize == 0 ) {
             $sql = "SELECT ".$fields.$from;
@@ -248,6 +246,7 @@ class Threads {
         if ( count($rows) > 1 && count($rows) > $pagesize) {
             unset($rows[$pagesize-1]);
             $retval->more = true;
+            $retval->back = $start - $pagesize;
             $retval->next = $start + $pagesize;
         }
         $retval->rows = $rows;

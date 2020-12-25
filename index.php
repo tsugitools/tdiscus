@@ -22,6 +22,21 @@ $THREADS = new Threads();
 
 Tdiscus::header();
 
+$default_page_size = 20;
+
+$pagesize = intval(U::get($_GET, 'pagesize', $default_page_size));
+$start = intval(U::get($_GET, 'start', 0));
+$comeback = $TOOL_ROOT.'/';
+
+// Does not include start
+$copyparms = array('search', 'sort', 'pagesize');
+foreach ( $copyparms as $parm ) {
+    $val = U::get($_GET, $parm);
+    if ( strlen($val) == 0 ) continue;
+    $comeback = U::add_url_parm_null($comeback, $parm, $val);
+}
+
+
 $menu = new \Tsugi\UI\MenuSet();
 $menu->addLeft(__('Add Thread'), $TOOL_ROOT.'/threadform');
 if ( $USER->instructor ) {
@@ -119,6 +134,7 @@ if ( count($threads) < 1 ) {
 <?php
     }
   echo("</ul>");
+  Tdiscus::paginator($comeback, $start, $pagesize, $retval->total);
 }
 
 Tdiscus::footerStart();
