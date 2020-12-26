@@ -87,9 +87,9 @@ if ( count($threads) < 1 ) {
   <p class="tdiscus-thread-item-title">
   <?php
     if ( $LAUNCH->user->instructor ) {
-        Tdiscus::renderBooleanSwitch($thread_id, 'pin', 'pin', $pin, 0, 'fa-thumbtack fa-rotate-270', 'orange');
-        Tdiscus::renderBooleanSwitch($thread_id, 'hidden', 'hide', $hidden, 0, 'fa-eye-slash', 'orange');
-        Tdiscus::renderBooleanSwitch($thread_id, 'locked', 'lock', $locked, 0, 'fa-lock', 'orange');
+        Tdiscus::renderBooleanSwitch('thread', $thread_id, 'pin', 'pin', $pin, 0, 'fa-thumbtack fa-rotate-270', 'orange');
+        Tdiscus::renderBooleanSwitch('thread', $thread_id, 'hidden', 'hide', $hidden, 0, 'fa-eye-slash', 'orange');
+        Tdiscus::renderBooleanSwitch('thread', $thread_id, 'locked', 'lock', $locked, 0, 'fa-lock', 'orange');
     } else {
         echo('<span '.($pin == 0 ? 'style="display:none;"' : '').'><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></span>');
         echo('<span '.($locked == 0 ? 'style="display:none;"' : '').'><i class="fa fa-lock fa-rotate-270" style="color: orange;"></i></span>');
@@ -103,9 +103,9 @@ if ( count($threads) < 1 ) {
     <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
   <?php
     if ( $LAUNCH->user->instructor ) {
-        Tdiscus::renderBooleanSwitch($thread_id, 'pin', 'pin', $pin, 1, 'fa-thumbtack');
-        Tdiscus::renderBooleanSwitch($thread_id, 'hidden', 'hide', $hidden, 1, 'fa-eye-slash');
-        Tdiscus::renderBooleanSwitch($thread_id, 'locked', 'lock', $locked, 1, 'fa-lock');
+        Tdiscus::renderBooleanSwitch('thread', $thread_id, 'pin', 'pin', $pin, 1, 'fa-thumbtack');
+        Tdiscus::renderBooleanSwitch('thread', $thread_id, 'hidden', 'hide', $hidden, 1, 'fa-eye-slash');
+        Tdiscus::renderBooleanSwitch('thread', $thread_id, 'locked', 'lock', $locked, 1, 'fa-lock');
     }
 ?>
     </span>
