@@ -191,12 +191,12 @@ class Threads {
         }
 
         if ( ! $TSUGI_LAUNCH->user->instructor ) {
-            $whereclause = " AND (COALESCE(deleted, 0) = 0 ) ";
+            $whereclause = " AND (COALESCE(hidden, 0) = 0 ) ";
         }
 
         $fields = "
             T.thread_id AS thread_id, body, title, pin, views, staffcreate,
-            staffread, staffanswer, comments, displayname, deleted, edited,
+            staffread, staffanswer, comments, displayname, hidden, edited, locked,
             T.created_at AS created_at, T.updated_at AS updated_at,
             COALESCE(T.updated_at, T.created_at) AS modified_at,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned,
@@ -337,7 +337,7 @@ class Threads {
 
         $whereclause = "";
         if ( ! $TSUGI_LAUNCH->user->instructor ) {
-            $whereclause = " AND (COALESCE(deleted, 0) = 0 ) ";
+            $whereclause = " AND (COALESCE(hidden, 0) = 0 ) ";
         }
 
         if ( strlen(trim($search)) > 0 ) {
@@ -346,8 +346,8 @@ class Threads {
         }
 
         $fields = "
-            comment_id, comment, displayname, C.edited AS edited, C.deleted AS deleted,
-            C.updated_at AS updated_at, C.created_at AS created_at,
+            comment_id, comment, displayname, C.edited AS edited, C.hidden AS hidden,
+            C.locked AS locked, C.updated_at AS updated_at, C.created_at AS created_at,
             COALESCE(C.updated_at, C.created_at) AS modified_at,
             (COALESCE(C.upvote, 0)-COALESCE(C.downvote, 0)) AS netvote,
             CASE WHEN C.user_id = :UID THEN TRUE ELSE FALSE END AS owned
