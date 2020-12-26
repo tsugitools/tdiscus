@@ -78,34 +78,36 @@ if ( count($threads) < 1 ) {
     echo('<!-- Total: '.$retval->total." next=".$retval->next."-->\n");
     foreach($threads as $thread ) {
         $pin = $thread['pin'];
+        $locked = $thread['locked'];
+        $hidden = $thread['hidden'];
+        $thread_id = $thread['thread_id'];
 ?>
   <li class="tdiscus-thread-item">
   <div class="tdiscus-thread-item-left">
   <p class="tdiscus-thread-item-title">
-  <?php if ( $LAUNCH->user->instructor ) { ?>
-  <a href="#" id="threadunpin_<?= $thread['thread_id'] ?>"
-        data-endpoint="threadsetboolean/<?= $thread['thread_id'] ?>/pin/0"
-        data-thread="<?= $thread['thread_id'] ?>"
-        title="<?= __("Unpin Thread") ?>"
-         <?= ($pin == 0 ? 'style="display:none;"' : '') ?>
-        class="tdiscus-api-call"><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></a>
-  <?php } else { ?>
-        <span <?= ($pin == 0 ? 'style="display:none;"' : '') ?><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></span>
-  <?php } ?>
+  <?php
+    if ( $LAUNCH->user->instructor ) {
+        Tdiscus::renderBooleanSwitch($thread_id, 'pin', 'pin', $pin, 0, 'fa-thumbtack fa-rotate-270', 'orange');
+        Tdiscus::renderBooleanSwitch($thread_id, 'hidden', 'hide', $hidden, 0, 'fa-eye-slash', 'orange');
+        Tdiscus::renderBooleanSwitch($thread_id, 'locked', 'lock', $locked, 0, 'fa-lock', 'orange');
+    } else {
+        echo('<span '.($pin == 0 ? 'style="display:none;"' : '').'><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></span>');
+        echo('<span '.($locked == 0 ? 'style="display:none;"' : '').'><i class="fa fa-lock fa-rotate-270" style="color: orange;"></i></span>');
+    }
+?>
   <a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
   <b><?= htmlentities($thread['title']) ?></b></a>
 <?php if ( $thread['owned'] || $LAUNCH->user->instructor ) { ?>
     <span class="tdiscus-thread-owned-menu">
     <a href="<?= $TOOL_ROOT ?>/threadform/<?= $thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>
     <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
-<?php if ( $LAUNCH->user->instructor ) { ?>
-    <a href="#" id="threadpin_<?= $thread['thread_id'] ?>"
-            data-endpoint="threadsetboolean/<?= $thread['thread_id'] ?>/pin/1"
-            data-thread="<?= $thread['thread_id'] ?>"
-            title="<?= __("Pin Thread") ?>"
-           <?= ($pin == 1 ? 'style="display:none;"' : '') ?>
-           class="tdiscus-api-call"><i class="fa fa-thumb-tack"></i></a>
-<?php } ?>
+  <?php
+    if ( $LAUNCH->user->instructor ) {
+        Tdiscus::renderBooleanSwitch($thread_id, 'pin', 'pin', $pin, 1, 'fa-thumbtack');
+        Tdiscus::renderBooleanSwitch($thread_id, 'hidden', 'hide', $hidden, 1, 'fa-eye-slash');
+        Tdiscus::renderBooleanSwitch($thread_id, 'locked', 'lock', $locked, 1, 'fa-lock');
+    }
+?>
     </span>
 <?php } ?>
 </p>
@@ -136,37 +138,5 @@ if ( count($threads) < 1 ) {
 }
 
 Tdiscus::footerStart();
-?>
-<script>
-$(document).ready( function() {
-   $('.tdiscus-api-call').click(function(ev) {
-        ev.preventDefault()
-        var endpoint = $(this).attr('data-endpoint');
-        console.log('endpoint', endpoint)
-        if ( endpoint.includes('pin/0') ) {
-            if ( ! confirm('<?= htmlentities(__('Do you want to unpin this thread?')) ?>') ) return;
-        } else {
-            if ( ! confirm('<?= htmlentities(__('Do you want to pin this thread?')) ?>') ) return;
-        }
-        var thread = $(this).attr('data-thread');
-        $.post(addSession('<?= $TOOL_ROOT ?>'+'/api/'+endpoint))
-            .done( function(data) {
-                $('#threadpin_'+thread).toggle();
-                $('#threadunpin_'+thread).toggle();
-            })
-            .error( function(xhr, status, error) {
-                console.log(xhr);
-                console.log(status);
-                var message = '<?= htmlentities(__('Request Failed')) ?>';
-                if ( error && error.length > 0 ) {
-                    message = message + ": "+error.substring(0,40);
-                }
-                console.log(error);
-                alert(message);
-            });
-    });
-});
-</script>
-<?php
-
+Tdiscus::renderBooleanScript();
 Tdiscus::footerEnd();

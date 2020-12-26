@@ -129,4 +129,53 @@ foreach($sortby as $sort) {
 <?php
     }
 
+    public static function renderBooleanSwitch($thread_id, $variable, $title, $value, $set, $icon, $color=false)
+    {
+        $action = ($set ? '' : 'un').$title;
+?>
+        <a href="#"
+        class="thread<?= $variable ?>_<?= $thread_id ?> tdiscus-pin-api-call"
+        data-class="thread<?= $variable ?>_<?= $thread_id ?>"
+        data-endpoint="threadsetboolean/<?= $thread_id ?>/<?= $variable ?>/<?= $set ?>"
+        data-confirm="<?= htmlentities(__('Do you want to '.$action.' this thread?')) ?>"
+        title="<?= __(ucfirst($action)." Thread") ?>"
+         <?= ($value == $set ? 'style="display:none;"' : '') ?>
+         ><i class="fa <?= $icon ?>" <?= ($color ? 'style="color: '.$color.'";' : '') ?>></i></a>
+<?php
+    }
+
+    public static function renderBooleanScript()
+    {
+        global $TOOL_ROOT;
+?>
+<script>
+$(document).ready( function() {
+   $('.tdiscus-pin-api-call').click(function(ev) {
+        ev.preventDefault()
+        var endpoint = $(this).attr('data-endpoint');
+        console.log('endpoint', endpoint);
+        var data_class = $(this).attr('data-class');
+        console.log('data_class',data_class);
+        if ( ! confirm($(this).attr('data-confirm')) ) return;
+        $.post(addSession('<?= $TOOL_ROOT ?>'+'/api/'+$(this).attr('data-endpoint')))
+            .done( function(data) {
+                console.log('start', data_class);
+                $('.'+data_class).toggle();
+                console.log('end', data_class);
+            })
+            .error( function(xhr, status, error) {
+                console.log(xhr);
+                console.log(status);
+                var message = '<?= htmlentities(__('Request Failed')) ?>';
+                if ( error && error.length > 0 ) {
+                    message = message + ": "+error.substring(0,40);
+                }
+                console.log(error);
+                alert(message);
+            });
+    });
+});
+</script>
+<?php
+    }
 }

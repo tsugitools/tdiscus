@@ -124,7 +124,7 @@ class Threads {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
         $valid_columns = array(
-            'staffcreate', 'staffread', 'staffanswer', 'frozen', 'edited', 'pin'
+            'staffcreate', 'staffread', 'staffanswer', 'locked', 'hidden', 'pin'
         );
 
         if ( ! in_array($column, $valid_columns) ) {
@@ -196,7 +196,7 @@ class Threads {
 
         $fields = "
             T.thread_id AS thread_id, body, title, pin, views, staffcreate,
-            staffread, staffanswer, comments, displayname, hidden, edited, locked,
+            staffread, staffanswer, comments, displayname, edited, hidden, locked,
             T.created_at AS created_at, T.updated_at AS updated_at,
             COALESCE(T.updated_at, T.created_at) AS modified_at,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned,
@@ -315,7 +315,7 @@ class Threads {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
         if ( ! is_array($info) ) $info = $_GET;
- 
+
         // Default is most recent
         $order_by = "modified_at DESC";
         $sort = U::get($info, "sort");
@@ -347,7 +347,8 @@ class Threads {
 
         $fields = "
             comment_id, comment, displayname, C.edited AS edited, C.hidden AS hidden,
-            C.locked AS locked, C.updated_at AS updated_at, C.created_at AS created_at,
+            C.locked AS locked,
+            C.updated_at AS updated_at, C.created_at AS created_at,
             COALESCE(C.updated_at, C.created_at) AS modified_at,
             (COALESCE(C.upvote, 0)-COALESCE(C.downvote, 0)) AS netvote,
             CASE WHEN C.user_id = :UID THEN TRUE ELSE FALSE END AS owned
