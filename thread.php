@@ -111,6 +111,19 @@ if ( count($comments) < 1 ) {
     echo("<p>".__('No replies yet')."</p>\n");
 } else {
     foreach($comments as $comment ) {
+        $locked = $comment['locked'];
+        $hidden = $comment['hidden'];
+        $comment_id = $comment['comment_id'];
+
+        if ( $comment['owned'] || $LAUNCH->user->instructor ) { 
+                Tdiscus::renderBooleanSwitch('comment', $comment_id, 'hidden', 'hide', $hidden, 0, 'fa-eye-slash', 'orange');
+        }
+
+        if ( $LAUNCH->user->instructor ) {
+            Tdiscus::renderBooleanSwitch('comment', $comment_id, 'locked', 'lock', $locked, 0, 'fa-lock', 'orange');
+        } else {
+            echo('<span '.($locked == 0 ? 'style="display:none;"' : '').'><i class="fa fa-lock fa-rotate-270" style="color: orange;"></i></span>');
+        }
 ?>
   <b><?= htmlentities($comment['displayname']) ?></b>
   <time class="timeago" datetime="<?= $comment['modified_at'] ?>"><?= $comment['modified_at'] ?></time>
@@ -118,6 +131,14 @@ if ( count($comments) < 1 ) {
     <a href="<?= $TOOL_ROOT ?>/commentform/<?= $comment['comment_id'] ?>"><i class="fa fa-pencil"></i></a>
     <a href="<?= $TOOL_ROOT ?>/commentremove/<?= $comment['comment_id'] ?>"><i class="fa fa-trash"></i></a>
   <?php } ?>
+<?php
+        if ( $comment['owned'] || $LAUNCH->user->instructor ) { 
+            Tdiscus::renderBooleanSwitch('comment', $comment_id, 'hidden', 'hide', $hidden, 1, 'fa-eye-slash');
+        }
+        if ( $LAUNCH->user->instructor ) {
+            Tdiscus::renderBooleanSwitch('comment', $comment_id, 'locked', 'lock', $locked, 1, 'fa-lock');
+        }
+?>
   <br/>
   <div style="padding-left: 10px;"><?= htmlentities($comment['comment']) ?></div>
   </p>
@@ -134,5 +155,5 @@ if ( count($comments) < 1 ) {
 if ( ! $commenttop ) Tdiscus::add_comment();
 
 Tdiscus::footerStart();
-
+Tdiscus::renderBooleanScript();
 Tdiscus::footerEnd();

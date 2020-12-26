@@ -307,6 +307,41 @@ class Threads {
 
     }
 
+    public static function commentSetBoolean($comment_id, $column, $value) {
+        global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        $valid_columns = array(
+            'locked', 'hidden'
+        );
+
+        if ( ! in_array($column, $valid_columns) ) {
+            return __("Column $column not allowed");
+        }
+
+        if ( $value != 1 && $value != 0 ) {
+            return __("Column $column requires boolean (0 or 1)");
+        }
+
+        if ( ! is_numeric($comment_id) ) {
+            return __('Incorrect or missing comment_id');
+        }
+
+        $comment = self::commentLoadForUpdate($comment_id);
+
+        if ( ! is_array($comment) ) {
+            return __('Could not load comment for update');
+        }
+
+        $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_comment SET
+            $column=:VALUE
+            WHERE comment_id = :CID",
+            array(
+                ':VALUE' => $value,
+                ':CID' => $comment_id,
+            )
+        );
+    }
+
     public static function commentsSortableBy() {
         return array('most recent', /* 'top', put back if voting */ 'earliest');
     }
@@ -337,7 +372,7 @@ class Threads {
 
         $whereclause = "";
         if ( ! $TSUGI_LAUNCH->user->instructor ) {
-            $whereclause = " AND (COALESCE(hidden, 0) = 0 ) ";
+            $whereclause = " AND (COALESCE(C.hidden, 0) = 0 ) ";
         }
 
         if ( strlen(trim($search)) > 0 ) {
@@ -417,11 +452,12 @@ class Threads {
     }
 
     public static function commentLoadForUpdate($comment_id) {
+        global $TSUGI_LAUNCH;
 
         $row = self::commentLoad($comment_id);
-        if ( $row['owned'] != 1 ) return null;
+        if ( $row['owned'] > 0 || $TSUGI_LAUNCH->user->instructor ) return $row;
 
-        return $row;
+        return $null;
     }
 
     public static function commentDeleteDao($comment_id, $thread_id) {
