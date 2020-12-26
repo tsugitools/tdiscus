@@ -47,12 +47,12 @@ if ( $USER->instructor ) {
 $OUTPUT->bodyStart();
 $OUTPUT->topNav($menu);
 
-$title = strlen(Settings::linkget('title')) > 0 ? Settings::linkget('title') : $LAUNCH->link->title;
+$dicussion_title = strlen(Settings::linkget('title')) > 0 ? Settings::linkget('title') : $LAUNCH->link->title;
 
 echo('<div>');
 echo('<span class="tdiscus-threads-title">');
 echo('<a href="'.$comeback.'">');
-echo(htmlentities($title));
+echo(htmlentities($dicussion_title));
 echo('</a></span>' );
 echo('<a style="float: right;" href="'.$TOOL_ROOT.'/threadform'.'">');
 echo('('.__('Add Thread').')');
