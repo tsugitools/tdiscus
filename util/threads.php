@@ -13,8 +13,8 @@ global $TOOL_ROOT;
 
 class Threads {
 
-    // const default_page_size = 20;
-    const default_page_size = 3;
+    const default_page_size = 20;
+    // const default_page_size = 3;
 
     public static function threadLoad($thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
@@ -156,7 +156,7 @@ class Threads {
     }
 
     public static function threadsSortableBy() {
-        return array('latest', 'unanswered', 'popular', 'active', 'votes');
+        return array('latest', 'unanswered', 'popular', 'active', 'votes', 'earliest');
     }
 
     public static function threads($info=false) {
@@ -168,6 +168,8 @@ class Threads {
         $sort = U::get($info, "sort");
         if ( $sort == "latest" ) {
             $order_by = "modified_at DESC, netvote DESC";
+        } else if ( $sort == "earliest" ) {
+            $order_by = "modified_at ASC, netvote DESC";
         } else if ( $sort == "unanswered" ) {
             $order_by = "comments ASC, netvote DESC, modified_at DESC";
         } else if ( $sort == "popular" ) {
@@ -184,7 +186,7 @@ class Threads {
 
         $whereclause = "";
         if ( strlen(trim($search)) > 0 ) {
-            $whereclause = " AND (LOWER(title) LIKE :SEARCH OR LOWER(body) LIKE :SEARCH) ";
+            $whereclause = " AND (LOWER(title) LIKE LOWER(:SEARCH) OR LOWER(body) LIKE LOWER(:SEARCH)) ";
             $subst[':SEARCH'] = '%'.strtolower($search).'%';
         }
 
@@ -306,17 +308,41 @@ class Threads {
     }
 
     public static function commentsSortableBy() {
-        return array('most recent', 'top', 'earliest');
+        return array('most recent', /* 'top', put back if voting */ 'earliest');
     }
 
     public static function comments($thread_id, $info=false) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
         if ( ! is_array($info) ) $info = $_GET;
+ 
+        // Default is most recent
+        $order_by = "modified_at DESC";
+        $sort = U::get($info, "sort");
+        if ( $sort == "most recent" ) {
+            $order_by = "modified_at DESC";
+        } else if ( $sort == "top" ) {
+            $order_by = "netvote DESC, modified_at DESC";
+        } else if ( $sort == "earliest" ) {
+            $order_by = "modified_at ASC";
+        }
+
+        $subst =  array(
+                ':UID' => $TSUGI_LAUNCH->user->id,
+                ':LI' => $TSUGI_LAUNCH->link->id,
+                ':TID' => $thread_id
+        );
+
+        $search = U::get($info, "search");
 
         $whereclause = "";
         if ( ! $TSUGI_LAUNCH->user->instructor ) {
             $whereclause = " AND (COALESCE(deleted, 0) = 0 ) ";
+        }
+
+        if ( strlen(trim($search)) > 0 ) {
+            $whereclause = " AND (LOWER(comment) LIKE LOWER(:SEARCH)) ";
+            $subst[':SEARCH'] = '%'.strtolower($search).'%';
         }
 
         $fields = "
@@ -332,14 +358,8 @@ class Threads {
             JOIN {$CFG->dbprefix}tdiscus_thread AS T ON  C.thread_id = T.thread_id
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = C.user_id
             WHERE T.link_id = :LI AND C.thread_id = :TID $whereclause
-            ORDER BY C.created_at DESC
+            ORDER BY $order_by
         ";
-        $subst =  array(
-                ':UID' => $TSUGI_LAUNCH->user->id,
-                ':LI' => $TSUGI_LAUNCH->link->id,
-                ':TID' => $thread_id
-        );
-
         return self::pagedQuery($fields, $from, $subst, $info);
     }
 

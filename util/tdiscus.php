@@ -43,9 +43,7 @@ class Tdiscus {
         global $TOOL_ROOT;
         $searchvalue = U::get($_GET,'search') ? 'value="'.htmlentities(U::get($_GET,'search')).'" ' : "";
         $sortvalue = U::get($_GET,'sort');
-        $selectedtop = $sortvalue == "top" ? 'selected="selected"' : "";
-        $selectedlatest = $sortvalue == "latest" ? 'selected="selected"' : "";
-        $selectedunanswered = $sortvalue == "unanswered" ? 'selected="selected"' : "";
+
         // https://www.w3schools.com/howto/howto_css_search_button.asp
         echo('<div class="tdiscus-threads-search-sort"><form>'."\n");
         if ( is_array($sortby) ) {
@@ -64,11 +62,11 @@ foreach($sortby as $sort) {
         }
 ?>
 <div class="tdiscus-threads-search">
-  <input type="text" placeholder="Search.." name="search"
+  <input type="text" id="tdiscus-threads-search-input" placeholder="Search.." name="search"
   <?= $searchvalue ?>
   >
   <button type="submit"><i class="fa fa-search"></i></button>
-  <a href="<?= $TOOL_ROOT ?>"><i class="fa fa-undo"></i></a>
+  <button type="submit" onclick='document.getElementById("tdiscus-threads-search-input").value = "";'><i class="fa fa-undo"></i></button>
 </div>
 <?php
         echo("</form></div>\n");
