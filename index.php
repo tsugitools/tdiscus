@@ -96,7 +96,7 @@ if ( count($threads) < 1 ) {
     }
 ?>
   <a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
-  <b><?= htmlentities($thread['title']) ?></b></a>
+  <b <?= ($hidden ? ' style="text-decoration: line-through;"' : '') ?>><?= htmlentities($thread['title']) ?></b></a>
 <?php if ( $thread['owned'] || $LAUNCH->user->instructor ) { ?>
     <span class="tdiscus-thread-owned-menu">
     <a href="<?= $TOOL_ROOT ?>/threadform/<?= $thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>

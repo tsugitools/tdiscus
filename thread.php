@@ -75,7 +75,7 @@ $OUTPUT->topNav($menu);
 $sortable = $THREADS->commentsSortableBy();
 $OUTPUT->flashMessages();
 echo('<div class="tdiscus-thread-container">'."\n");
-echo('<p class="tdiscus-thread-title">'.htmlentities($thread['title']).'</p>');
+echo('<p class="tdiscus-thread-title"'.($thread['hidden'] ? ' style="text-decoration: line-through;"' : '').'>'.htmlentities($thread['title']).'</p>');
 ?>
 <p class="tdiscus-thread-info">
 <?= $thread['displayname'] ?>
@@ -140,7 +140,7 @@ if ( count($comments) < 1 ) {
         }
 ?>
   <br/>
-  <div style="padding-left: 10px;"><?= htmlentities($comment['comment']) ?></div>
+  <div style="padding-left: 10px;<?= ($hidden ? ' text-decoration: line-through;' : '') ?>"><?= htmlentities($comment['comment']) ?></div>
   </p>
 <?php
     }
