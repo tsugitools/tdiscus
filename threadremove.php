@@ -49,15 +49,14 @@ if ( count($_POST) > 0 ) {
 
 Tdiscus::header();
 
-$menu = new \Tsugi\UI\MenuSet();
-$menu->addLeft(__('All Threads'), $TOOL_ROOT);
+$menu = false;
 
 $OUTPUT->bodyStart();
 $OUTPUT->flashMessages();
 $OUTPUT->topNav($menu);
 ?>
 <p><?= __("Title:") ?> <br/>
-<?php 
+<?php
 echo('<b>'.htmlentities($old_thread['title']).'</b></br>');
 ?>
 </p>

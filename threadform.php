@@ -60,8 +60,7 @@ if ( count($_POST) > 0 ) {
 
 Tdiscus::header();
 
-$menu = new \Tsugi\UI\MenuSet();
-$menu->addLeft(__('All Threads'), $TOOL_ROOT);
+$menu = false;
 
 $OUTPUT->bodyStart();
 $OUTPUT->topNav($menu);

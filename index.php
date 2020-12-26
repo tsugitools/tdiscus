@@ -35,9 +35,9 @@ foreach ( $copyparms as $parm ) {
 }
 
 
-$menu = new \Tsugi\UI\MenuSet();
-$menu->addLeft(__('Add Thread'), $TOOL_ROOT.'/threadform');
+$menu = false;
 if ( $USER->instructor ) {
+    $menu = new \Tsugi\UI\MenuSet();
     if ( $CFG->launchactivity ) {
         $menu->addRight('Analytics', 'analytics');
     }
@@ -49,7 +49,15 @@ $OUTPUT->topNav($menu);
 
 $title = strlen(Settings::linkget('title')) > 0 ? Settings::linkget('title') : $LAUNCH->link->title;
 
-echo('<div class="tdiscus-threads-title">'.htmlentities($title)."</div>\n");
+echo('<div>');
+echo('<span class="tdiscus-threads-title">');
+echo('<a href="'.$comeback.'">');
+echo(htmlentities($title));
+echo('</a></span>' );
+echo('<a style="float: right;" href="'.$TOOL_ROOT.'/threadform'.'">');
+echo('('.__('Add Thread').')');
+echo('</a>');
+echo("</div>\n");
 
 SettingsForm::start();
 SettingsForm::text('title',__('Thread title.'));
@@ -96,7 +104,7 @@ if ( count($threads) < 1 ) {
     }
 ?>
   <a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
-  <b <?= ($hidden ? ' style="text-decoration: line-through;"' : '') ?>><?= htmlentities($thread['title']) ?></b></a>
+  <b<?= ($hidden ? ' style="text-decoration: line-through;"' : '') ?>><?= htmlentities($thread['title']) ?></b></a>
 <?php if ( $thread['owned'] || $LAUNCH->user->instructor ) { ?>
     <span class="tdiscus-thread-owned-menu">
     <a href="<?= $TOOL_ROOT ?>/threadform/<?= $thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>

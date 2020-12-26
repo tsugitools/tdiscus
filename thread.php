@@ -35,6 +35,7 @@ if ( ! $thread ) {
 
 $come_back = $TOOL_ROOT . '/thread/' . $thread_id;
 $all_done = $TOOL_ROOT;
+$discussion_title = strlen(Settings::linkget('title')) > 0 ? Settings::linkget('title') : $LAUNCH->link->title;
 
 if ( count($_POST) > 0 ) {
     $retval = $THREADS->commentInsertDao($thread_id, U::get($_POST, 'comment') );
@@ -65,8 +66,8 @@ foreach ( $copyparms as $parm ) {
     $page_base = U::add_url_parm($page_base, $parm, $val);
 }
 
-$menu = new \Tsugi\UI\MenuSet();
-$menu->addLeft(__('All Threads'), $TOOL_ROOT);
+$menu = false;
+// $menu->addLeft(__('All Threads'), $TOOL_ROOT);
 
 $commenttop = (Settings::linkGet('commenttop') == 1);
 
@@ -75,7 +76,10 @@ $OUTPUT->topNav($menu);
 $sortable = $THREADS->commentsSortableBy();
 $OUTPUT->flashMessages();
 echo('<div class="tdiscus-thread-container">'."\n");
-echo('<p class="tdiscus-thread-title"'.($thread['hidden'] ? ' style="text-decoration: line-through;"' : '').'>'.htmlentities($thread['title']).'</p>');
+echo('<p class="tdiscus-thread-title">');
+echo('<a href="'.$TOOL_ROOT.'">'.htmlentities($discussion_title).'</a> &raquo; ');
+echo('<a href="'.$page_base.'"'.($thread['hidden'] ? ' style="text-decoration: line-through;"' : '').'>'.htmlentities($thread['title']).'</a>');
+echo("</p>\n");
 ?>
 <p class="tdiscus-thread-info">
 <?= $thread['displayname'] ?>

@@ -53,16 +53,16 @@ $OUTPUT->flashMessages();
 ?>
 <div id="delete-comment-div" title="<?= __("Delete comment") ?>" >
 <form id="delete-comment-form" method="post">
+<p><?= __("Comment:") ?> <br/>
+<?php
+echo('<b>'.htmlentities($old_comment['comment']).'</b></br>');
+?>
+</p>
 <p>
 <input type="submit" id="delete-comment-submit" value="<?= __('Delete') ?>" >
 <input type="submit" id="delete-comment-cancel" value="<?= __('Cancel') ?>"
 onclick='window.location.href="<?= addSession($all_done) ?>";return false;'
 >
-</p>
-<p><?= __("Comment:") ?> <br/>
-<?php 
-echo('<b>'.htmlentities($old_comment['comment']).'</b></br>');
-?>
 </p>
 </form>
 </div>

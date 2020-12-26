@@ -52,18 +52,18 @@ $OUTPUT->flashMessages();
 ?>
 <div id="edit-comment-div" title="<?= __("Comment") ?>" >
 <form id="edit-comment-form" method="post">
-<p>
-<input type="submit" id="edit-comment-submit" value="<?= __('Update') ?>" >
-<input type="submit" id="edit-comment-cancel" value="<?= __('Cancel') ?>"
-onclick='window.location.href="<?= addSession($TOOL_ROOT.'/thread/'.$thread_id) ?>";return false;'
->
-</p>
 <input type="text" name="comment" class="form-control"
 <?php 
 if ( $old_comment ) {
     echo('value="'.htmlentities($old_comment['comment']).'" ');
 }
 ?>
+>
+</p>
+<p>
+<input type="submit" id="edit-comment-submit" value="<?= __('Update') ?>" >
+<input type="submit" id="edit-comment-cancel" value="<?= __('Cancel') ?>"
+onclick='window.location.href="<?= addSession($TOOL_ROOT.'/thread/'.$thread_id) ?>";return false;'
 >
 </p>
 </form>
