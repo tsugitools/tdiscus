@@ -13,6 +13,8 @@ global $TOOL_ROOT;
 
 class Tdiscus {
 
+    const default_paginator_width = 7;
+
     public static function header() {
         global $OUTPUT, $TOOL_ROOT;
         if ( ! isset($TOOL_ROOT) ) $TOOL_ROOT = dirname($_SERVER['SCRIPT_NAME']);
@@ -92,7 +94,7 @@ foreach($sortby as $sort) {
     if ( $start == 0 && $total < $pagesize ) return;
 
     $laststart = intval($total /$pagesize) * $pagesize;
-    $showpages = 7; // The number of pages
+    $showpages = self::default_paginator_width; // The number of pages
     $firststart = $start - (intval($showpages/2) * $pagesize);
     if ( $firststart < 0 ) $firststart = 0;
 ?>

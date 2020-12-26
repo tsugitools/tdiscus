@@ -53,9 +53,7 @@ $comments = $retval->rows;
 
 Tdiscus::header();
 
-$default_page_size = 20;
-
-$pagesize = intval(U::get($_GET, 'pagesize', $default_page_size));
+$pagesize = intval(U::get($_GET, 'pagesize', Threads::default_page_size));
 $start = intval(U::get($_GET, 'start', 0));
 $page_base = $come_back;
 
@@ -64,7 +62,7 @@ $copyparms = array('search', 'sort', 'pagesize');
 foreach ( $copyparms as $parm ) {
     $val = U::get($_GET, $parm);
     if ( strlen($val) == 0 ) continue;
-    $page_base = U::add_url_parm_null($page_base, $parm, $val);
+    $page_base = U::add_url_parm($page_base, $parm, $val);
 }
 
 $menu = new \Tsugi\UI\MenuSet();

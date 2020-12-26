@@ -13,6 +13,9 @@ global $TOOL_ROOT;
 
 class Threads {
 
+    // const default_page_size = 20;
+    const default_page_size = 3;
+
     public static function threadLoad($thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
@@ -218,7 +221,7 @@ class Threads {
         $retval->next = -1;
 
         $start = intval(U::get($info, "start", 0));
-        $pagesize = intval(U::get($info, "pagesize", 3));
+        $pagesize = intval(U::get($info, "pagesize", self::default_page_size));
 
         if ( $pagesize == 0 ) {
             $sql = "SELECT ".$fields.$from;

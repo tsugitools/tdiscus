@@ -22,9 +22,7 @@ $THREADS = new Threads();
 
 Tdiscus::header();
 
-$default_page_size = 20;
-
-$pagesize = intval(U::get($_GET, 'pagesize', $default_page_size));
+$pagesize = intval(U::get($_GET, 'pagesize', Threads::default_page_size));
 $start = intval(U::get($_GET, 'start', 0));
 $comeback = $TOOL_ROOT.'/';
 
@@ -33,7 +31,7 @@ $copyparms = array('search', 'sort', 'pagesize');
 foreach ( $copyparms as $parm ) {
     $val = U::get($_GET, $parm);
     if ( strlen($val) == 0 ) continue;
-    $comeback = U::add_url_parm_null($comeback, $parm, $val);
+    $comeback = U::add_url_parm($comeback, $parm, $val);
 }
 
 
@@ -77,7 +75,7 @@ if ( count($threads) < 1 ) {
     echo("<p>".__('No threads')."</p>\n");
 } else {
     echo('<ul class="tdiscus-threads-list">');
-    echo('<p>Total: '.$retval->total." next=".$retval->next."</p>\n");
+    echo('<!-- Total: '.$retval->total." next=".$retval->next."-->\n");
     foreach($threads as $thread ) {
         $pin = $thread['pin'];
 ?>
