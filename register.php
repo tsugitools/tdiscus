@@ -12,7 +12,7 @@ $REGISTER_LTI2 = array(
     "languages" => array(
         "English"
     ),
-"tool_phase" => "emerging",
+    "tool_phase" => "new",
     "source_url" => "https://github.com/tsugitools/attend",
     // For now Tsugi tools delegate this to /lti/store
     "placements" => array(
