@@ -104,11 +104,16 @@ class Threads {
     public static function threadDelete($thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
+        $thread = self::threadLoadForUpdate($thread_id);
+
+        if ( ! is_array($thread) ) {
+            return __('Could not load thread for delete');
+        }
+
         $stmt = $PDOX->queryDie("DELETE FROM {$CFG->dbprefix}tdiscus_thread
-            WHERE link_id = :LID AND thread_id = :TID AND user_id = :UID",
+            WHERE link_id = :LID AND thread_id = :TID",
             array(
                 ':LID' => $TSUGI_LAUNCH->link->id,
-                ':UID' => $TSUGI_LAUNCH->user->id,
                 ':TID' => $thread_id,
             )
         );
@@ -464,8 +469,22 @@ class Threads {
         return $null;
     }
 
+    public static function commentDelete($comment_id, $thread_id) {
+        $comment = self::commentLoadForUpdate($comment_id);
+
+        if ( ! is_array($comment) ) {
+            return __('Could not load comment for delete');
+        }
+
+        $thread_id = $comment['thread_id'];
+        $retval = self::commentDeleteDao($comment_id, $thread_id);
+
+        return $retval;
+    }
+
     public static function commentDeleteDao($comment_id, $thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
+
 
         $stmt = $PDOX->queryDie("DELETE FROM {$CFG->dbprefix}tdiscus_comment
             WHERE comment_id = :CID",
