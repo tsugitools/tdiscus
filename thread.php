@@ -27,6 +27,8 @@ if ( isset($rest_path->action) && is_numeric($rest_path->action) ) {
     $thread = $THREADS->threadLoadMarkRead($thread_id);
 }
 
+$thread_locked = intval($thread['locked']) && ! $LAUNCH->user->instructor;
+
 if ( ! $thread ) {
     $_SESSION['error'] = __('Could not load thread');
     header( 'Location: '.addSession($TOOL_ROOT) ) ;
@@ -107,7 +109,7 @@ onclick="document.querySelector('#tdiscus-add-comment-div').scrollIntoView({ beh
 <div class="tdiscus-comments-sort">
 <?php
 Tdiscus::search_box($sortable);
-if ( $commenttop ) Tdiscus::add_comment();
+if ( $commenttop && ! $thread_locked) Tdiscus::add_comment();
 ?>
 </div>
 <div class="tdiscus-comments-list">
@@ -158,7 +160,7 @@ if ( count($comments) < 1 ) {
 
   Tdiscus::paginator($page_base, $start, $pagesize, $retval->total);
 
-if ( ! $commenttop ) Tdiscus::add_comment();
+if ( ! $commenttop && ! $thread_locked) Tdiscus::add_comment();
 
 Tdiscus::footerStart();
 Tdiscus::renderBooleanScript();
