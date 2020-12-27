@@ -84,6 +84,8 @@ it is done.
 
 Features yet to be added:
 
+* The ability to get email updates when a comment is added to a thread.
+
 * Image uploading into thread text.  I added a feature to Tsugi's blob storage to
 improve the ability to delete unreferences images from the Tsugi single-instance blob store.
 I want to make sure this works really well before I let thread creators upload pictures.
