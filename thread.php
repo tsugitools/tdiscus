@@ -93,6 +93,7 @@ echo("</p>\n");
 <?= $purifier->purify($thread['body']) ?>
 </p>
 <p>
+<!--
 <?= $thread['netvote'] ?> Upvotes
 <i class="fa fa-arrow-up"></i>
 <a href="#reply"
@@ -100,6 +101,7 @@ onclick="document.querySelector('#tdiscus-add-comment-div').scrollIntoView({ beh
 ><?= __('Reply') ?>
 <i class="fa fa-reply-all"></i>
 </a>
+-->
 </div>
 <div class="tdiscus-comments-container">
 <div class="tdiscus-comments-sort">
