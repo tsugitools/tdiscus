@@ -19,7 +19,8 @@ class Threads {
     public static function threadLoad($thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
-        $row = $PDOX->rowDie("SELECT *, COALESCE(T.updated_at, T.created_at) AS modified_at,
+        $row = $PDOX->rowDie("SELECT *, 
+            CONCAT(CONVERT_TZ(COALESCE(T.updated_at, T.created_at), @@session.time_zone, '+00:00'), 'Z') AS modified_at,
             (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned
             FROM {$CFG->dbprefix}tdiscus_thread AS T
@@ -197,8 +198,9 @@ class Threads {
         $fields = "
             T.thread_id AS thread_id, body, title, pin, views, staffcreate,
             staffread, staffanswer, comments, displayname, edited, hidden, locked,
-            T.created_at AS created_at, T.updated_at AS updated_at,
-            COALESCE(T.updated_at, T.created_at) AS modified_at,
+            CONCAT(CONVERT_TZ(T.created_at, @@session.time_zone, '+00:00'), 'Z') AS created_at,
+            CONCAT(CONVERT_TZ(T.updated_at, @@session.time_zone, '+00:00'), 'Z') AS updated_at,
+            CONCAT(CONVERT_TZ(COALESCE(T.updated_at, T.created_at), @@session.time_zone, '+00:00'), 'Z') AS modified_at,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned,
             (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote
         ";
@@ -383,8 +385,9 @@ class Threads {
         $fields = "
             comment_id, comment, displayname, C.edited AS edited, C.hidden AS hidden,
             C.locked AS locked,
-            C.updated_at AS updated_at, C.created_at AS created_at,
-            COALESCE(C.updated_at, C.created_at) AS modified_at,
+            CONCAT(CONVERT_TZ(C.created_at, @@session.time_zone, '+00:00'), 'Z') AS created_at,
+            CONCAT(CONVERT_TZ(C.updated_at, @@session.time_zone, '+00:00'), 'Z') AS updated_at,
+            CONCAT(CONVERT_TZ(COALESCE(C.updated_at, C.created_at), @@session.time_zone, '+00:00'), 'Z') AS modified_at,
             (COALESCE(C.upvote, 0)-COALESCE(C.downvote, 0)) AS netvote,
             CASE WHEN C.user_id = :UID THEN TRUE ELSE FALSE END AS owned
         ";
@@ -440,7 +443,8 @@ class Threads {
     public static function commentLoad($comment_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
-        $row = $PDOX->rowDie("SELECT *, COALESCE(C.updated_at, C.created_at) AS modified_at,
+        $row = $PDOX->rowDie("SELECT *,
+            CONCAT(CONVERT_TZ(COALESCE(T.updated_at, T.created_at), @@session.time_zone, '+00:00'), 'Z') AS modified_at,
             CASE WHEN C.user_id = :UID THEN TRUE ELSE FALSE END AS owned
             FROM {$CFG->dbprefix}tdiscus_comment AS C
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = C.user_id
