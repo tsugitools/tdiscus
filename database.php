@@ -40,6 +40,7 @@ array( "{$CFG->dbprefix}tdiscus_thread",
     staffanswer TINYINT(1) NOT NULL DEFAULT 0,
     edited      TINYINT(1) NOT NULL DEFAULT 0,
     hidden      TINYINT(1) NOT NULL DEFAULT 0,
+    hidden_global TINYINT(1) NOT NULL DEFAULT 0,
     locked      TINYINT(1) NOT NULL DEFAULT 0,
     pin         TINYINT(1) NOT NULL DEFAULT 0,
     rank_value  SMALLINT(2) NOT NULL DEFAULT 0,
@@ -91,6 +92,7 @@ array( "{$CFG->dbprefix}tdiscus_comment",
     depth       INTEGER NOT NULL DEFAULT 0,
 
     comment     TEXT NULL,
+    cleaned     TINYINT(1) NOT NULL DEFAULT 0,
     json        TEXT NULL,
     settings    TEXT NULL,
 
@@ -176,7 +178,7 @@ array( "{$CFG->dbprefix}tdiscus_closure",
     children    INTEGER NOT NULL,
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP NULL,
-    
+
     CONSTRAINT `{$CFG->dbprefix}tdiscus_closure_ibfk_1`
         FOREIGN KEY (`parent_id`)
         REFERENCES `{$CFG->dbprefix}tdiscus_comment` (`comment_id`)
@@ -198,7 +200,31 @@ array( "{$CFG->dbprefix}tdiscus_closure",
 $DATABASE_UPGRADE = function($oldversion) {
     global $CFG, $PDOX;
 
-    return 201710191330;
+    // This is a place to make sure added fields are present
+    // if you add a field to a table, put it in here and it will be auto-added
+    $add_some_fields = array(
+        array('tdiscus_thread', 'hidden_global', 'TINYINT(1) NOT NULL DEFAULT 0'),
+        array('tdiscus_comment', 'cleaned', 'TINYINT(1) NOT NULL DEFAULT 0'),
+    );
+
+    foreach ( $add_some_fields as $add_field ) {
+        if (count($add_field) != 3 ) {
+            echo("Badly formatted add_field");
+            var_dump($add_field);
+            continue;
+        }
+        $table = $CFG->dbprefix . $add_field[0];
+        $column = $add_field[1];
+        $type = $add_field[2];
+        if ( $PDOX->columnExists($column, $table ) ) continue;
+        $sql= "ALTER TABLE {$CFG->dbprefix}$table ADD $column $type";
+        echo("Upgrading: ".$sql."<br/>\n");
+        error_log("Upgrading: ".$sql);
+        $q = $PDOX->queryReturnError($sql);
+    }
+
+    return 202012101330;
+
 }; // Don't forget the semicolon on anonymous functions :)
 
 // Do the actual migration if we are not in admin/upgrade.php
