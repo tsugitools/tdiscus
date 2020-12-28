@@ -132,13 +132,16 @@ foreach($sortby as $sort) {
     public static function renderBooleanSwitch($type, $thread_id, $variable, $title, $value, $set, $icon, $color=false)
     {
         $action = ($set ? '' : 'un').$title;
+        $uitype = $type;
+        if ( $uitype == 'threaduser' ) $uitype = 'thread';
+        if ( $uitype == 'threadcomment' ) $uitype = 'comment';
 ?>
         <a href="#"
         class="<?= $type ?><?= $variable ?>_<?= $thread_id ?> tdiscus-pin-api-call"
         data-class="<?= $type ?><?= $variable ?>_<?= $thread_id ?>"
         data-endpoint="<?= $type ?>setboolean/<?= $thread_id ?>/<?= $variable ?>/<?= $set ?>"
-        data-confirm="<?= htmlentities(__('Do you want to '.$action.' this '.$type.'?')) ?>"
-        title="<?= __(ucfirst($action)." ".ucfirst($type)) ?>"
+        data-confirm="<?= htmlentities(__('Do you want to '.$action.' this '.$uitype.'?')) ?>"
+        title="<?= __(ucfirst($action)." ".ucfirst($uitype)) ?>"
          <?= ($value == $set ? 'style="display:none;"' : '') ?>
          ><i class="fa <?= $icon ?>" <?= ($color ? 'style="color: '.$color.'";' : '') ?>></i></a>
 <?php

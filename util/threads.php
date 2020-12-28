@@ -19,7 +19,7 @@ class Threads {
     public static function threadLoad($thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
-        $row = $PDOX->rowDie("SELECT *, 
+        $row = $PDOX->rowDie("SELECT *,
             CONCAT(CONVERT_TZ(COALESCE(T.updated_at, T.created_at), @@session.time_zone, '+00:00'), 'Z') AS modified_at,
             (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned
@@ -201,20 +201,22 @@ class Threads {
         }
 
         $fields = "
-            T.thread_id AS thread_id, body, title, pin, views, staffcreate,
-            staffread, staffanswer, comments, displayname, edited, hidden, locked,
+            T.thread_id AS thread_id, body, title, pin, T.views AS views, staffcreate,
+            staffread, staffanswer, T.comments AS comments, displayname, edited, hidden, locked,
             CONCAT(CONVERT_TZ(T.created_at, @@session.time_zone, '+00:00'), 'Z') AS created_at,
             CONCAT(CONVERT_TZ(T.updated_at, @@session.time_zone, '+00:00'), 'Z') AS updated_at,
             CONCAT(CONVERT_TZ(COALESCE(T.updated_at, T.created_at), @@session.time_zone, '+00:00'), 'Z') AS modified_at,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned,
-            (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote
+            (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote,
+            UT.subscribe AS subscribe, UT.favorite AS favorite
         ";
 
         $from = "
             FROM {$CFG->dbprefix}tdiscus_thread AS T
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = T.user_id
+            LEFT JOIN {$CFG->dbprefix}tdiscus_user_thread AS UT ON T.thread_id = UT.thread_id AND UT.user_id = :UID
             WHERE link_id = :LID $whereclause
-            ORDER BY T.pin DESC, T.rank_value DESC, $order_by
+            ORDER BY UT.favorite DESC, T.pin DESC, T.rank_value DESC, $order_by
         ";
 
         return self::pagedQuery($fields, $from, $subst, $info);
@@ -295,6 +297,24 @@ class Threads {
 
     public static function threadUserSetBoolean($thread_id, $column, $value)
     {
+        global $CFG, $PDOX, $TSUGI_LAUNCH;
+
+        $valid_columns = array(
+            'subscribe', 'favorite'
+        );
+
+        if ( ! in_array($column, $valid_columns) ) {
+            return __("Column $column not allowed");
+        }
+
+        if ( $value != 1 && $value != 0 ) {
+            return __("Column $column requires boolean (0 or 1)");
+        }
+
+        if ( ! is_numeric($thread_id) ) {
+            return __('Incorrect or missing thread_id');
+        }
+
         $thread = self::threadLoad($thread_id);
         if ( ! is_array($thread) ) {
             return __('Could not load thread for update');
@@ -303,14 +323,13 @@ class Threads {
         $stmt = $PDOX->queryDie("INSERT IGNORE INTO {$CFG->dbprefix}tdiscus_user_thread
             (thread_id, user_id, $column) VALUES
             (:TID, :UID, :VALUE)
-            ON DUPLICATE KEY UPDATE read_at = NOW()",
+            ON DUPLICATE KEY UPDATE $column=:VALUE, read_at = NOW()",
             array(
                 ':TID' => $thread_id,
                 ':UID' => $TSUGI_LAUNCH->user->id,
                 ':VALUE' => $value,
             )
         );
-
 
     }
 

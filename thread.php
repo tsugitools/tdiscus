@@ -78,10 +78,10 @@ $OUTPUT->topNav($menu);
 $sortable = $THREADS->commentsSortableBy();
 $OUTPUT->flashMessages();
 echo('<div class="tdiscus-thread-container">'."\n");
-echo('<p class="tdiscus-thread-title">');
-echo('<a href="'.$TOOL_ROOT.'"><i class="fa fa-home" title="'.htmlentities($discussion_title).'"></i></a> <i class="fas fa-angle-double-right"></i> ');
-echo('<a href="'.$page_base.'"'.($thread['hidden'] ? ' style="text-decoration: line-through;"' : '').'>'.htmlentities($thread['title']).'</a>');
-echo("</p>\n");
+echo('<p>');
+echo('<a style="float: right;" href="'.$TOOL_ROOT.'"><i class="fa fa-home" title="'.__('All Threads').'"></i> '.__('All Threads').'</a></p>');
+echo('<span class="tdiscus-thread-title"><a href="'.$page_base.'"'.($thread['hidden'] ? ' style="text-decoration: line-through;"' : '').'>'.htmlentities($thread['title']).'</a>');
+echo("</span></p>\n");
 ?>
 <p class="tdiscus-thread-info">
 <?= $thread['displayname'] ?>

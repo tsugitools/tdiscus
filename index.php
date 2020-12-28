@@ -55,7 +55,8 @@ echo('<a href="'.$comeback.'">');
 echo(htmlentities($dicussion_title));
 echo('</a></span>' );
 echo('<a style="float: right;" href="'.$TOOL_ROOT.'/threadform'.'">');
-echo('('.__('Add Thread').')');
+echo('<i class="fa fa-plus"></i> ');
+echo(__('Add Thread'));
 echo('</a>');
 echo("</div>\n");
 
@@ -89,6 +90,8 @@ if ( count($threads) < 1 ) {
         $locked = $thread['locked'];
         $hidden = $thread['hidden'];
         $thread_id = $thread['thread_id'];
+        $subscribe = $thread['subscribe'];
+        $favorite = $thread['favorite'];
 ?>
   <li class="tdiscus-thread-item">
   <div class="tdiscus-thread-item-left">
@@ -98,6 +101,8 @@ if ( count($threads) < 1 ) {
         Tdiscus::renderBooleanSwitch('thread', $thread_id, 'pin', 'pin', $pin, 0, 'fa-thumbtack fa-rotate-270', 'orange');
         Tdiscus::renderBooleanSwitch('thread', $thread_id, 'hidden', 'hide', $hidden, 0, 'fa-eye-slash', 'orange');
         Tdiscus::renderBooleanSwitch('thread', $thread_id, 'locked', 'lock', $locked, 0, 'fa-lock', 'orange');
+        Tdiscus::renderBooleanSwitch('threaduser', $thread_id, 'favorite', 'favorite', $favorite, 0, 'fa-star', 'green');
+        // Tdiscus::renderBooleanSwitch('threaduser', $thread_id, 'subscribe', 'subscribe', $subscribe, 0, 'fa-envelope', 'green');
     } else {
         echo('<span '.($pin == 0 ? 'style="display:none;"' : '').'><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></span>');
         echo('<span '.($locked == 0 ? 'style="display:none;"' : '').'><i class="fa fa-lock fa-rotate-270" style="color: orange;"></i></span>');
@@ -114,6 +119,8 @@ if ( count($threads) < 1 ) {
         Tdiscus::renderBooleanSwitch('thread', $thread_id, 'pin', 'pin', $pin, 1, 'fa-thumbtack');
         Tdiscus::renderBooleanSwitch('thread', $thread_id, 'hidden', 'hide', $hidden, 1, 'fa-eye-slash');
         Tdiscus::renderBooleanSwitch('thread', $thread_id, 'locked', 'lock', $locked, 1, 'fa-lock');
+        Tdiscus::renderBooleanSwitch('threaduser', $thread_id, 'favorite', 'favorite', $favorite, 1, 'fa-star');
+        // Tdiscus::renderBooleanSwitch('threaduser', $thread_id, 'subscribe', 'subscribe', $subscribe, 1, 'fa-envelope');
     }
 ?>
     </span>
@@ -122,8 +129,8 @@ if ( count($threads) < 1 ) {
 <?php
     if ( $thread['staffcreate'] > 0 ) {
         echo('<span class="tdiscus-staff-created">Staff Created</span>');
-        echo(" Created by ".htmlentities($thread['displayname']));
-        echo(' at <time class="timeago" datetime="'.$thread['created_at'].'">'.$thread['created_at'].'</time>');
+        echo(" ".__("Created by")." ".htmlentities($thread['displayname']));
+        echo(' - '.__("last post").' <time class="timeago" datetime="'.$thread['modified_at'].'">'.$thread['modified_at'].'</time>');
     } else {
         if ( $thread['staffread'] > 0 ) echo('<span class="tdiscus-staff-read">'.__('Staff Read')."</span>\n");
         if ( $thread['staffanswer'] > 0 ) echo('<span class="tdiscus-staff-answer">'.__('Staff Answer')."</span>\n");
