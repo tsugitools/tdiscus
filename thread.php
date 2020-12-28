@@ -79,7 +79,7 @@ $sortable = $THREADS->commentsSortableBy();
 $OUTPUT->flashMessages();
 echo('<div class="tdiscus-thread-container">'."\n");
 echo('<p class="tdiscus-thread-title">');
-echo('<a href="'.$TOOL_ROOT.'">'.htmlentities($discussion_title).'</a> &raquo; ');
+echo('<a href="'.$TOOL_ROOT.'"><i class="fa fa-home" title="'.htmlentities($discussion_title).'"></i></a> <i class="fas fa-angle-double-right"></i> ');
 echo('<a href="'.$page_base.'"'.($thread['hidden'] ? ' style="text-decoration: line-through;"' : '').'>'.htmlentities($thread['title']).'</a>');
 echo("</p>\n");
 ?>
