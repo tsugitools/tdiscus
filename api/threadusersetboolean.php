@@ -22,7 +22,7 @@ if ( count($rest_path->parameters) != 2 ) {
 $column = $rest_path->parameters[0];
 $value = $rest_path->parameters[1];
 
-error_log("threadUserSetBoolean $thread_id $column $value");
+// error_log("threadUserSetBoolean $thread_id $column $value");
 
 $retval = $THREADS->threadUserSetBoolean($thread_id, $column, $value);
 if ( is_string($retval) ) {

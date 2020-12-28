@@ -323,7 +323,7 @@ class Threads {
         $stmt = $PDOX->queryDie("INSERT IGNORE INTO {$CFG->dbprefix}tdiscus_user_thread
             (thread_id, user_id, $column) VALUES
             (:TID, :UID, :VALUE)
-            ON DUPLICATE KEY UPDATE $column=:VALUE, read_at = NOW()",
+            ON DUPLICATE KEY UPDATE $column=:VALUE",
             array(
                 ':TID' => $thread_id,
                 ':UID' => $TSUGI_LAUNCH->user->id,
@@ -435,10 +435,10 @@ class Threads {
 
          $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_comment
             (thread_id, user_id, comment) VALUES
-            (:TH, :UI, :COM)",
+            (:TH, :UID, :COM)",
             array(
                 ':TH' => $thread_id,
-                ':UI' => $TSUGI_LAUNCH->user->id,
+                ':UID' => $TSUGI_LAUNCH->user->id,
                 ':COM' => $comment,
             )
         );
@@ -455,6 +455,18 @@ class Threads {
                 SET $staffanswer comments=(SELECT count(comment_id) FROM {$CFG->dbprefix}tdiscus_comment
                      WHERE thread_id = :TID), updated_at=NOW()
                 WHERE thread_id = :TID",
+                array(
+                    ':TID' => $thread_id,
+                 )
+            );
+        }
+
+        // Notify subscribed users
+        // TODO: Give this a checkbox in settings
+        if ( $retval > 0 ) {
+            $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_user_thread
+                SET notify=1
+                WHERE thread_id = :TID AND subscribe = 1",
                 array(
                     ':TID' => $thread_id,
                  )
