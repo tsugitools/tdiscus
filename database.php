@@ -61,6 +61,7 @@ array( "{$CFG->dbprefix}tdiscus_user_thread",
 "create table {$CFG->dbprefix}tdiscus_user_thread (
     thread_id   INTEGER NOT NULL,
     user_id     INTEGER NOT NULL,
+    subscribe   TINYINT(1) NOT NULL DEFAULT 0,
     views       INTEGER NOT NULL DEFAULT 0,
     comments    INTEGER NOT NULL DEFAULT 0,
     vote        TINYINT(1) NOT NULL DEFAULT 0,
@@ -120,6 +121,7 @@ array( "{$CFG->dbprefix}tdiscus_user_comment",
 "create table {$CFG->dbprefix}tdiscus_user_comment (
     comment_id  INTEGER NOT NULL,
     user_id     INTEGER NOT NULL,
+    subscribe   TINYINT(1) NOT NULL DEFAULT 0,
     vote        TINYINT(1) NOT NULL DEFAULT 0,
     report      TINYINT(1) NOT NULL DEFAULT 0,
     favorite    TINYINT(1) NOT NULL DEFAULT 0,
@@ -213,6 +215,8 @@ $DATABASE_UPGRADE = function($oldversion) {
         array('tdiscus_user_thread', 'notify_at', 'TIMESTAMP NULL'),
         array('tdiscus_user_comment', 'notify', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_user_comment', 'notify_at', 'TIMESTAMP NULL'),
+        array('tdiscus_user_thread', 'subscribe', 'TINYINT(1) NOT NULL DEFAULT 0'),
+        array('tdiscus_user_comment', 'subscribe', 'TINYINT(1) NOT NULL DEFAULT 0'),
     );
 
     foreach ( $add_some_fields as $add_field ) {
