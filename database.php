@@ -68,6 +68,8 @@ array( "{$CFG->dbprefix}tdiscus_user_thread",
     favorite    TINYINT(1) NOT NULL DEFAULT 0,
     report      TINYINT(1) NOT NULL DEFAULT 0,
     read_at     TIMESTAMP NULL,
+    notify      TINYINT(1) NOT NULL DEFAULT 0,
+    notify_at   TIMESTAMP NULL,
 
     CONSTRAINT `{$CFG->dbprefix}tdiscus_user_thread_ibfk_1`
         UNIQUE (`thread_id`, `user_id`),
@@ -122,6 +124,8 @@ array( "{$CFG->dbprefix}tdiscus_user_comment",
     report      TINYINT(1) NOT NULL DEFAULT 0,
     favorite    TINYINT(1) NOT NULL DEFAULT 0,
     read_at     TIMESTAMP NULL,
+    notify      TINYINT(1) NOT NULL DEFAULT 0,
+    notify_at   TIMESTAMP NULL,
 
     CONSTRAINT `{$CFG->dbprefix}tdiscus_user_comment_ibfk_1`
         UNIQUE (`comment_id`, `user_id`),
@@ -205,6 +209,10 @@ $DATABASE_UPGRADE = function($oldversion) {
     $add_some_fields = array(
         array('tdiscus_thread', 'hidden_global', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_comment', 'cleaned', 'TINYINT(1) NOT NULL DEFAULT 0'),
+        array('tdiscus_user_thread', 'notify', 'TINYINT(1) NOT NULL DEFAULT 0'),
+        array('tdiscus_user_thread', 'notify_at', 'TIMESTAMP NULL'),
+        array('tdiscus_user_comment', 'notify', 'TINYINT(1) NOT NULL DEFAULT 0'),
+        array('tdiscus_user_comment', 'notify_at', 'TIMESTAMP NULL'),
     );
 
     foreach ( $add_some_fields as $add_field ) {
