@@ -57,6 +57,28 @@ as an `lti` entry and using the same format.  Of course make sure to keep
     "lti" : [
         ...
 
+Enabling tdiscus in config.php
+------------------------------
+
+You need to enable discussions in your `tsugi/config.php` by adding the following line:
+
+    $CFG->tdiscus = true;
+
+This configuration is needed to keep Tsugi from having to look through the `mod` folder to see
+if `tdisucs` is installed.
+
+Course-wide link to all discussions
+-----------------------------------
+
+If you are running a site with `lessons.json` you are using Koseu to make the
+lessons UI appear under the `/lessons` URL.   There is a course wide disucssions
+tool automatically available at the `/discussions` URL.  For example:
+
+https://www.py4e.com/discussions
+
+This tool works whether or not the session is logged in.  If the user is not
+logged in the sessions are shown but cannot be entered.
+
 History
 -------
 
