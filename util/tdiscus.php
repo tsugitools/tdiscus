@@ -117,7 +117,9 @@ foreach($sortby as $sort) {
         }
         $id = "tdiscus-add-sub-comment-div$unique";
 
-        Tdiscus::renderToggle(__('reply'), $id, 'fa-comment', 'green');
+        if ( Settings::linkGet('maxdepth') > 0 ) {
+            Tdiscus::renderToggle(__('reply'), $id, 'fa-comment', 'green');
+        }
 
         if ( $children > 0 ) echo(" (".$children." child nodes) ");
 ?>
