@@ -96,6 +96,7 @@ array( "{$CFG->dbprefix}tdiscus_comment",
 
     comment     TEXT NULL,
     cleaned     TINYINT(1) NOT NULL DEFAULT 0,
+    children    INTEGER NOT NULL DEFAULT 0,
     json        TEXT NULL,
     settings    TEXT NULL,
 
@@ -180,8 +181,8 @@ array( "{$CFG->dbprefix}tdiscus_closure",
 "create table {$CFG->dbprefix}tdiscus_closure (
     parent_id   INTEGER NOT NULL,
     child_id    INTEGER NOT NULL,
-    depth       INTEGER NOT NULL,
-    children    INTEGER NOT NULL,
+    depth       INTEGER NOT NULL DEFAULT 0,
+    children    INTEGER NOT NULL DEFAULT 0,
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP NULL,
 
@@ -211,6 +212,7 @@ $DATABASE_UPGRADE = function($oldversion) {
     $add_some_fields = array(
         array('tdiscus_thread', 'hidden_global', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_comment', 'cleaned', 'TINYINT(1) NOT NULL DEFAULT 0'),
+        array('tdiscus_comment', 'children', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_user_thread', 'notify', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_user_thread', 'notify_at', 'TIMESTAMP NULL'),
         array('tdiscus_user_comment', 'notify', 'TINYINT(1) NOT NULL DEFAULT 0'),
@@ -234,6 +236,17 @@ $DATABASE_UPGRADE = function($oldversion) {
         error_log("Upgrading: ".$sql);
         $q = $PDOX->queryReturnError($sql);
     }
+
+    // Temporary hack
+
+    $sql= "ALTER TABLE {$CFG->dbprefix}tdiscus_closure MODIFY children INTEGER NOT NULL DEFAULT 0";
+    echo("Upgrading: ".$sql."<br/>\n");
+    error_log("Upgrading: ".$sql);
+
+    $sql= "ALTER TABLE {$CFG->dbprefix}tdiscus_closure MODIFY depth INTEGER NOT NULL DEFAULT 0";
+    echo("Upgrading: ".$sql."<br/>\n");
+    error_log("Upgrading: ".$sql);
+
 
     return 202012101330;
 
