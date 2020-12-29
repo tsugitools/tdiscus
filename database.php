@@ -87,10 +87,13 @@ array( "{$CFG->dbprefix}tdiscus_user_thread",
 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8"),
 
+// parent_id is *not* a real foreign key - just to keep track in case closure
+// table gets corrupted
 array( "{$CFG->dbprefix}tdiscus_comment",
 "create table {$CFG->dbprefix}tdiscus_comment (
     comment_id  INTEGER NOT NULL KEY AUTO_INCREMENT,
     thread_id   INTEGER NOT NULL,
+    parent_id   INTEGER NULL;
     user_id     INTEGER NOT NULL,
     depth       INTEGER NOT NULL DEFAULT 0,
 
@@ -213,6 +216,7 @@ $DATABASE_UPGRADE = function($oldversion) {
         array('tdiscus_thread', 'hidden_global', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_comment', 'cleaned', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_comment', 'children', 'TINYINT(1) NOT NULL DEFAULT 0'),
+        array('tdiscus_comment', 'parent_id', 'INTEGER NULL'),
         array('tdiscus_user_thread', 'notify', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_user_thread', 'notify_at', 'TIMESTAMP NULL'),
         array('tdiscus_user_comment', 'notify', 'TINYINT(1) NOT NULL DEFAULT 0'),

@@ -151,6 +151,9 @@ if ( count($comments) < 1 ) {
   <div style="padding-left: 10px;<?= ($hidden ? ' text-decoration: line-through;' : '') ?>"><?= htmlentities($comment['comment']) ?></div>
   </p>
 <?php
+        if ( Settings::linkGet('maxdepth') > 0 ) {
+            Tdiscus::add_sub_comment($comment_id, $thread_id, 1);
+        }
     }
 }
 ?>

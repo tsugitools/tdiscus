@@ -408,7 +408,7 @@ class Threads {
 
         $fields = "
             comment_id, comment, displayname, C.edited AS edited, C.hidden AS hidden,
-            C.locked AS locked,
+            C.locked AS locked, C.children AS children,
             CONCAT(CONVERT_TZ(C.created_at, @@session.time_zone, '+00:00'), 'Z') AS created_at,
             CONCAT(CONVERT_TZ(C.updated_at, @@session.time_zone, '+00:00'), 'Z') AS updated_at,
             CONCAT(CONVERT_TZ(COALESCE(C.updated_at, C.created_at), @@session.time_zone, '+00:00'), 'Z') AS modified_at,
@@ -420,26 +420,42 @@ class Threads {
             FROM {$CFG->dbprefix}tdiscus_comment AS C
             JOIN {$CFG->dbprefix}tdiscus_thread AS T ON  C.thread_id = T.thread_id
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = C.user_id
-            WHERE T.link_id = :LI AND C.thread_id = :TID $whereclause
+            WHERE C.depth = 0 AND T.link_id = :LI AND C.thread_id = :TID $whereclause
             ORDER BY $order_by
         ";
         return self::pagedQuery($fields, $from, $subst, $info);
     }
 
-    public static function commentInsertDao($thread_id, $comment) {
+    public static function commentInsertDao($thread_id, $comment, $parent_id=null) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
         if ( strlen($comment) < 1 ) {
             return __('Non-empty comment required');
         }
 
-         $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_comment
-            (thread_id, user_id, comment) VALUES
-            (:TH, :UID, :COM)",
+        $maxdepth = Settings::linkGet('maxdepth');
+        if ( $maxdepth < 1 && $parent_id > 0 ) {
+            return __('Hierarchical comments not allowed');
+        }
+
+        // Replying to a comment - hierarchy
+        $parent_comment = false;
+        if ( $parent_id > 0 ) {
+            $parent_comment = self::commentLoad($parent_id);
+            if ( ! is_array($parent_comment) ) return __("Could not load comment");
+        }
+
+        $depth = $old_comment ? $old_comment['depth'] : 0;
+
+        $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_comment
+            (thread_id, user_id, comment, parent_id, depth) VALUES
+            (:TH, :UID, :COM, :PARENT, :DEPTH)",
             array(
                 ':TH' => $thread_id,
                 ':UID' => $TSUGI_LAUNCH->user->id,
                 ':COM' => $comment,
+                ':PARENT' => $parent_id,
+                ':DEPTH' => $depth,
             )
         );
 

@@ -87,6 +87,23 @@ foreach($sortby as $sort) {
 <?php
     }
 
+    public static function add_sub_comment($thread_id, $comment_id, $depth) {
+?>
+<div id="tdiscus-add-comment-div" class="tdiscus-add-comment-container" title="<?= __("Reply") ?>" >
+<form id="tdiscus-add-comment-form" method="post">
+<p>
+<input type="hidden" name="comment_id" value="<= $comment_id ?>">
+<input type="hidden" name="thread_id" value="<= $thread_id ?>">
+<input type="text" name="comment" class="form-control">
+</p>
+<p>
+<input type="submit" id="tdiscus-add-comment-submit" name="submit" value="<?= __('Reply') ?>" >
+</p>
+</form>
+</div>
+<?php
+    }
+
     public static function paginator($baseurl, $start, $pagesize, $total) {
     // echo("<p>baseurl=$baseurl start=$start size=$pagesize total=$total</p>\n");
     if ( $start == 0 && $total < $pagesize ) return;
