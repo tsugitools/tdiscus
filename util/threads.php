@@ -317,7 +317,7 @@ class Threads {
 
         $thread = self::threadLoad($thread_id);
         if ( ! is_array($thread) ) {
-            return __('Could not load thread for update');
+            return __('Could not load thread');
         }
 
         $stmt = $PDOX->queryDie("INSERT IGNORE INTO {$CFG->dbprefix}tdiscus_user_thread
@@ -426,6 +426,41 @@ class Threads {
         return self::pagedQuery($fields, $from, $subst, $info);
     }
 
+    public static function commentAddSubComment($thread_id, $parent_id, $comment) {
+        if ( strlen($comment) < 1 ) {
+            return __('Non-empty comment required');
+        }
+
+        $maxdepth = Settings::linkGet('maxdepth');
+        if ( $maxdepth < 1 ) {
+            return __('Hierarchical comments not allowed');
+        }
+
+        if ( ! is_numeric($thread_id) || ! is_numeric($parent_id) ) {
+            return __('thread_id and comment_id must be numeric');
+        }
+
+        $parent_id = intval($parent_id);
+        $thread_id = intval($thread_id);
+
+        $parent = self::commentLoad($parent_id);
+        if ( is_string($parent) ) return $parent;
+        if ( !is_array($parent) ) return __('Could not load comment').' '.$parent_id;
+        $thread = self::threadLoad($thread_id);
+        if ( is_string($thread) ) return $thread;
+        if ( !is_array($thread) ) return __('Could not load thread').' '.$thread_id;
+
+        $parentDepth = $parent['depth'];
+        if ( $parentDepth+1 > $maxdepth ) {
+            return __('Comment depth exceeded');
+        }
+
+        $retval = self::commentInsertDao($thread_id, $comment, $parent_id);
+
+        return $retval;
+
+    }
+
     public static function commentInsertDao($thread_id, $comment, $parent_id=null) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
@@ -445,7 +480,7 @@ class Threads {
             if ( ! is_array($parent_comment) ) return __("Could not load comment");
         }
 
-        $depth = $old_comment ? $old_comment['depth'] : 0;
+        $depth = $parent_comment ? $parent_comment['depth']+1 : 0;
 
         $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_comment
             (thread_id, user_id, comment, parent_id, depth) VALUES
@@ -486,6 +521,19 @@ class Threads {
                 array(
                     ':TID' => $thread_id,
                  )
+            );
+        }
+
+        // Up the tree we go...
+        // https://www.slideshare.net/billkarwin/models-for-hierarchical-data
+
+        if ( $retval > 0 && $parent_id > 0 ) {
+            $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_closure
+                (parent_id, child_id, depth, children) 
+                SELECT parent_id, :CID, depth, children+1 FROM {$CFG->dbprefix}tdiscus_closure
+                WHERE child_id = :PID
+                UNION SELECT :CID, :CID, :DEPTH, 0",
+                array(':PID' => $parent_id, ':CID' => $retval, ':DEPTH' => $depth)
             );
         }
 

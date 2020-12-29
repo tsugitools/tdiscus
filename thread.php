@@ -116,15 +116,19 @@ if ( $commenttop && ! $thread_locked) Tdiscus::add_comment($thread_id);
 
 <?php
 if ( count($comments) < 1 ) {
-    echo("<p>".__('No replies yet')."</p>\n");
+    echo("<p>".__('No comments yet')."</p>\n");
 } else {
     foreach($comments as $comment ) {
         $locked = $comment['locked'];
         $hidden = $comment['hidden'];
         $comment_id = $comment['comment_id'];
 
+        $unique = '_'.$thread_id.'_'.$comment_id;
+
+        echo('<div class="tdiscus-comment-container">'."\n");
+
         if ( $LAUNCH->user->instructor ) {
-                Tdiscus::renderBooleanSwitch('comment', $comment_id, 'hidden', 'hide', $hidden, 0, 'fa-eye-slash', 'orange');
+           Tdiscus::renderBooleanSwitch('comment', $comment_id, 'hidden', 'hide', $hidden, 0, 'fa-eye-slash', 'orange');
         }
 
         if ( $LAUNCH->user->instructor ) {
@@ -146,14 +150,20 @@ if ( count($comments) < 1 ) {
         if ( $LAUNCH->user->instructor ) {
             Tdiscus::renderBooleanSwitch('comment', $comment_id, 'locked', 'lock', $locked, 1, 'fa-lock');
         }
+        $id = "tdiscus-add-sub-comment-div$unique";
+
+        Tdiscus::renderToggle(__('reply'), $id, 'fa-comment', 'green');
 ?>
   <br/>
   <div style="padding-left: 10px;<?= ($hidden ? ' text-decoration: line-through;' : '') ?>"><?= htmlentities($comment['comment']) ?></div>
   </p>
 <?php
         if ( Settings::linkGet('maxdepth') > 0 ) {
-            Tdiscus::add_sub_comment($comment_id, $thread_id, 1);
+            echo('<div class="tdiscus-sub-comment-container">'."\n");
+            Tdiscus::add_sub_comment($id, $thread_id, $comment_id, 1);
+            echo('</div> <!-- tdiscus-sub-comment-container -->');
         }
+        echo('</div> <!-- tdiscus-comment-container -->');
     }
 }
 ?>
@@ -163,7 +173,7 @@ if ( count($comments) < 1 ) {
 
   Tdiscus::paginator($page_base, $start, $pagesize, $retval->total);
 
-if ( ! $commenttop && ! $thread_locked) Tdiscus::add_comment();
+if ( ! $commenttop && ! $thread_locked) Tdiscus::add_comment($thread_id);
 
 Tdiscus::footerStart();
 Tdiscus::renderBooleanScript();

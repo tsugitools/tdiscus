@@ -72,7 +72,7 @@ foreach($sortby as $sort) {
         echo("</form></div>\n");
     }
 
-    public static function add_comment() {
+    public static function add_comment($thread_id) {
 ?>
 <div id="tdiscus-add-comment-div" class="tdiscus-add-comment-container" title="<?= __("Reply") ?>" >
 <form id="tdiscus-add-comment-form" method="post">
@@ -87,14 +87,17 @@ foreach($sortby as $sort) {
 <?php
     }
 
-    public static function add_sub_comment($thread_id, $comment_id, $depth) {
+    public static function add_sub_comment($html_id, $thread_id, $comment_id, $depth) {
 ?>
-<div id="tdiscus-add-comment-div" class="tdiscus-add-comment-container" title="<?= __("Reply") ?>" >
-<form id="tdiscus-add-comment-form" method="post">
+<div id="<?= $html_id ?>" class="tdiscus-add-sub-comment-container" title="<?= __("Reply") ?>"  style="display:none;">
+<form method="post" 
+    data-click-done="<?= $html_id ?>_toggle" 
+    class="tdiscus-add-sub-comment-form">
 <p>
-<input type="hidden" name="comment_id" value="<= $comment_id ?>">
-<input type="hidden" name="thread_id" value="<= $thread_id ?>">
-<input type="text" name="comment" class="form-control">
+<input type="hidden" name="comment_id" value="<?= $comment_id ?>">
+<input type="hidden" name="thread_id" value="<?= $thread_id ?>">
+<textarea style="width:100%;" class="tdiscus-add-sub-comment-text" name="comment" class="form-control">
+</textarea>
 </p>
 <p>
 <input type="submit" id="tdiscus-add-comment-submit" name="submit" value="<?= __('Reply') ?>" >
@@ -164,9 +167,23 @@ foreach($sortby as $sort) {
 <?php
     }
 
+    public static function renderToggle($title, $id, $icon, $color=false)
+    {
+?>
+        <a href="#"
+        id="<?= $id ?>_toggle"
+        data-id="<?= $id ?>"
+        class="tdiscus-toggle-api-call"
+        title="<?= htmlentities(__("Toggle").' '.$title) ?>">
+        <i id="<?= $id ?>_icon_on" class="fa <?= $icon ?>"></i>
+        <i id="<?= $id ?>_icon_off" class="fa <?= $icon ?>"
+         style="display:none; <?= ($color ? ('color: '.$color.';') : '') ?>"></i></a>
+<?php
+    }
+
     public static function renderBooleanScript()
     {
-        global $TOOL_ROOT;
+        global $TOOL_ROOT, $OUTPUT;
 ?>
 <script>
 $(document).ready( function() {
@@ -188,7 +205,44 @@ $(document).ready( function() {
                 console.log(error);
                 alert(message);
             });
+   });
+
+   $('.tdiscus-toggle-api-call').click(function(ev) {
+        ev.preventDefault()
+        var data_id = $(this).attr('data-id');
+        $('#'+data_id).toggle();
+        $('#'+data_id+"_icon_on").toggle();
+        $('#'+data_id+"_icon_off").toggle();
     });
+
+   $(".tdiscus-add-sub-comment-form").on('submit', function (ev) {
+       var comment = $(this).find('textarea[name="comment"]').val();
+       console.log('comment=',comment);
+       ev.preventDefault();
+       var ser = $(this).serialize();
+       var form = $(this);
+       console.log('ser', ser);
+       var click_done = $(this).attr('data-click-done');
+       var txt3 = document.createElement("p");  // Create with DOM
+       txt3.innerHTML = '<img src="<?= $OUTPUT->getSpinnerUrl() ?>">';
+       $(this).closest('.tdiscus-sub-comment-container').prepend(txt3);
+       // Hide during the processing
+       if ( click_done ) $('#'+click_done).click();
+       $(this).find('textarea[name="comment"]').val('');
+       $.post(addSession('<?= $TOOL_ROOT ?>/api/addsubcomment'), ser)
+            .done( function(data) {
+                console.log('data', data);
+                // if ( comment.length > 0 ) txt3.innerHTML = htmlentities(comment);
+                if ( comment.length > 0 ) txt3.innerHTML = data;
+            })
+            .error( function(xhr, status, error) {
+                console.log(xhr);
+                console.log(status);
+                console.log(error);
+                alert(error);
+            });
+   });
+
 });
 </script>
 <?php
