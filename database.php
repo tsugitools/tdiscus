@@ -93,7 +93,7 @@ array( "{$CFG->dbprefix}tdiscus_comment",
 "create table {$CFG->dbprefix}tdiscus_comment (
     comment_id  INTEGER NOT NULL KEY AUTO_INCREMENT,
     thread_id   INTEGER NOT NULL,
-    parent_id   INTEGER NULL;
+    parent_id   INTEGER NOT NULL DEFAULT 0;
     user_id     INTEGER NOT NULL,
     depth       INTEGER NOT NULL DEFAULT 0,
 
@@ -251,6 +251,9 @@ $DATABASE_UPGRADE = function($oldversion) {
     echo("Upgrading: ".$sql."<br/>\n");
     error_log("Upgrading: ".$sql);
 
+    $sql= "ALTER TABLE {$CFG->dbprefix}tdiscus_comment MODIFY parent_id INTEGER NOT NULL DEFAULT 0";
+    echo("Upgrading: ".$sql."<br/>\n");
+    error_log("Upgrading: ".$sql);
 
     return 202012101330;
 

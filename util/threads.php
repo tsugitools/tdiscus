@@ -372,7 +372,7 @@ class Threads {
         return array('most recent', /* 'top', put back if voting */ 'earliest');
     }
 
-    public static function comments($thread_id, $info=false) {
+    public static function comments($thread_id, $info=false, $parent_id=0) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
         if ( ! is_array($info) ) $info = $_GET;
@@ -391,7 +391,8 @@ class Threads {
         $subst =  array(
                 ':UID' => $TSUGI_LAUNCH->user->id,
                 ':LI' => $TSUGI_LAUNCH->link->id,
-                ':TID' => $thread_id
+                ':TID' => $thread_id,
+                ':PID' => $parent_id,
         );
 
         $search = U::get($info, "search");
@@ -422,7 +423,7 @@ class Threads {
             JOIN {$CFG->dbprefix}tdiscus_thread AS T ON  C.thread_id = T.thread_id
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = C.user_id
             LEFT JOIN {$CFG->dbprefix}tdiscus_closure AS CL ON C.comment_id = CL.parent_id
-            WHERE C.depth = 0 AND T.link_id = :LI AND C.thread_id = :TID $whereclause
+            WHERE COALESCE(C.parent_id, 0) = :PID AND T.link_id = :LI AND C.thread_id = :TID $whereclause
             GROUP BY C.comment_id
             ORDER BY $order_by
         ";
