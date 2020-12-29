@@ -450,7 +450,7 @@ class Threads {
             $staffanswer = "";
             if ( $TSUGI_LAUNCH->user->instructor ) $staffanswer = "staffanswer=1, ";
 
-            // A little denormalization saves a COUNT / GROUP BY and makes sorting super fast
+            // A little denormalization saves a JOIN / COUNT / GROUP BY and makes sorting super fast
             $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_thread
                 SET $staffanswer comments=(SELECT count(comment_id) FROM {$CFG->dbprefix}tdiscus_comment
                      WHERE thread_id = :TID), updated_at=NOW()
