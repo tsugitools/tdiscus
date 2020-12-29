@@ -109,7 +109,7 @@ onclick="document.querySelector('#tdiscus-add-comment-div').scrollIntoView({ beh
 <div class="tdiscus-comments-sort">
 <?php
 Tdiscus::search_box($sortable);
-if ( $commenttop && ! $thread_locked) Tdiscus::add_comment();
+if ( $commenttop && ! $thread_locked) Tdiscus::add_comment($thread_id);
 ?>
 </div>
 <div class="tdiscus-comments-list">
@@ -123,7 +123,7 @@ if ( count($comments) < 1 ) {
         $hidden = $comment['hidden'];
         $comment_id = $comment['comment_id'];
 
-        if ( $comment['owned'] || $LAUNCH->user->instructor ) { 
+        if ( $LAUNCH->user->instructor ) {
                 Tdiscus::renderBooleanSwitch('comment', $comment_id, 'hidden', 'hide', $hidden, 0, 'fa-eye-slash', 'orange');
         }
 
@@ -140,7 +140,7 @@ if ( count($comments) < 1 ) {
     <a href="<?= $TOOL_ROOT ?>/commentremove/<?= $comment['comment_id'] ?>"><i class="fa fa-trash"></i></a>
   <?php } ?>
 <?php
-        if ( $comment['owned'] || $LAUNCH->user->instructor ) { 
+        if ( $LAUNCH->user->instructor ) {
             Tdiscus::renderBooleanSwitch('comment', $comment_id, 'hidden', 'hide', $hidden, 1, 'fa-eye-slash');
         }
         if ( $LAUNCH->user->instructor ) {
