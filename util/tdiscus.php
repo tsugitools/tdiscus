@@ -72,6 +72,67 @@ foreach($sortby as $sort) {
         echo("</form></div>\n");
     }
 
+    public static function renderComment($LAUNCH, $thread_id, $comment)
+    {
+        global$TOOL_ROOT;
+
+        $locked = $comment['locked'];
+        $hidden = $comment['hidden'];
+        $depth = $comment['depth'];
+        $children = $comment['children'];
+        $comment_id = $comment['comment_id'];
+
+        $unique = '_'.$thread_id.'_'.$comment_id;
+
+        if ( $depth < 3 ) {
+            $indent = ($depth * 10);
+        } else {
+            $indent = 20 + ($depth-3) * 2;
+        }
+
+        echo('<div class="tdiscus-comment-container" style="padding-left:'.$indent.'px;">'."\n");
+
+        if ( $LAUNCH->user->instructor ) {
+           Tdiscus::renderBooleanSwitch('comment', $comment_id, 'hidden', 'hide', $hidden, 0, 'fa-eye-slash', 'orange');
+        }
+
+        if ( $LAUNCH->user->instructor ) {
+            Tdiscus::renderBooleanSwitch('comment', $comment_id, 'locked', 'lock', $locked, 0, 'fa-lock', 'orange');
+        } else {
+            echo('<span '.($locked == 0 ? 'style="display:none;"' : '').'><i class="fa fa-lock fa-rotate-270" style="color: orange;"></i></span>');
+        }
+?>
+  <b><?= htmlentities($comment['displayname']) ?></b>
+  <time class="timeago" datetime="<?= $comment['modified_at'] ?>"><?= $comment['modified_at'] ?></time>
+  <?php if ( $comment['owned'] || $LAUNCH->user->instructor ) { ?>
+    <a href="<?= $TOOL_ROOT ?>/commentform/<?= $comment['comment_id'] ?>"><i class="fa fa-pencil"></i></a>
+    <a href="<?= $TOOL_ROOT ?>/commentremove/<?= $comment['comment_id'] ?>"><i class="fa fa-trash"></i></a>
+  <?php } ?>
+<?php
+        if ( $LAUNCH->user->instructor ) {
+            Tdiscus::renderBooleanSwitch('comment', $comment_id, 'hidden', 'hide', $hidden, 1, 'fa-eye-slash');
+        }
+        if ( $LAUNCH->user->instructor ) {
+            Tdiscus::renderBooleanSwitch('comment', $comment_id, 'locked', 'lock', $locked, 1, 'fa-lock');
+        }
+        $id = "tdiscus-add-sub-comment-div$unique";
+
+        Tdiscus::renderToggle(__('reply'), $id, 'fa-comment', 'green');
+
+        if ( $children > 0 ) echo(" (".$children." child nodes) ");
+?>
+  <br/>
+  <div style="padding-left: 10px;<?= ($hidden ? ' text-decoration: line-through;' : '') ?>"><?= htmlentities($comment['comment']) ?></div>
+  </p>
+<?php
+        if ( Settings::linkGet('maxdepth') > 0 ) {
+            echo('<div class="tdiscus-sub-comment-container">'."\n");
+            Tdiscus::add_sub_comment($id, $thread_id, $comment_id, 1);
+            echo('</div> <!-- tdiscus-sub-comment-container -->');
+        }
+        echo('</div> <!-- tdiscus-comment-container -->');
+    }
+
     public static function add_comment($thread_id) {
 ?>
 <div id="tdiscus-add-comment-div" class="tdiscus-add-comment-container" title="<?= __("Reply") ?>" >

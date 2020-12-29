@@ -408,7 +408,8 @@ class Threads {
 
         $fields = "
             comment_id, comment, displayname, C.edited AS edited, C.hidden AS hidden,
-            C.locked AS locked, C.children AS children,
+            C.locked AS locked, C.depth AS depth,
+            COUNT(CL.child_id)-1 AS children,
             CONCAT(CONVERT_TZ(C.created_at, @@session.time_zone, '+00:00'), 'Z') AS created_at,
             CONCAT(CONVERT_TZ(C.updated_at, @@session.time_zone, '+00:00'), 'Z') AS updated_at,
             CONCAT(CONVERT_TZ(COALESCE(C.updated_at, C.created_at), @@session.time_zone, '+00:00'), 'Z') AS modified_at,
@@ -420,7 +421,9 @@ class Threads {
             FROM {$CFG->dbprefix}tdiscus_comment AS C
             JOIN {$CFG->dbprefix}tdiscus_thread AS T ON  C.thread_id = T.thread_id
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = C.user_id
+            LEFT JOIN {$CFG->dbprefix}tdiscus_closure AS CL ON C.comment_id = CL.parent_id
             WHERE C.depth = 0 AND T.link_id = :LI AND C.thread_id = :TID $whereclause
+            GROUP BY C.comment_id
             ORDER BY $order_by
         ";
         return self::pagedQuery($fields, $from, $subst, $info);
@@ -469,7 +472,7 @@ class Threads {
         }
 
         $maxdepth = Settings::linkGet('maxdepth');
-        if ( $maxdepth < 1 && $parent_id > 0 ) {
+        if ( $maxdepth < 2 && $parent_id > 0 ) {
             return __('Hierarchical comments not allowed');
         }
 
@@ -527,7 +530,7 @@ class Threads {
         // Up the tree we go...
         // https://www.slideshare.net/billkarwin/models-for-hierarchical-data
 
-        if ( $retval > 0 && $parent_id > 0 ) {
+        if ( $retval > 0 && $maxdepth > 1 ) {
             $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_closure
                 (parent_id, child_id, depth, children) 
                 SELECT parent_id, :CID, depth, children+1 FROM {$CFG->dbprefix}tdiscus_closure
