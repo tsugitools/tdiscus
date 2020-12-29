@@ -185,7 +185,6 @@ array( "{$CFG->dbprefix}tdiscus_closure",
     parent_id   INTEGER NOT NULL,
     child_id    INTEGER NOT NULL,
     depth       INTEGER NOT NULL DEFAULT 0,
-    children    INTEGER NOT NULL DEFAULT 0,
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP NULL,
 
@@ -243,17 +242,20 @@ $DATABASE_UPGRADE = function($oldversion) {
 
     // Temporary hack
 
-    $sql= "ALTER TABLE {$CFG->dbprefix}tdiscus_closure MODIFY children INTEGER NOT NULL DEFAULT 0";
+    $sql= "ALTER TABLE {$CFG->dbprefix}tdiscus_closure DROP COLUMN children";
     echo("Upgrading: ".$sql."<br/>\n");
     error_log("Upgrading: ".$sql);
+    $q = $PDOX->queryReturnError($sql);
 
     $sql= "ALTER TABLE {$CFG->dbprefix}tdiscus_closure MODIFY depth INTEGER NOT NULL DEFAULT 0";
     echo("Upgrading: ".$sql."<br/>\n");
     error_log("Upgrading: ".$sql);
+    $q = $PDOX->queryReturnError($sql);
 
     $sql= "ALTER TABLE {$CFG->dbprefix}tdiscus_comment MODIFY parent_id INTEGER NOT NULL DEFAULT 0";
     echo("Upgrading: ".$sql."<br/>\n");
     error_log("Upgrading: ".$sql);
+    $q = $PDOX->queryReturnError($sql);
 
     return 202012101330;
 

@@ -487,8 +487,8 @@ class Threads {
         $depth = $parent_comment ? $parent_comment['depth']+1 : 0;
 
         $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_comment
-            (thread_id, user_id, comment, parent_id, depth) VALUES
-            (:TH, :UID, :COM, :PARENT, :DEPTH)",
+            (thread_id, user_id, comment, parent_id, children, depth) VALUES
+            (:TH, :UID, :COM, :PARENT, 0, :DEPTH)",
             array(
                 ':TH' => $thread_id,
                 ':UID' => $TSUGI_LAUNCH->user->id,
@@ -533,11 +533,27 @@ class Threads {
 
         if ( $retval > 0 && $maxdepth > 1 ) {
             $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_closure
-                (parent_id, child_id, depth, children) 
-                SELECT parent_id, :CID, depth, children+1 FROM {$CFG->dbprefix}tdiscus_closure
+                (parent_id, child_id, depth) 
+                SELECT parent_id, :CID, depth FROM {$CFG->dbprefix}tdiscus_closure
                 WHERE child_id = :PID
-                UNION SELECT :CID, :CID, :DEPTH, 0",
+                UNION SELECT :CID, :CID, :DEPTH",
                 array(':PID' => $parent_id, ':CID' => $retval, ':DEPTH' => $depth)
+            );
+        }
+
+        // From the parent on up - they get an additional child node
+        // Yeah it is a sub-select - but it is no more than maxdepth...
+        if ( $retval > 0 && $maxdepth > 1 & $parent_id > 0 ) {
+            $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_comment
+                SET children=COALESCE(children, 0) + 1
+                WHERE comment_id IN 
+                (
+                    SELECT parent_id from {$CFG->dbprefix}tdiscus_closure
+                    WHERE parent_id = :PID
+                )",
+                array(
+                    ':PID' => $parent_id,
+                 )
             );
         }
 
