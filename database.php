@@ -185,8 +185,6 @@ array( "{$CFG->dbprefix}tdiscus_closure",
     parent_id   INTEGER NOT NULL,
     child_id    INTEGER NOT NULL,
     depth       INTEGER NOT NULL DEFAULT 0,
-    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  TIMESTAMP NULL,
 
     CONSTRAINT `{$CFG->dbprefix}tdiscus_closure_ibfk_1`
         FOREIGN KEY (`parent_id`)
@@ -209,19 +207,30 @@ array( "{$CFG->dbprefix}tdiscus_closure",
 $DATABASE_UPGRADE = function($oldversion) {
     global $CFG, $PDOX;
 
+    $sql= "UPDATE {$CFG->dbprefix}tdiscus_comment SET parent_id = 0 WHERE parent_id IS NULL";
+    echo("Upgrading: ".$sql."<br/>\n");
+    error_log("Upgrading: ".$sql);
+    $q = $PDOX->queryReturnError($sql);
+
     // This is a place to make sure added fields are present
     // if you add a field to a table, put it in here and it will be auto-added
     $add_some_fields = array(
         array('tdiscus_thread', 'hidden_global', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_comment', 'cleaned', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_comment', 'children', 'TINYINT(1) NOT NULL DEFAULT 0'),
-        array('tdiscus_comment', 'parent_id', 'INTEGER NULL'),
+        array('tdiscus_comment', 'parent_id', 'INTEGER DEFAULT 0'),
+        array('tdiscus_comment', 'parent_id', 'INTEGER NOT NULL DEFAULT 0'),
         array('tdiscus_user_thread', 'notify', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_user_thread', 'notify_at', 'TIMESTAMP NULL'),
         array('tdiscus_user_comment', 'notify', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_user_comment', 'notify_at', 'TIMESTAMP NULL'),
         array('tdiscus_user_thread', 'subscribe', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_user_comment', 'subscribe', 'TINYINT(1) NOT NULL DEFAULT 0'),
+        array('tdiscus_closure', 'depth', 'INTEGER NOT NULL DEFAULT 0'),
+
+        array('tdiscus_closure', 'children', 'DROP'),
+        array('tdiscus_closure', 'created_at', 'DROP'),
+        array('tdiscus_closure', 'updated_at', 'DROP'),
     );
 
     foreach ( $add_some_fields as $add_field ) {
@@ -233,29 +242,23 @@ $DATABASE_UPGRADE = function($oldversion) {
         $table = $CFG->dbprefix . $add_field[0];
         $column = $add_field[1];
         $type = $add_field[2];
-        if ( $PDOX->columnExists($column, $table ) ) continue;
-        $sql= "ALTER TABLE {$CFG->dbprefix}$table ADD $column $type";
+        $sql = false;
+        if ( $PDOX->columnExists($column, $table ) ) {
+            if ( $type == 'DROP' ) {
+                $sql= "ALTER TABLE {$CFG->dbprefix}$table DROP COLUMN $column";
+            } else {
+                // continue;
+                $sql= "ALTER TABLE {$CFG->dbprefix}$table MODIFY $column $type";
+            }
+        } else {
+            if ( $type == 'DROP' ) continue;
+            $sql= "ALTER TABLE {$CFG->dbprefix}$table ADD $column $type";
+        }
         echo("Upgrading: ".$sql."<br/>\n");
         error_log("Upgrading: ".$sql);
         $q = $PDOX->queryReturnError($sql);
     }
 
-    // Temporary hack
-
-    $sql= "ALTER TABLE {$CFG->dbprefix}tdiscus_closure DROP COLUMN children";
-    echo("Upgrading: ".$sql."<br/>\n");
-    error_log("Upgrading: ".$sql);
-    $q = $PDOX->queryReturnError($sql);
-
-    $sql= "ALTER TABLE {$CFG->dbprefix}tdiscus_closure MODIFY depth INTEGER NOT NULL DEFAULT 0";
-    echo("Upgrading: ".$sql."<br/>\n");
-    error_log("Upgrading: ".$sql);
-    $q = $PDOX->queryReturnError($sql);
-
-    $sql= "ALTER TABLE {$CFG->dbprefix}tdiscus_comment MODIFY parent_id INTEGER NOT NULL DEFAULT 0";
-    echo("Upgrading: ".$sql."<br/>\n");
-    error_log("Upgrading: ".$sql);
-    $q = $PDOX->queryReturnError($sql);
 
     return 202012101330;
 
