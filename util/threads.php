@@ -463,7 +463,7 @@ class Threads {
 
     }
 
-    public static function commentInsertDao($thread_id, $comment, $parent_id=null) {
+    public static function commentInsertDao($thread_id, $comment, $parent_id=0) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
         if ( strlen($comment) < 1 ) {
