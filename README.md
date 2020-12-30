@@ -124,11 +124,6 @@ is a way to meet some Piazza-unique use cases which will likely be useful
 in general for various pedagogies.  The verion tracking will be done in a general
 way and at some point version trcking will be added to the CKEditor tool.
 
-* Hierarchical comments replying to comments to arbitrary depth.  Right now
-it is three level hierarchy (discussion / thread / commnent) with no
-way to reply to a comment (i.e. turtles all the way down).  But the hierarchy
-is all designed using the closure pattern and the table is even there.
-
 In the long term there is a dream of a Piazza-style UI and Slack-style UI
 using this back-end - but that will require some UI / UI design talent that
 I do not posess.
