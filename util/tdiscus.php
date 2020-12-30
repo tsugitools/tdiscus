@@ -143,11 +143,11 @@ foreach($sortby as $sort) {
 <div id="tdiscus-add-comment-div" class="tdiscus-add-comment-container" title="<?= __("Reply") ?>" >
 <form id="tdiscus-add-comment-form" method="post">
 <p>
-<input type="text" name="comment" class="form-control">
-</p>
-<p>
 <textarea style="width:100%;" class="tdiscus-add-sub-comment-text" name="comment" class="form-control">
 </textarea>
+</p>
+<p>
+<input type="submit" id="tdiscus-add-comment-submit" name="submit" value="<?= __('Reply') ?>" >
 </p>
 </form>
 </div>
