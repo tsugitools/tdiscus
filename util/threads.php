@@ -118,10 +118,8 @@ class Threads {
             )
         );
 
-        if (isset($stmt->rowCount)) {
-            if ( $stmt->rowCount == 0 ) {
-                return __('Unable to delete thread');
-            }
+        if ( $stmt->rowCount() == 0 ) {
+            return __('Unable to delete thread');
         }
         return $stmt;
     }
@@ -531,7 +529,7 @@ class Threads {
 
         if ( $retval > 0 && $maxdepth > 1 ) {
             $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_closure
-                (parent_id, child_id, depth) 
+                (parent_id, child_id, depth)
                 SELECT parent_id, :CID, depth FROM {$CFG->dbprefix}tdiscus_closure
                 WHERE child_id = :PID
                 UNION SELECT :CID, :CID, :DEPTH",
@@ -545,7 +543,7 @@ class Threads {
         if ( $retval > 0 && $maxdepth > 1 & $parent_id > 0 ) {
             $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_comment
                 SET children=COALESCE(children, 0) + 1, updated_at=NOW()
-                WHERE comment_id IN 
+                WHERE comment_id IN
                 (
                     SELECT parent_id from {$CFG->dbprefix}tdiscus_closure
                     WHERE child_id = :PID
@@ -591,26 +589,48 @@ class Threads {
         }
 
         $thread_id = $comment['thread_id'];
-        $retval = self::commentDeleteDao($comment_id, $thread_id);
+        $retval = self::commentDeleteDao($comment, $thread_id);
 
         return $retval;
     }
 
-    public static function commentDeleteDao($comment_id, $thread_id) {
+    public static function commentDeleteDao($comment, $thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
+        $comment_id = $comment['comment_id'];
+        $parent_id = $comment['parent_id'];
 
+        // Delete the children of this comment if there are any
         $stmt = $PDOX->queryDie("DELETE FROM {$CFG->dbprefix}tdiscus_comment
-            WHERE comment_id = :CID",
-            array(
-                ':CID' => $comment_id,
-            )
+            WHERE comment_id IN (SELECT child_id FROM {$CFG->dbprefix}tdiscus_closure
+                WHERE parent_id = :CID) AND comment_id != :CID",
+            array(':CID' => $comment_id)
         );
 
-        if (isset($stmt->rowCount)) {
-            if ( $stmt->rowCount == 0 ) {
-                return __('Unable to delete comment');
-            }
+        $sub_comments = $stmt->rowCount();
+        error_log("Deleting comment $comment_id had $sub_comments sub comments");
+
+        // Delete the actual comment - afterwards to keep the tdiscuss_closure
+        // rows from vanishing due to referential integrity - they will be auto-deleted
+        // here
+        $retval = $PDOX->queryDie("DELETE FROM {$CFG->dbprefix}tdiscus_comment
+            WHERE comment_id = :CID",
+            array(':CID' => $comment_id)
+        );
+
+        if ( $retval->rowCount() == 0 ) {
+            return __('Unable to delete comment');
+        }
+
+        // Update the children count of the parent
+        if ( $parent_id > 0 ) {
+            $delta = $sub_comments + 1;  //This comment
+            $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_comment
+                SET children=CASE WHEN ((children - :DELTA) >= 0) THEN (children - :DELTA) ELSE 0 END
+                WHERE comment_id = :PID",
+                array(':DELTA' => $delta, ':PID' => $parent_id)
+            );
+            error_log("Removed $delta from children count of $parent_id");
         }
 
         // A little denormalization saves a COUNT / GROUP BY and makes sorting super fast
@@ -623,7 +643,7 @@ class Threads {
              )
         );
 
-        return $stmt;
+        return $retval;
     }
 
     public static function commentUpdateDao($old_comment, $comment) {
@@ -649,7 +669,7 @@ class Threads {
         if ( $maxdepth > 1 & $parent_id > 0 ) {
             $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_comment
                 SET updated_at=NOW()
-                WHERE comment_id IN 
+                WHERE comment_id IN
                 (
                     SELECT parent_id from {$CFG->dbprefix}tdiscus_closure
                     WHERE child_id = :PID
