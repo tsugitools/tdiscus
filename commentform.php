@@ -33,7 +33,7 @@ if ( isset($rest_path->action) && is_numeric($rest_path->action) ) {
 }
 
 if ( count($_POST) > 0 ) {
-    $retval = $THREADS->commentUpdateDao($comment_id, U::get($_POST, 'comment'));
+    $retval = $THREADS->commentUpdateDao($old_comment, U::get($_POST, 'comment'));
     if ( is_string($retval) ) {
         $_SESSION['error'] = $retval;
         header( 'Location: '.addSession($TOOL_ROOT . '/' . $come_back) ) ;

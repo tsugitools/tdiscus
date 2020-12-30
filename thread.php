@@ -105,6 +105,7 @@ onclick="document.querySelector('#tdiscus-add-comment-div').scrollIntoView({ beh
 </a>
 -->
 </div>
+<?php if ( count($comments) > 0 ) { ?>
 <div class="tdiscus-comments-container">
 <div class="tdiscus-comments-sort">
 <?php
@@ -115,17 +116,14 @@ if ( $commenttop && ! $thread_locked) Tdiscus::add_comment($thread_id);
 <div class="tdiscus-comments-list">
 
 <?php
-if ( count($comments) < 1 ) {
-    echo("<p>".__('No comments yet')."</p>\n");
-} else {
     foreach($comments as $comment ) {
         Tdiscus::renderComment($LAUNCH, $thread_id, $comment);
     }
-}
 ?>
 </div> <!-- tdiscus-comments-list -->
 </div> <!-- tdiscus-comments-container -->
 <?php
+    }
 
   Tdiscus::paginator($page_base, $start, $pagesize, $retval->total);
 

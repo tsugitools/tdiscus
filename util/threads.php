@@ -378,12 +378,12 @@ class Threads {
         if ( ! is_array($info) ) $info = $_GET;
 
         // Default is most recent
-        $order_by = "modified_at DESC";
+        $order_by = "modified_at DESC, depth";
         $sort = U::get($info, "sort");
         if ( $sort == "most recent" ) {
-            $order_by = "modified_at DESC";
+            $order_by = "modified_at DESC, depth";
         } else if ( $sort == "top" ) {
-            $order_by = "netvote DESC, modified_at DESC";
+            $order_by = "netvote DESC, modified_at DESC, depth";
         } else if ( $sort == "earliest" ) {
             $order_by = "modified_at ASC";
         }
@@ -392,7 +392,7 @@ class Threads {
                 ':UID' => $TSUGI_LAUNCH->user->id,
                 ':LI' => $TSUGI_LAUNCH->link->id,
                 ':TID' => $thread_id,
-                ':PID' => $parent_id,
+         //     ':PID' => $parent_id,
         );
 
         $search = U::get($info, "search");
@@ -409,8 +409,7 @@ class Threads {
 
         $fields = "
             comment_id, comment, displayname, C.edited AS edited, C.hidden AS hidden,
-            C.locked AS locked, C.depth AS depth,
-            COUNT(CL.child_id)-1 AS children,
+            C.locked AS locked, C.depth AS depth, C.children,
             CONCAT(CONVERT_TZ(C.created_at, @@session.time_zone, '+00:00'), 'Z') AS created_at,
             CONCAT(CONVERT_TZ(C.updated_at, @@session.time_zone, '+00:00'), 'Z') AS updated_at,
             CONCAT(CONVERT_TZ(COALESCE(C.updated_at, C.created_at), @@session.time_zone, '+00:00'), 'Z') AS modified_at,
@@ -422,11 +421,10 @@ class Threads {
             FROM {$CFG->dbprefix}tdiscus_comment AS C
             JOIN {$CFG->dbprefix}tdiscus_thread AS T ON  C.thread_id = T.thread_id
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = C.user_id
-            LEFT JOIN {$CFG->dbprefix}tdiscus_closure AS CL ON C.comment_id = CL.parent_id
-            WHERE COALESCE(C.parent_id, 0) = :PID AND T.link_id = :LI AND C.thread_id = :TID $whereclause
-            GROUP BY C.comment_id
+            WHERE T.link_id = :LI AND C.thread_id = :TID $whereclause
             ORDER BY $order_by
         ";
+        //    WHERE COALESCE(C.parent_id, 0) = :PID AND T.link_id = :LI AND C.thread_id = :TID $whereclause
         return self::pagedQuery($fields, $from, $subst, $info);
     }
 
@@ -541,19 +539,20 @@ class Threads {
             );
         }
 
+        // YYY
         // From the parent on up - they get an additional child node
         // Yeah it is a sub-select - but it is no more than maxdepth...
         if ( $retval > 0 && $maxdepth > 1 & $parent_id > 0 ) {
             $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_comment
-                SET children=COALESCE(children, 0) + 1
+                SET children=COALESCE(children, 0) + 1, updated_at=NOW()
                 WHERE comment_id IN 
                 (
                     SELECT parent_id from {$CFG->dbprefix}tdiscus_closure
-                    WHERE parent_id = :PID
+                    WHERE child_id = :PID
                 )",
                 array(
                     ':PID' => $parent_id,
-                 )
+                )
             );
         }
 
@@ -627,12 +626,14 @@ class Threads {
         return $stmt;
     }
 
-    public static function commentUpdateDao($comment_id, $comment) {
+    public static function commentUpdateDao($old_comment, $comment) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
         if ( strlen($comment) < 1 ) {
             return __('Non-empty comment required');
         }
 
+        $comment_id = $old_comment['comment_id'];
+        $parent_id = $old_comment['parent_id'];
 
         $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_comment SET
             comment = :COM, updated_at = NOW()
@@ -642,6 +643,23 @@ class Threads {
                 ':COM' => $comment,
             )
         );
+
+        // If we are updating a thread - update all its parent threads u the tree
+        $maxdepth = Settings::linkGet('maxdepth');
+        if ( $maxdepth > 1 & $parent_id > 0 ) {
+            $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_comment
+                SET updated_at=NOW()
+                WHERE comment_id IN 
+                (
+                    SELECT parent_id from {$CFG->dbprefix}tdiscus_closure
+                    WHERE child_id = :PID
+                )",
+                array(
+                    ':PID' => $parent_id,
+                )
+            );
+        }
+
     }
 
 }

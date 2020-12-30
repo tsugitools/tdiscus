@@ -90,7 +90,7 @@ foreach($sortby as $sort) {
             $indent = 20 + ($depth-3) * 2;
         }
 
-        echo('<div class="tdiscus-comment-container" style="padding-left:'.$indent.'px;">'."\n");
+        echo('<div id="tdiscus-comment-container-'.$comment_id.'" class="tdiscus-comment-container" style="padding-left:'.$indent.'px;">'."\n");
 
         if ( $LAUNCH->user->instructor ) {
            Tdiscus::renderBooleanSwitch('comment', $comment_id, 'hidden', 'hide', $hidden, 0, 'fa-eye-slash', 'orange');
@@ -120,8 +120,11 @@ foreach($sortby as $sort) {
         if ( Settings::linkGet('maxdepth') > 0 ) {
             Tdiscus::renderToggle(__('reply'), $id, 'fa-comment', 'green');
         }
-
-        if ( $children > 0 ) echo(" (".$children." child nodes) ");
+/*
+        if ( $children > 0 ) {
+            echo('<a href="#"><i class="fa fa-angle-double-down"></i> ('.$children.')</a>');
+        }
+*/
 ?>
   <br/>
   <div style="padding-left: 10px;<?= ($hidden ? ' text-decoration: line-through;' : '') ?>"><?= htmlentities($comment['comment']) ?></div>
