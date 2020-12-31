@@ -19,8 +19,10 @@ if ( SettingsForm::handleSettingsPost() ) {
 }
 
 $THREADS = new Threads();
+$TDISCUS = new Tdiscus();
 
-Tdiscus::header();
+$OUTPUT->header();
+$TDISCUS->header();
 
 $pagesize = intval(U::get($_GET, 'pagesize', Threads::default_page_size));
 $start = intval(U::get($_GET, 'start', 0));
@@ -77,7 +79,7 @@ $threads = $retval->rows;
 
 
 $sortable = $THREADS->threadsSortableBy();
-Tdiscus::search_box($sortable);
+$TDISCUS->search_box($sortable);
 
 if ( count($threads) < 1 ) {
     echo("<p>".__('No threads')."</p>\n");
@@ -97,11 +99,11 @@ if ( count($threads) < 1 ) {
   <p class="tdiscus-thread-item-title">
   <?php
     if ( $LAUNCH->user->instructor ) {
-        Tdiscus::renderBooleanSwitch('thread', $thread_id, 'pin', 'pin', $pin, 0, 'fa-thumbtack fa-rotate-270', 'orange');
-        Tdiscus::renderBooleanSwitch('thread', $thread_id, 'hidden', 'hide', $hidden, 0, 'fa-eye-slash', 'orange');
-        Tdiscus::renderBooleanSwitch('thread', $thread_id, 'locked', 'lock', $locked, 0, 'fa-lock', 'orange');
-        Tdiscus::renderBooleanSwitch('threaduser', $thread_id, 'favorite', 'favorite', $favorite, 0, 'fa-star', 'green');
-        // Tdiscus::renderBooleanSwitch('threaduser', $thread_id, 'subscribe', 'subscribe', $subscribe, 0, 'fa-envelope', 'green');
+        $TDISCUS->renderBooleanSwitch('thread', $thread_id, 'pin', 'pin', $pin, 0, 'fa-thumbtack fa-rotate-270', 'orange');
+        $TDISCUS->renderBooleanSwitch('thread', $thread_id, 'hidden', 'hide', $hidden, 0, 'fa-eye-slash', 'orange');
+        $TDISCUS->renderBooleanSwitch('thread', $thread_id, 'locked', 'lock', $locked, 0, 'fa-lock', 'orange');
+        $TDISCUS->renderBooleanSwitch('threaduser', $thread_id, 'favorite', 'favorite', $favorite, 0, 'fa-star', 'green');
+        // $TDISCUS->renderBooleanSwitch('threaduser', $thread_id, 'subscribe', 'subscribe', $subscribe, 0, 'fa-envelope', 'green');
     } else {
         echo('<span '.($pin == 0 ? 'style="display:none;"' : '').'><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></span>');
         echo('<span '.($locked == 0 ? 'style="display:none;"' : '').'><i class="fa fa-lock fa-rotate-270" style="color: orange;"></i></span>');
@@ -115,11 +117,11 @@ if ( count($threads) < 1 ) {
     <a href="<?= $TOOL_ROOT ?>/threadremove/<?= $thread['thread_id'] ?>"><i class="fa fa-trash"></i></a>
   <?php
     if ( $LAUNCH->user->instructor ) {
-        Tdiscus::renderBooleanSwitch('thread', $thread_id, 'pin', 'pin', $pin, 1, 'fa-thumbtack');
-        Tdiscus::renderBooleanSwitch('thread', $thread_id, 'hidden', 'hide', $hidden, 1, 'fa-eye-slash');
-        Tdiscus::renderBooleanSwitch('thread', $thread_id, 'locked', 'lock', $locked, 1, 'fa-lock');
-        Tdiscus::renderBooleanSwitch('threaduser', $thread_id, 'favorite', 'favorite', $favorite, 1, 'fa-star');
-        // Tdiscus::renderBooleanSwitch('threaduser', $thread_id, 'subscribe', 'subscribe', $subscribe, 1, 'fa-envelope');
+        $TDISCUS->renderBooleanSwitch('thread', $thread_id, 'pin', 'pin', $pin, 1, 'fa-thumbtack');
+        $TDISCUS->renderBooleanSwitch('thread', $thread_id, 'hidden', 'hide', $hidden, 1, 'fa-eye-slash');
+        $TDISCUS->renderBooleanSwitch('thread', $thread_id, 'locked', 'lock', $locked, 1, 'fa-lock');
+        $TDISCUS->renderBooleanSwitch('threaduser', $thread_id, 'favorite', 'favorite', $favorite, 1, 'fa-star');
+        // $TDISCUS->renderBooleanSwitch('threaduser', $thread_id, 'subscribe', 'subscribe', $subscribe, 1, 'fa-envelope');
     }
 ?>
     </span>
@@ -148,9 +150,10 @@ if ( count($threads) < 1 ) {
 <?php
     }
   echo("</ul>");
-  Tdiscus::paginator($comeback, $start, $pagesize, $retval->total);
+  $TDISCUS->paginator($comeback, $start, $pagesize, $retval->total);
 }
 
-Tdiscus::footerStart();
-Tdiscus::renderBooleanScript();
-Tdiscus::footerEnd();
+$OUTPUT->footerStart();
+$TDISCUS->footer();
+$TDISCUS->renderBooleanScript();
+$OUTPUT->footerEnd();

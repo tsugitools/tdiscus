@@ -15,8 +15,8 @@ $LAUNCH = LTIX::requireData();
 $config = HTMLPurifier_Config::createDefault();
 $purifier = new HTMLPurifier($config);
 
-
 $THREADS = new Threads();
+$TDISCUS = new Tdiscus();
 
 $rest_path = U::rest_path();
 
@@ -47,13 +47,15 @@ if ( count($_POST) > 0 ) {
     return;
 }
 
-Tdiscus::header();
-
-$menu = false;
+$OUTPUT->header();
+$TDISCUS->header();
 
 $OUTPUT->bodyStart();
+$OUTPUT->topNav(false);
 $OUTPUT->flashMessages();
-$OUTPUT->topNav($menu);
+
+echo("<h1>".__('Delete Thread')."</h1>\n");
+
 ?>
 <p><?= __("Title:") ?> <br/>
 <?php
@@ -75,12 +77,8 @@ onclick='window.location.href="<?= addSession($TOOL_ROOT) ?>";return false;'
 </div>
 <?php
 
-Tdiscus::footerStart();
-?>
-<script>
-$(document).ready( function () {
-    CKEDITOR.replace( 'editor' );
-});
-</script>
-<?php
-Tdiscus::footerEnd();
+$OUTPUT->footerStart();
+$TDISCUS->footer();
+$TDISCUS->ckeditor_footer();
+$OUTPUT->footerEnd();
+

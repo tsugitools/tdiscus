@@ -13,6 +13,7 @@ use \Tdiscus\Threads;
 $LAUNCH = LTIX::requireData();
 
 $THREADS = new Threads();
+$TDISCUS = new Tdiscus();
 
 $rest_path = U::rest_path();
 
@@ -45,10 +46,17 @@ if ( count($_POST) > 0 ) {
     return;
 }
 
-Tdiscus::header();
+$OUTPUT->header();
+$TDISCUS->header();
 
 $OUTPUT->bodyStart();
+$OUTPUT->topNav(false);
 $OUTPUT->flashMessages();
+if ( $old_comment ) {
+    echo("<h1>".__('Edit Comment')."</h1>\n");
+} else {
+    echo("<h1>".__('Add Comment')."</h1>\n");
+}
 ?>
 <div id="edit-comment-div" title="<?= __("Comment") ?>" >
 <form id="edit-comment-form" method="post">
@@ -70,12 +78,7 @@ onclick='window.location.href="<?= addSession($TOOL_ROOT.'/thread/'.$thread_id) 
 </div>
 <?php
 
-Tdiscus::footerStart();
-?>
-<script>
-$(document).ready( function () {
-    CKEDITOR.replace( 'editor' );
-});
-</script>
-<?php
-Tdiscus::footerEnd();
+$OUTPUT->footerStart();
+$TDISCUS->footer();
+$TDISCUS->ckeditor_footer();
+$OUTPUT->footerEnd();

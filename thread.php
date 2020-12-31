@@ -15,8 +15,8 @@ $LAUNCH = LTIX::requireData();
 $config = HTMLPurifier_Config::createDefault();
 $purifier = new HTMLPurifier($config);
 
-
 $THREADS = new Threads();
+$TDISCUS = new Tdiscus();
 
 $rest_path = U::rest_path();
 
@@ -54,7 +54,8 @@ if ( count($_POST) > 0 ) {
 $retval = $THREADS->comments($thread_id);
 $comments = $retval->rows;
 
-Tdiscus::header();
+$OUTPUT->header();
+$TDISCUS->header();
 
 $pagesize = intval(U::get($_GET, 'pagesize', Threads::default_page_size));
 $start = intval(U::get($_GET, 'start', 0));
@@ -109,15 +110,15 @@ onclick="document.querySelector('#tdiscus-add-comment-div').scrollIntoView({ beh
 <div class="tdiscus-comments-container">
 <div class="tdiscus-comments-sort">
 <?php
-Tdiscus::search_box($sortable);
-if ( $commenttop && ! $thread_locked) Tdiscus::add_comment($thread_id);
+$TDISCUS->search_box($sortable);
+if ( $commenttop && ! $thread_locked) $TDISCUS->add_comment($thread_id);
 ?>
 </div>
 <div class="tdiscus-comments-list">
 
 <?php
     foreach($comments as $comment ) {
-        Tdiscus::renderComment($LAUNCH, $thread_id, $comment);
+        $TDISCUS->renderComment($LAUNCH, $thread_id, $comment);
     }
 ?>
 </div> <!-- tdiscus-comments-list -->
@@ -125,10 +126,11 @@ if ( $commenttop && ! $thread_locked) Tdiscus::add_comment($thread_id);
 <?php
     }
 
-  Tdiscus::paginator($page_base, $start, $pagesize, $retval->total);
+  $TDISCUS->paginator($page_base, $start, $pagesize, $retval->total);
 
-if ( ! $commenttop && ! $thread_locked) Tdiscus::add_comment($thread_id);
+if ( ! $commenttop && ! $thread_locked) $TDISCUS->add_comment($thread_id);
 
-Tdiscus::footerStart();
-Tdiscus::renderBooleanScript();
-Tdiscus::footerEnd();
+$OUTPUT->footerStart();
+$TDISCUS->footer();
+$TDISCUS->renderBooleanScript();
+$OUTPUT->footerEnd();

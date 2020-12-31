@@ -13,6 +13,7 @@ use \Tdiscus\Threads;
 $LAUNCH = LTIX::requireData();
 
 $THREADS = new Threads();
+$TDISCUS = new Tdiscus();
 
 $rest_path = U::rest_path();
 
@@ -45,10 +46,15 @@ if ( count($_POST) > 0 ) {
     return;
 }
 
-Tdiscus::header();
+$OUTPUT->header();
+$TDISCUS->header();
 
 $OUTPUT->bodyStart();
+$OUTPUT->topNav(false);
 $OUTPUT->flashMessages();
+
+echo("<h1>".__('Delete Comment')."</h1>\n");
+
 ?>
 <div id="delete-comment-div" title="<?= __("Delete comment") ?>" >
 <form id="delete-comment-form" method="post">
@@ -67,6 +73,7 @@ onclick='window.location.href="<?= addSession($all_done) ?>";return false;'
 </div>
 <?php
 
-Tdiscus::footerStart();
+$OUTPUT->footerStart();
+$TDISCUS->footer();
+$OUTPUT->footerEnd();
 
-Tdiscus::footerEnd();

@@ -20,26 +20,28 @@ class Tdiscus {
     }
 
     public static function header() {
-        global $OUTPUT;
-        $OUTPUT->header();
         echo('<link href="'.self::toolRoot().'/static/coursera.css" rel="stylesheet">'."\n");
     }
 
-    public static function footerStart() {
-        global $OUTPUT;
-        $OUTPUT->footerStart();
-        self::load_ckeditor();
+    public static function footer() {
+        self::ckeditor_load();
         echo('<script>$(document).ready(function() { jQuery("time.timeago").timeago(); });</script>'."\n");
     }
 
-    public static function footerEnd() {
-        global $OUTPUT;
-        $OUTPUT->footerEnd();
-    }
-
-    public static function load_ckeditor() {
+    public static function ckeditor_load() {
         global $CFG;
         echo('<script src="'.$CFG->staticroot.'/util/ckeditor_4.8.0/ckeditor.js"></script>'."\n");
+    }
+
+    public static function ckeditor_footer() {
+        global $CFG;
+?>
+<script>
+$(document).ready( function () {
+    CKEDITOR.replace( 'editor' );
+});
+</script>
+<?php
     }
 
     public static function search_box($sortby=false) {

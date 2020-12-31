@@ -16,6 +16,7 @@ $config = HTMLPurifier_Config::createDefault();
 $purifier = new HTMLPurifier($config);
 
 $THREADS = new Threads();
+$TDISCUS = new Tdiscus();
 $rest_path = U::rest_path();
 
 $come_back = 'threadform';
@@ -58,13 +59,19 @@ if ( count($_POST) > 0 ) {
     return;
 }
 
-Tdiscus::header();
+$OUTPUT->header();
+$TDISCUS->header();
 
 $menu = false;
 
 $OUTPUT->bodyStart();
 $OUTPUT->topNav($menu);
 $OUTPUT->flashMessages();
+if ( $old_thread ) {
+    echo("<h1>".__('Editing Thread')."</h1>\n");
+} else {
+    echo("<h1>".__('New Thread')."</h1>\n");
+}
 ?>
 <div id="add-thread-div" title="<?= __("New Thread") ?>" >
 <form id="add-thread-form" method="post">
@@ -96,12 +103,7 @@ onclick='window.location.href="<?= addSession($TOOL_ROOT) ?>";return false;'
 </div>
 <?php
 
-Tdiscus::footerStart();
-?>
-<script>
-$(document).ready( function () {
-    CKEDITOR.replace( 'editor' );
-});
-</script>
-<?php
-Tdiscus::footerEnd();
+$OUTPUT->footerStart();
+$TDISCUS->footer();
+$TDISCUS->ckeditor_footer();
+$OUTPUT->footerEnd();
