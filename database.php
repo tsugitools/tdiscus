@@ -93,7 +93,7 @@ array( "{$CFG->dbprefix}tdiscus_comment",
 "create table {$CFG->dbprefix}tdiscus_comment (
     comment_id  INTEGER NOT NULL KEY AUTO_INCREMENT,
     thread_id   INTEGER NOT NULL,
-    parent_id   INTEGER NOT NULL DEFAULT 0;
+    parent_id   INTEGER NOT NULL DEFAULT 0,
     user_id     INTEGER NOT NULL,
     depth       INTEGER NOT NULL DEFAULT 0,
 
