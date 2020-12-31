@@ -119,7 +119,7 @@ foreach($sortby as $sort) {
         }
         $id = "tdiscus-add-sub-comment-div$unique";
 
-        if ( Settings::linkGet('maxdepth') > 0 && ($depth+1) < Settings::linkGet('maxdepth') ) {
+        if ( Threads::maxDepth() > 0 && ($depth+1) < Threads::maxDepth() ) {
             Tdiscus::renderToggle(__('reply'), $id, 'fa-comment', 'green');
         }
 /*
@@ -132,7 +132,7 @@ foreach($sortby as $sort) {
   <div style="padding-left: 10px;<?= ($hidden ? ' text-decoration: line-through;' : '') ?>"><?= htmlentities($comment['comment']) ?></div>
   </p>
 <?php
-        if ( Settings::linkGet('maxdepth') > 0 ) {
+        if ( Threads::maxDepth() > 0 ) {
             echo('<div class="tdiscus-sub-comment-container">'."\n");
             Tdiscus::add_sub_comment($id, $thread_id, $comment_id, 1);
             echo('</div> <!-- tdiscus-sub-comment-container -->');

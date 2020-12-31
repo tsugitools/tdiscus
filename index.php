@@ -68,7 +68,7 @@ SettingsForm::text('title',__('Thread title override.'));
 // SettingsForm::checkbox('studentthread',__('Allow learners to create a thread.'));
 SettingsForm::checkbox('commenttop',__('Put comment box before comments in thread display.'));
 // SettingsForm::number('lockminutes',__('Number of minutes before posts are locked.'));
-SettingsForm::number('maxdepth',__('Allowed depth of nested comments. Set to < 1 for no nested comments.'));
+SettingsForm::number('maxdepth',__('Allowed depth of nested comments. Default is 2. Set to 1 for no nested comments.'));
 SettingsForm::dueDate();
 SettingsForm::end();
 

@@ -16,6 +16,12 @@ class Threads {
     const default_page_size = 20;
     // const default_page_size = 3;
 
+    public static function maxDepth() {
+        $maxdepth = Settings::linkGet('maxdepth', '2');
+        if ( strlen($maxdepth) < 1 ) return 2;
+        return intval($maxdepth);
+    }
+
     public static function threadLoad($thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
@@ -431,7 +437,7 @@ class Threads {
             return __('Non-empty comment required');
         }
 
-        $maxdepth = Settings::linkGet('maxdepth');
+        $maxdepth = self::maxDepth();
         if ( $maxdepth < 1 ) {
             return __('Hierarchical comments not allowed');
         }
@@ -451,7 +457,7 @@ class Threads {
         if ( !is_array($thread) ) return __('Could not load thread').' '.$thread_id;
 
         $parentDepth = $parent['depth'];
-        if ( $parentDepth+1 > $maxdepth ) {
+        if ( $parentDepth+2 > $maxdepth ) {
             return __('Comment depth exceeded');
         }
 
@@ -468,7 +474,7 @@ class Threads {
             return __('Non-empty comment required');
         }
 
-        $maxdepth = Settings::linkGet('maxdepth');
+        $maxdepth = self::maxDepth();
         if ( $maxdepth < 2 && $parent_id > 0 ) {
             return __('Hierarchical comments not allowed');
         }
@@ -664,7 +670,7 @@ class Threads {
         );
 
         // If we are updating a thread - update all its parent threads u the tree
-        $maxdepth = Settings::linkGet('maxdepth');
+        $maxdepth = self::maxDepth();
         if ( $maxdepth > 1 & $parent_id > 0 ) {
             $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_comment
                 SET updated_at=NOW()
