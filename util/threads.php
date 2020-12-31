@@ -527,7 +527,7 @@ class Threads {
         // Up the tree we go...
         // https://www.slideshare.net/billkarwin/models-for-hierarchical-data
 
-        if ( $retval > 0 && $maxdepth > 1 ) {
+        if ( $retval > 0 ) {
             $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_closure
                 (parent_id, child_id, depth)
                 SELECT parent_id, :CID, depth FROM {$CFG->dbprefix}tdiscus_closure
@@ -537,10 +537,9 @@ class Threads {
             );
         }
 
-        // YYY
         // From the parent on up - they get an additional child node
         // Yeah it is a sub-select - but it is no more than maxdepth...
-        if ( $retval > 0 && $maxdepth > 1 & $parent_id > 0 ) {
+        if ( $retval > 0 && $parent_id > 0 ) {
             $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_comment
                 SET children=COALESCE(children, 0) + 1, updated_at=NOW()
                 WHERE comment_id IN
@@ -630,7 +629,7 @@ class Threads {
                 WHERE comment_id = :PID",
                 array(':DELTA' => $delta, ':PID' => $parent_id)
             );
-            error_log("Removed $delta from children count of $parent_id");
+            error_log("Removed $delta from children count of thread $parent_id");
         }
 
         // A little denormalization saves a COUNT / GROUP BY and makes sorting super fast

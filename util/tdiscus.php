@@ -9,17 +9,20 @@ use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\MessageSelector;
 use Symfony\Component\Translation\Loader\MoFileLoader;
 
-global $TOOL_ROOT;
-
 class Tdiscus {
 
     const default_paginator_width = 7;
 
-    public static function header() {
-        global $OUTPUT, $TOOL_ROOT;
+    public static function toolRoot() {
+        global $TOOL_ROOT;
         if ( ! isset($TOOL_ROOT) ) $TOOL_ROOT = dirname($_SERVER['SCRIPT_NAME']);
+        return $TOOL_ROOT;
+    }
+
+    public static function header() {
+        global $OUTPUT;
         $OUTPUT->header();
-        echo('<link href="'.$TOOL_ROOT.'/static/coursera.css" rel="stylesheet">'."\n");
+        echo('<link href="'.self::toolRoot().'/static/coursera.css" rel="stylesheet">'."\n");
     }
 
     public static function footerStart() {
@@ -40,7 +43,6 @@ class Tdiscus {
     }
 
     public static function search_box($sortby=false) {
-        global $TOOL_ROOT;
         $searchvalue = U::get($_GET,'search') ? 'value="'.htmlentities(U::get($_GET,'search')).'" ' : "";
         $sortvalue = U::get($_GET,'sort');
 
@@ -74,8 +76,6 @@ foreach($sortby as $sort) {
 
     public static function renderComment($LAUNCH, $thread_id, $comment)
     {
-        global$TOOL_ROOT;
-
         $locked = $comment['locked'];
         $hidden = $comment['hidden'];
         $depth = $comment['depth'];
@@ -105,8 +105,8 @@ foreach($sortby as $sort) {
   <b><?= htmlentities($comment['displayname']) ?></b>
   <time class="timeago" datetime="<?= $comment['modified_at'] ?>"><?= $comment['modified_at'] ?></time>
   <?php if ( $comment['owned'] || $LAUNCH->user->instructor ) { ?>
-    <a href="<?= $TOOL_ROOT ?>/commentform/<?= $comment['comment_id'] ?>"><i class="fa fa-pencil"></i></a>
-    <a href="<?= $TOOL_ROOT ?>/commentremove/<?= $comment['comment_id'] ?>"><i class="fa fa-trash"></i></a>
+    <a href="<?= self::toolRoot() ?>/commentform/<?= $comment['comment_id'] ?>"><i class="fa fa-pencil"></i></a>
+    <a href="<?= self::toolRoot() ?>/commentremove/<?= $comment['comment_id'] ?>"><i class="fa fa-trash"></i></a>
   <?php } ?>
 <?php
         if ( $LAUNCH->user->instructor ) {
@@ -117,7 +117,7 @@ foreach($sortby as $sort) {
         }
         $id = "tdiscus-add-sub-comment-div$unique";
 
-        if ( Settings::linkGet('maxdepth') > 0 ) {
+        if ( Settings::linkGet('maxdepth') > 0 && ($depth+1) < Settings::linkGet('maxdepth') ) {
             Tdiscus::renderToggle(__('reply'), $id, 'fa-comment', 'green');
         }
 /*
@@ -224,7 +224,7 @@ foreach($sortby as $sort) {
         if ( $uitype == 'threadcomment' ) $uitype = 'comment';
 ?>
         <a href="#"
-        class="<?= $type ?><?= $variable ?>_<?= $thread_id ?> tdiscus-pin-api-call"
+        class="<?= $type ?><?= $variable ?>_<?= $thread_id ?> tdiscus-boolean-api-call"
         data-class="<?= $type ?><?= $variable ?>_<?= $thread_id ?>"
         data-endpoint="<?= $type ?>setboolean/<?= $thread_id ?>/<?= $variable ?>/<?= $set ?>"
         data-confirm="<?= htmlentities(__('Do you want to '.$action.' this '.$uitype.'?')) ?>"
@@ -250,15 +250,15 @@ foreach($sortby as $sort) {
 
     public static function renderBooleanScript()
     {
-        global $TOOL_ROOT, $OUTPUT;
+        global $OUTPUT;
 ?>
 <script>
 $(document).ready( function() {
-   $('.tdiscus-pin-api-call').click(function(ev) {
+    function handleApiCall(ev) {
         ev.preventDefault()
         if ( ! confirm($(this).attr('data-confirm')) ) return;
         var data_class = $(this).attr('data-class');
-        $.post(addSession('<?= $TOOL_ROOT ?>'+'/api/'+$(this).attr('data-endpoint')))
+        $.post(addSession('<?= self::toolRoot() ?>'+'/api/'+$(this).attr('data-endpoint')))
             .done( function(data) {
                 $('.'+data_class).toggle();
             })
@@ -272,17 +272,17 @@ $(document).ready( function() {
                 console.log(error);
                 alert(message);
             });
-   });
+   }
 
-   $('.tdiscus-toggle-api-call').click(function(ev) {
+    function toggleApiCall(ev) {
         ev.preventDefault()
         var data_id = $(this).attr('data-id');
         $('#'+data_id).toggle();
         $('#'+data_id+"_icon_on").toggle();
         $('#'+data_id+"_icon_off").toggle();
-    });
+    }
 
-   $(".tdiscus-add-sub-comment-form").on('submit', function (ev) {
+   function handleSubmit(ev) {
        var comment = $(this).find('textarea[name="comment"]').val();
        console.log('comment=',comment);
        ev.preventDefault();
@@ -296,11 +296,15 @@ $(document).ready( function() {
        // Hide during the processing
        if ( click_done ) $('#'+click_done).click();
        $(this).find('textarea[name="comment"]').val('');
-       $.post(addSession('<?= $TOOL_ROOT ?>/api/addsubcomment'), ser)
+       $.post(addSession('<?= self::toolRoot() ?>/api/addsubcomment'), ser)
             .done( function(data) {
                 console.log('data', data);
                 // if ( comment.length > 0 ) txt3.innerHTML = htmlentities(comment);
                 if ( comment.length > 0 ) txt3.innerHTML = data;
+
+                $('.tdiscus-add-sub-comment-form').on('submit', handleSubmit);
+                $('.tdiscus-toggle-api-call').click(toggleApiCall);
+                $('.tdiscus-boolean-api-call').click(handleApiCall);
             })
             .error( function(xhr, status, error) {
                 console.log(xhr);
@@ -308,7 +312,11 @@ $(document).ready( function() {
                 console.log(error);
                 alert(error);
             });
-   });
+    }
+
+    $('.tdiscus-add-sub-comment-form').on('submit', handleSubmit);
+    $('.tdiscus-boolean-api-call').click(handleApiCall);
+    $('.tdiscus-toggle-api-call').click(toggleApiCall);
 
 });
 </script>
