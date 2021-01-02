@@ -63,7 +63,7 @@ echo('</a>');
 echo("</div>\n");
 
 SettingsForm::start();
-SettingsForm::text('title',__('Thread title override.'));
+SettingsForm::text('title',__('Discussion title override.'));
 // SettingsForm::checkbox('grade',__('Give a 100% grade for a student making a post or a comment.'));
 // SettingsForm::checkbox('studentthread',__('Allow learners to create a thread.'));
 SettingsForm::checkbox('commenttop',__('Put comment box before comments in thread display.'));
