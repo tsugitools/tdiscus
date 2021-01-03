@@ -24,9 +24,9 @@ class Threads {
 
     public static function getPurifier()
     {
-        $config = HTMLPurifier_Config::createDefault();
+        $config = \HTMLPurifier_Config::createDefault();
         $config->set('Cache.DefinitionImpl', null);
-        $purifier = new HTMLPurifier($config);
+        $purifier = new \HTMLPurifier($config);
         return $purifier;
     }
 
