@@ -51,7 +51,7 @@ $OUTPUT->topNav($menu);
 
 $dicussion_title = strlen(Settings::linkget('title')) > 0 ? Settings::linkget('title') : $LAUNCH->link->title;
 
-if ( Settings::linkget('depth') < 1 ) Settings::linkSet('2');
+if ( Settings::linkget('depth') < 1 ) Settings::linkSet('depth', '2');
 
 echo('<div>');
 echo('<span class="tdiscus-threads-title">');
