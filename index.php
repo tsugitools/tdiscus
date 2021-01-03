@@ -36,7 +36,6 @@ foreach ( $copyparms as $parm ) {
     $comeback = U::add_url_parm($comeback, $parm, $val);
 }
 
-
 $menu = false;
 if ( $USER->instructor ) {
     $menu = new \Tsugi\UI\MenuSet();
@@ -108,7 +107,7 @@ if ( count($threads) < 1 ) {
         // $TDISCUS->renderBooleanSwitch('threaduser', $thread_id, 'subscribe', 'subscribe', $subscribe, 0, 'fa-envelope', 'green');
     } else {
         echo('<span '.($pin == 0 ? 'style="display:none;"' : '').'><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></span>');
-        echo('<span '.($locked == 0 ? 'style="display:none;"' : '').'><i class="fa fa-lock fa-rotate-270" style="color: orange;"></i></span>');
+        echo(' <span '.($locked == 0 ? 'style="display:none;"' : '').'><i class="fa fa-lock fa-rotate-270" style="color: orange;"></i></span>');
     }
 ?>
   <a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
