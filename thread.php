@@ -12,11 +12,10 @@ use \Tdiscus\Threads;
 // No parameter means we require CONTEXT, USER, and LINK
 $LAUNCH = LTIX::requireData();
 
-$config = HTMLPurifier_Config::createDefault();
-$purifier = new HTMLPurifier($config);
-
 $THREADS = new Threads();
 $TDISCUS = new Tdiscus();
+
+$purifier = $THREADS->getPurifier();
 
 $rest_path = U::rest_path();
 

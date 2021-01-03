@@ -22,6 +22,14 @@ class Threads {
         return intval($maxdepth);
     }
 
+    public static function getPurifier()
+    {
+        $config = HTMLPurifier_Config::createDefault();
+        $config->set('Cache.DefinitionImpl', null);
+        $purifier = new HTMLPurifier($config);
+        return $purifier;
+    }
+
     public static function threadLoad($thread_id) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
 
