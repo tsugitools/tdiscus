@@ -51,6 +51,8 @@ $OUTPUT->topNav($menu);
 
 $dicussion_title = strlen(Settings::linkget('title')) > 0 ? Settings::linkget('title') : $LAUNCH->link->title;
 
+if ( Settings::linkget('depth') < 1 ) Settings::linkSet('2');
+
 echo('<div>');
 echo('<span class="tdiscus-threads-title">');
 echo('<a href="'.$comeback.'">');
@@ -64,7 +66,7 @@ echo("</div>\n");
 
 SettingsForm::start();
 SettingsForm::text('title',__('Discussion title override.'));
-// SettingsForm::checkbox('grade',__('Give a 100% grade for a student making a post or a comment.'));
+SettingsForm::checkbox('grade',__('Give a 100% grade for a student making a post or a comment.'));
 // SettingsForm::checkbox('studentthread',__('Allow learners to create a thread.'));
 SettingsForm::checkbox('commenttop',__('Put comment box before comments in thread display.'));
 // SettingsForm::number('lockminutes',__('Number of minutes before posts are locked.'));

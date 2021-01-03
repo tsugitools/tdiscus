@@ -47,6 +47,11 @@ if ( count($_POST) > 0 ) {
         return;
     }
 
+    if ( Settings::linkGet('grade') > 0 ) {
+        $LAUNCH->result->gradeSend(1.0, false);
+    }
+
+
     header( 'Location: '.addSession($come_back) ) ;
     return;
 }

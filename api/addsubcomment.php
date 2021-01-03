@@ -3,6 +3,7 @@
 use \Tsugi\Util\U;
 use \Tsugi\Util\Net;
 use \Tsugi\Core\LTIX;
+use \Tsugi\Core\Settings;
 use \Tdiscus\Tdiscus;
 use \Tdiscus\Threads;
 
@@ -22,6 +23,10 @@ $retval = $THREADS->commentAddSubComment($thread_id, $comment_id, $comment);
 if ( is_string($retval) ) {
     Net::send400($retval);
     return;
+}
+
+if ( Settings::linkGet('grade') > 0 ) {
+    $LTI->result->gradeSend(1.0, false);
 }
 
 $comment = $THREADS->commentLoad($retval);
