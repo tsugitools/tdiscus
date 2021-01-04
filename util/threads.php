@@ -174,7 +174,7 @@ class Threads {
     }
 
     public static function threadsSortableBy() {
-        return array('latest', 'unanswered', 'popular', 'active', 'votes', 'earliest');
+        return array('latest', 'unanswered', 'views', 'comments', /* 'votes', */ 'earliest');
     }
 
     public static function threads($info=false) {
@@ -190,9 +190,9 @@ class Threads {
             $order_by = "modified_at ASC, netvote DESC";
         } else if ( $sort == "unanswered" ) {
             $order_by = "comments ASC, netvote DESC, modified_at DESC";
-        } else if ( $sort == "popular" ) {
+        } else if ( $sort == "views" ) {
             $order_by = "views DESC, comments DESC, netvote DESC, modified_at DESC";
-        } else if ( $sort == "active" ) {
+        } else if ( $sort == "comments" ) {
             $order_by = "comments DESC, views DESC, netvote DESC, modified_at DESC";
         } else if ( $sort == "votes" ) {
             $order_by = "netvote DESC, comments DESC, views DESC, modified_at DESC";
