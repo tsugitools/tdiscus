@@ -104,7 +104,7 @@ foreach($sortby as $sort) {
             echo('<span '.($locked == 0 ? 'style="display:none;"' : '').'><i class="fa fa-lock fa-rotate-270" style="color: orange;"></i></span>');
         }
 ?>
-  <b><?= htmlentities($comment['displayname']) ?></b>
+  <span class="tdiscus-user-name"><?= htmlentities($comment['displayname']) ?></span>
   <time class="timeago" datetime="<?= $comment['modified_at'] ?>"><?= $comment['modified_at'] ?></time>
   <?php if ( $comment['owned'] || $LAUNCH->user->instructor ) { ?>
     <a href="<?= self::toolRoot() ?>/commentform/<?= $comment['comment_id'] ?>"><i class="fa fa-pencil"></i></a>

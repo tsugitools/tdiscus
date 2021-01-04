@@ -130,8 +130,9 @@ if ( count($threads) < 1 ) {
 </p>
 <?php
     if ( $thread['staffcreate'] > 0 ) {
-        echo('<span class="tdiscus-staff-created">Staff Created</span>');
-        echo(" ".__("Created by")." ".htmlentities($thread['displayname']));
+        echo('<span class="tdiscus-staff-created">'.__('Staff Created').'</span>');
+        echo(" ".__("Created by")." ");
+        echo('<span class="tdiscus-user-name">'.htmlentities($thread['displayname']).'</span>');
         echo(' - '.__("last post").' <time class="timeago" datetime="'.$thread['modified_at'].'">'.$thread['modified_at'].'</time>');
     } else {
         if ( $thread['staffread'] > 0 ) echo('<span class="tdiscus-staff-read">'.__('Staff Read')."</span>\n");

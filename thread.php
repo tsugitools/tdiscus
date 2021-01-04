@@ -89,7 +89,7 @@ echo('<span class="tdiscus-thread-title"><a href="'.$page_base.'"'.($thread['hid
 echo("</span></p>\n");
 ?>
 <p class="tdiscus-thread-info">
-<?= $thread['displayname'] ?>
+<span class="tdiscus-user-name"><?= $thread['displayname'] ?></span>
  -
 <time class="timeago" datetime="<?= $thread['modified_at'] ?>"><?= $thread['modified_at'] ?></time>
 <?php if ( $thread['edited'] == 1 ) {

@@ -1,4 +1,9 @@
 
+.tdiscus-user-name {
+    font-weight: bold;
+    /* filter:blur(0.3rem); */
+}
+
 .tdiscus-threads-title {
     font-size: 2em;
 }
