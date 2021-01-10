@@ -32,6 +32,7 @@ array( "{$CFG->dbprefix}tdiscus_thread",
     cleaned     TINYINT(1) NOT NULL DEFAULT 0,
     json        TEXT NULL,
     settings    TEXT NULL,
+    thread_type SMALLINT(2) NOT NULL DEFAULT 0,
 
     views       INTEGER NOT NULL DEFAULT 0,
     comments    INTEGER NOT NULL DEFAULT 0,
@@ -99,6 +100,7 @@ array( "{$CFG->dbprefix}tdiscus_comment",
 
     comment     TEXT NULL,
     cleaned     TINYINT(1) NOT NULL DEFAULT 0,
+    staff       TINYINT(1) NOT NULL DEFAULT 0,
     children    INTEGER NOT NULL DEFAULT 0,
     json        TEXT NULL,
     settings    TEXT NULL,
@@ -216,10 +218,14 @@ $DATABASE_UPGRADE = function($oldversion) {
     // if you add a field to a table, put it in here and it will be auto-added
     $add_some_fields = array(
         array('tdiscus_thread', 'hidden_global', 'TINYINT(1) NOT NULL DEFAULT 0'),
+        array('tdiscus_thread', 'thread_type', 'TINYINT(2) NOT NULL DEFAULT 0'),
+
         array('tdiscus_comment', 'cleaned', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_comment', 'children', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_comment', 'parent_id', 'INTEGER DEFAULT 0'),
         array('tdiscus_comment', 'parent_id', 'INTEGER NOT NULL DEFAULT 0'),
+        array('tdiscus_comment', 'staff', 'TINYINT(1) NOT NULL DEFAULT 0'),
+
         array('tdiscus_user_thread', 'notify', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_user_thread', 'notify_at', 'TIMESTAMP NULL'),
         array('tdiscus_user_comment', 'notify', 'TINYINT(1) NOT NULL DEFAULT 0'),
