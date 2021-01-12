@@ -100,7 +100,7 @@ array( "{$CFG->dbprefix}tdiscus_comment",
 
     comment     TEXT NULL,
     cleaned     TINYINT(1) NOT NULL DEFAULT 0,
-    staff       TINYINT(1) NOT NULL DEFAULT 0,
+    ctype       SMALLINT(2) NOT NULL DEFAULT 0,
     children    INTEGER NOT NULL DEFAULT 0,
     json        TEXT NULL,
     settings    TEXT NULL,
@@ -224,7 +224,7 @@ $DATABASE_UPGRADE = function($oldversion) {
         array('tdiscus_comment', 'children', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_comment', 'parent_id', 'INTEGER DEFAULT 0'),
         array('tdiscus_comment', 'parent_id', 'INTEGER NOT NULL DEFAULT 0'),
-        array('tdiscus_comment', 'staff', 'TINYINT(1) NOT NULL DEFAULT 0'),
+        array('tdiscus_comment', 'ctype', 'TINYINT(2) NOT NULL DEFAULT 0'),
 
         array('tdiscus_user_thread', 'notify', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_user_thread', 'notify_at', 'TIMESTAMP NULL'),
@@ -237,6 +237,7 @@ $DATABASE_UPGRADE = function($oldversion) {
         array('tdiscus_closure', 'children', 'DROP'),
         array('tdiscus_closure', 'created_at', 'DROP'),
         array('tdiscus_closure', 'updated_at', 'DROP'),
+        array('tdiscus_comment', 'staff', 'DROP'),
     );
 
     foreach ( $add_some_fields as $add_field ) {
