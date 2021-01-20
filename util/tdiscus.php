@@ -54,7 +54,7 @@ $(document).ready( function () {
 ?>
 <div class="tdiscus-threads-sort">
 <label for="sort"><?= __("Sort by") ?></label>
-<select name="sort" id="sort" onclick="this.form.submit();">
+<select name="sort" id="sort" onchange="this.form.submit();">
 <?php
 foreach($sortby as $sort) {
   echo('<option value="'.$sort.'" '.($sortvalue == $sort ? 'selected="selected"' : '').' >'.__(ucfirst($sort)).'</option>'."\n");
