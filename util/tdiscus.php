@@ -25,7 +25,8 @@ class Tdiscus {
 
     public static function footer() {
         self::ckeditor_load();
-        echo('<script>$(document).ready(function() { jQuery("time.timeago").timeago(); });</script>'."\n");
+        // Timeago is in Output::footer();
+        // echo('<script>$(document).ready(function() { jQuery("time.timeago").timeago(); });</script>'."\n");
     }
 
     public static function ckeditor_load() {
