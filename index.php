@@ -96,6 +96,8 @@ if ( count($threads) < 1 ) {
         $favorite = $thread['favorite'];
         $unread = $thread['comments'] - $thread['user_comments'];
         if ( $unread < 0 ) $unread = 0;
+        // TODO: Remove this after a while
+        if ( $thread['user_comments'] < 1 ) $unread = 0;
 ?>
   <li class="tdiscus-thread-item">
   <div class="tdiscus-thread-item-left">
