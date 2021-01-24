@@ -78,9 +78,31 @@ class Threads {
                     ':TID' => $thread_id,
                 )
             );
-       }
+        }
+
+        // Catch this user up
+        self::threadMarkAsReadForUserDao($row);
 
        return $row;
+    }
+
+    // Record how many comments were on the thread when this user read the thread
+    public static function threadMarkAsReadForUserDao($thread) {
+        global $CFG, $PDOX, $TSUGI_LAUNCH;
+
+        $thread_id = $thread['thread_id'];
+        $thread_comments = $thread['comments'];
+        if ( $thread_comments > 0 ) {
+            $stmt = $PDOX->queryDie("UPDATE {$CFG->dbprefix}tdiscus_user_thread
+                SET comments=(SELECT comments from {$CFG->dbprefix}tdiscus_thread WHERE thread_id = :TID)
+                WHERE thread_id = :TID AND user_id = :UID",
+                array(
+                    ':COMMENTS' => $thread_comments,
+                    ':TID' => $thread_id,
+                    ':UID' => $TSUGI_LAUNCH->user->id,
+                )
+            );
+        }
     }
 
     public static function threadLoadForUpdate($thread_id) {
@@ -214,7 +236,8 @@ class Threads {
 
         $fields = "
             T.thread_id AS thread_id, body, title, pin, T.views AS views, staffcreate,
-            staffread, staffanswer, T.comments AS comments, displayname, edited, hidden, locked,
+            staffread, staffanswer, T.comments AS comments, UT.comments AS user_comments,
+            displayname, edited, hidden, locked,
             CONCAT(CONVERT_TZ(T.created_at, @@session.time_zone, '+00:00'), 'Z') AS created_at,
             CONCAT(CONVERT_TZ(T.updated_at, @@session.time_zone, '+00:00'), 'Z') AS updated_at,
             CONCAT(CONVERT_TZ(COALESCE(T.updated_at, T.created_at), @@session.time_zone, '+00:00'), 'Z') AS modified_at,
@@ -469,14 +492,16 @@ class Threads {
             return __('Comment depth exceeded');
         }
 
-        $retval = self::commentInsertDao($thread_id, $comment, $parent_id);
+        $retval = self::commentInsertDao($thread, $comment, $parent_id);
 
         return $retval;
 
     }
 
-    public static function commentInsertDao($thread_id, $comment, $parent_id=0) {
+    public static function commentInsertDao($thread, $comment, $parent_id=0) {
         global $PDOX, $TSUGI_LAUNCH, $CFG;
+
+        $thread_id = $thread['thread_id'];
 
         if ( strlen($comment) < 1 ) {
             return __('Non-empty comment required');
@@ -525,6 +550,9 @@ class Threads {
                  )
             );
         }
+
+        // Mark thread as read for user - Make sure to do this after the comment count is updated above
+        self::threadMarkAsReadForUserDao($thread);
 
         // Notify subscribed users
         // TODO: Give this a checkbox in settings

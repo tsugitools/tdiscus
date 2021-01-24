@@ -39,7 +39,7 @@ $all_done = $TOOL_ROOT;
 $discussion_title = strlen(Settings::linkget('title')) > 0 ? Settings::linkget('title') : $LAUNCH->link->title;
 
 if ( count($_POST) > 0 ) {
-    $retval = $THREADS->commentInsertDao($thread_id, U::get($_POST, 'comment') );
+    $retval = $THREADS->commentInsertDao($thread, U::get($_POST, 'comment') );
     if ( is_string($retval) ) {
         $_SESSION['error'] = $retval;
         header( 'Location: '.addSession($come_back) ) ;

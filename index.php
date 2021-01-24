@@ -94,6 +94,8 @@ if ( count($threads) < 1 ) {
         $thread_id = $thread['thread_id'];
         $subscribe = $thread['subscribe'];
         $favorite = $thread['favorite'];
+        $unread = $thread['comments'] - $thread['user_comments'];
+        if ( $unread < 0 ) $unread = 0;
 ?>
   <li class="tdiscus-thread-item">
   <div class="tdiscus-thread-item-left">
@@ -109,9 +111,11 @@ if ( count($threads) < 1 ) {
         echo('<span '.($pin == 0 ? 'style="display:none;"' : '').'><i class="fa fa-thumbtack fa-rotate-270" style="color: orange;"></i></span>');
         echo(' <span '.($locked == 0 ? 'style="display:none;"' : '').'><i class="fa fa-lock fa-rotate-270" style="color: orange;"></i></span>');
     }
+    $unread_str = '';
+    if ( $unread > 0 ) $unread_str = ' <span class="tdiscus-thread-item-title-badge">'.$unread.'</span>';
 ?>
   <a href="<?= $TOOL_ROOT.'/thread/'.$thread['thread_id'] ?>">
-  <b<?= ($hidden ? ' style="text-decoration: line-through;"' : '') ?>><?= htmlentities($thread['title']) ?></b></a>
+  <b<?= ($hidden ? ' style="text-decoration: line-through;"' : '') ?>><?= htmlentities($thread['title']) ?><?= $unread_str ?></b></a>
 <?php if ( $thread['owned'] || $LAUNCH->user->instructor ) { ?>
     <span class="tdiscus-thread-owned-menu">
     <a href="<?= $TOOL_ROOT ?>/threadform/<?= $thread['thread_id'] ?>"><i class="fa fa-pencil"></i></a>
@@ -123,6 +127,8 @@ if ( count($threads) < 1 ) {
         $TDISCUS->renderBooleanSwitch('thread', $thread_id, 'locked', 'lock', $locked, 1, 'fa-lock');
         $TDISCUS->renderBooleanSwitch('threaduser', $thread_id, 'favorite', 'favorite', $favorite, 1, 'fa-star');
         // $TDISCUS->renderBooleanSwitch('threaduser', $thread_id, 'subscribe', 'subscribe', $subscribe, 1, 'fa-envelope');
+        // TODO: Make this work
+        // $TDISCUS->renderBooleanSwitch('threaduser', $thread_id, 'comments', 'catch up', $unread, 1, 'fa-check');
     }
 ?>
     </span>
@@ -139,7 +145,6 @@ if ( count($threads) < 1 ) {
         if ( $thread['staffanswer'] > 0 ) echo('<span class="tdiscus-staff-answer">'.__('Staff Answer')."</span>\n");
         echo(__("Last post").' <time class="timeago" datetime="'.$thread['modified_at'].'">'.$thread['modified_at']."</time>\n");
     }
-
 ?>
   </div>
   <div class="tdiscus-thread-item-right" >
