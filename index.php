@@ -5,15 +5,15 @@ require_once "util/threads.php";
 
 use \Tsugi\Util\U;
 use \Tsugi\Core\LTIX;
-use \Tsugi\Core\Settings;
-use \Tsugi\UI\SettingsForm;
+use \Tsugi\UI\SettingsDialog;
 use \Tdiscus\Tdiscus;
 use \Tdiscus\Threads;
 
 // No parameter means we require CONTEXT, USER, and LINK
 $LAUNCH = LTIX::requireData();
+$settingsDialog = new SettingsDialog();
 
-if ( SettingsForm::handleSettingsPost() ) {
+if ( $settingsDialog->handleSettingsPost() ) {
     header( 'Location: '.addSession('index') ) ;
     return;
 }
@@ -40,17 +40,17 @@ $menu = false;
 if ( $USER->instructor ) {
     $menu = new \Tsugi\UI\MenuSet();
     if ( $CFG->launchactivity ) {
-        $menu->addRight('Analytics', 'analytics');
+        $menu->addRight(__('Analytics'), 'analytics');
     }
-    $menu->addRight('Settings', '#', /* push */ false, SettingsForm::attr());
+    $menu->addRight(__('Settings'), '#', /* push */ false, $settingsDialog->attr());
 }
 
 $OUTPUT->bodyStart();
 $OUTPUT->topNav($menu);
 
-$dicussion_title = strlen(Settings::linkget('title')) > 0 ? Settings::linkget('title') : $LAUNCH->link->title;
+$dicussion_title = strlen($LAUNCH->link->settingsGet('title')) > 0 ? $LAUNCH->link->settingsGet('title') : $LAUNCH->link->title;
 
-if ( Settings::linkget('depth') < 1 ) Settings::linkSet('depth', '2');
+if ( $LAUNCH->link->settingsGet('depth') < 1 ) $LAUNCH->link->settingsSet('depth', '2');
 
 echo('<div>');
 echo('<span class="tdiscus-threads-title">');
@@ -63,15 +63,15 @@ echo(__('Add Thread'));
 echo('</a>');
 echo("</div>\n");
 
-SettingsForm::start();
-SettingsForm::text('title',__('Discussion title override.'));
-SettingsForm::checkbox('grade',__('Give a 100% grade for a student making a post or a comment.'));
-// SettingsForm::checkbox('studentthread',__('Allow learners to create a thread.'));
-SettingsForm::checkbox('commenttop',__('Put comment box before comments in thread display.'));
-// SettingsForm::number('lockminutes',__('Number of minutes before posts are locked.'));
-SettingsForm::number('maxdepth',__('Allowed depth of nested comments. Default is 2. Set to 1 for no nested comments.'));
-SettingsForm::dueDate();
-SettingsForm::end();
+$settingsDialog->start();
+$settingsDialog->text('title',__('Discussion title override.'));
+$settingsDialog->checkbox('grade',__('Give a 100% grade for a student making a post or a comment.'));
+// $settingsDialog->checkbox('studentthread',__('Allow learners to create a thread.'));
+$settingsDialog->checkbox('commenttop',__('Put comment box before comments in thread display.'));
+// $settingsDialog->number('lockminutes',__('Number of minutes before posts are locked.'));
+$settingsDialog->number('maxdepth',__('Allowed depth of nested comments. Default is 2. Set to 1 for no nested comments.'));
+$settingsDialog->dueDate();
+$settingsDialog->end();
 
 $OUTPUT->flashMessages();
 
