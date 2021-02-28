@@ -247,11 +247,11 @@ $DATABASE_UPGRADE = function($oldversion) {
             var_dump($add_field);
             continue;
         }
-        $table = $CFG->dbprefix . $add_field[0];
+        $table = $add_field[0];
         $column = $add_field[1];
         $type = $add_field[2];
         $sql = false;
-        if ( $PDOX->columnExists($column, $table ) ) {
+        if ( $PDOX->columnExists($column, $CFG->dbprefix.$table ) ) {
             if ( $type == 'DROP' ) {
                 $sql= "ALTER TABLE {$CFG->dbprefix}$table DROP COLUMN $column";
             } else {
