@@ -243,7 +243,7 @@ class Threads {
             CONCAT(CONVERT_TZ(COALESCE(T.updated_at, T.created_at), @@session.time_zone, '+00:00'), 'Z') AS modified_at,
             CASE WHEN T.user_id = :UID THEN TRUE ELSE FALSE END AS owned,
             (COALESCE(T.upvote, 0)-COALESCE(T.downvote, 0)) AS netvote,
-            UT.subscribe AS subscribe, UT.favorite AS favorite
+            UT.subscribe AS subscribe, COALESCE(UT.favorite,0) AS favorite
         ";
 
         $from = "
@@ -251,7 +251,7 @@ class Threads {
             JOIN {$CFG->dbprefix}lti_user AS U ON  U.user_id = T.user_id
             LEFT JOIN {$CFG->dbprefix}tdiscus_user_thread AS UT ON T.thread_id = UT.thread_id AND UT.user_id = :UID
             WHERE link_id = :LID $whereclause
-            ORDER BY UT.favorite DESC, T.pin DESC, T.rank_value DESC, $order_by
+            ORDER BY favorite DESC, T.pin DESC, T.rank_value DESC, $order_by
         ";
 
         return self::pagedQuery($fields, $from, $subst, $info);
