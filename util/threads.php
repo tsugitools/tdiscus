@@ -316,8 +316,8 @@ class Threads {
         $staffcreate = $TSUGI_LAUNCH->user->instructor ? 1 : 0;
         // TODO: Purify pre-insert?
         $stmt = $PDOX->queryDie("INSERT INTO {$CFG->dbprefix}tdiscus_thread
-            (link_id, user_id, staffcreate, title, body) VALUES
-            (:LID, :UID, :STAFF, :TITLE, :BODY)",
+            (link_id, user_id, staffcreate, title, body, updated_at) VALUES
+            (:LID, :UID, :STAFF, :TITLE, :BODY, NOW())",
             array(
                 ':LID' => $TSUGI_LAUNCH->link->id,
                 ':UID' => $TSUGI_LAUNCH->user->id,
