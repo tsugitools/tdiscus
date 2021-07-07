@@ -277,11 +277,14 @@ class Threads {
         }
 
         // Retrieve one extra to see if there are more available
-        $from .= " LIMIT $start, ".($pagesize+1);
-	// https://stackoverflow.com/questions/186588/which-is-fastest-select-sql-calc-found-rows-from-table-or-select-count
-        $sql = "SELECT ".$fields.$from;
+        $paged_from = $from . " LIMIT $start, ".($pagesize+1);
+        $sql = "SELECT ".$fields.$paged_from;
         $rows = $PDOX->allRowsDie($sql, $vars);
-        $sql = "SELECT count(*) AS total, ".$fields.$from;
+
+        // https://stackoverflow.com/questions/186588/which-is-fastest-select-sql-calc-found-rows-from-table-or-select-count
+        $sql = "SELECT count(*) AS total ".$from;
+        $pos = strpos($sql, "ORDER BY");
+        if ( $pos > 0 ) $sql = substr($sql, 0, $pos);
         $row2 = $PDOX->rowDie($sql, $vars);
         $retval->total = intval($row2['total']);
 
