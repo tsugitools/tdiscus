@@ -285,7 +285,7 @@ class Threads {
         $sql = "SELECT count(*) AS total ".$from;
         $pos = strpos($sql, "ORDER BY");
         if ( $pos > 0 ) $sql = substr($sql, 0, $pos);
-        $row2 = $PDOX->rowDie($sql, $vars);
+        $row2 = $PDOX->rowDie($sql, $PDOX->limitVars($sql, $vars));
         $retval->total = intval($row2['total']);
 
         // Remove that extra row and indicate there is more to go
