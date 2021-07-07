@@ -278,18 +278,12 @@ class Threads {
 
         // Retrieve one extra to see if there are more available
         $from .= " LIMIT $start, ".($pagesize+1);
-        if ( $PDOX->versionAtLeast('9.0.0') ) {
-            $sql = "SELECT ".$fields.$from;
-            $rows = $PDOX->allRowsDie($sql, $vars);
-            $sql = "SELECT count(thread_id) AS total".$fields.$from;
-            $row2 = $PDOX->rowDie($sql);
-            $retval->total = intval($row2['total']);
-        } else {
-            $sql = "SELECT SQL_CALC_FOUND_ROWS ".$fields.$from;
-            $rows = $PDOX->allRowsDie($sql, $vars);
-            $row2 = $PDOX->rowDie('SELECT FOUND_ROWS() AS total');
-            $retval->total = intval($row2['total']);
-        }
+	// https://stackoverflow.com/questions/186588/which-is-fastest-select-sql-calc-found-rows-from-table-or-select-count
+        $sql = "SELECT ".$fields.$from;
+        $rows = $PDOX->allRowsDie($sql, $vars);
+        $sql = "SELECT count(*) AS total, ".$fields.$from;
+        $row2 = $PDOX->rowDie($sql, $vars);
+        $retval->total = intval($row2['total']);
 
         // Remove that extra row and indicate there is more to go
         if ( count($rows) > 1 && count($rows) > $pagesize) {
