@@ -69,7 +69,7 @@ echo('<b>'.htmlentities($old_thread['title']).'</b></br>');
 <p>
 <input type="submit" id="delete-thread-submit" value="<?= __('Delete') ?>" >
 <input type="submit" id="delete-thread-cancel" value="<?= __('Cancel') ?>"
-onclick='window.location.href="<?= addSession($TOOL_ROOT) . '/' ?>";return false;'
+onclick='window.location.href="<?= addSession($TOOL_ROOT.'/') ?>";return false;'
 >
 </p>
 </form>
