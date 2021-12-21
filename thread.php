@@ -30,12 +30,12 @@ $thread_locked = intval($thread['locked']) && ! $LAUNCH->user->instructor;
 
 if ( ! $thread ) {
     $_SESSION['error'] = __('Could not load thread');
-    header( 'Location: '.addSession($TOOL_ROOT) ) ;
+    header( 'Location: '.addSession($TOOL_ROOT . '/') ) ;
     return;
 }
 
 $come_back = $TOOL_ROOT . '/thread/' . $thread_id;
-$all_done = $TOOL_ROOT;
+$all_done = $TOOL_ROOT . '/';
 $discussion_title = strlen(Settings::linkget('title')) > 0 ? Settings::linkget('title') : $LAUNCH->link->title;
 
 if ( count($_POST) > 0 ) {
@@ -84,7 +84,7 @@ $sortable = $THREADS->commentsSortableBy();
 $OUTPUT->flashMessages();
 echo('<div class="tdiscus-thread-container">'."\n");
 echo('<p>');
-echo('<a style="float: right;" href="'.$TOOL_ROOT.'"><i class="fa fa-home" title="'.__('All Threads').'"></i> '.__('All Threads').'</a></p>');
+echo('<a style="float: right;" href="'.$TOOL_ROOT.'/"><i class="fa fa-home" title="'.__('All Threads').'"></i> '.__('All Threads').'</a></p>');
 echo('<span class="tdiscus-thread-title"><a href="'.$page_base.'"'.($thread['hidden'] ? ' style="text-decoration: line-through;"' : '').'>'.htmlentities($thread['title']).'</a>');
 echo("</span></p>\n");
 ?>

@@ -61,7 +61,7 @@ echo('<a style="float: right;" href="'.$TOOL_ROOT.'/threadform'.'">');
 echo('<i class="fa fa-plus"></i> ');
 echo(__('Add Thread'));
 echo('</a>');
-echo("</div>\n");
+echo('</div><br clear="all"/>'."\n");
 
 $settingsDialog->start();
 $settingsDialog->text('title',__('Discussion title override.'));

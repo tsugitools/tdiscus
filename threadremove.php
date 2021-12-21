@@ -29,7 +29,7 @@ if ( isset($rest_path->action) && is_numeric($rest_path->action) ) {
 
 if ( ! $old_thread ) {
     $_SESSION['error'] = __('Could not load thread');
-    header( 'Location: '.addSession($TOOL_ROOT) ) ;
+    header( 'Location: '.addSession($TOOL_ROOT . '/') ) ;
     return;
 }
 
@@ -42,7 +42,7 @@ if ( count($_POST) > 0 ) {
     }
 
     $_SESSION['success'] = __('Thread deleted');
-    header( 'Location: '.addSession($TOOL_ROOT) ) ;
+    header( 'Location: '.addSession($TOOL_ROOT . '/') ) ;
     return;
 }
 
@@ -69,7 +69,7 @@ echo('<b>'.htmlentities($old_thread['title']).'</b></br>');
 <p>
 <input type="submit" id="delete-thread-submit" value="<?= __('Delete') ?>" >
 <input type="submit" id="delete-thread-cancel" value="<?= __('Cancel') ?>"
-onclick='window.location.href="<?= addSession($TOOL_ROOT) ?>";return false;'
+onclick='window.location.href="<?= addSession($TOOL_ROOT) . '/' ?>";return false;'
 >
 </p>
 </form>

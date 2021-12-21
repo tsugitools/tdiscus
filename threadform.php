@@ -43,7 +43,7 @@ if ( count($_POST) > 0 ) {
         }
 
         $_SESSION['success'] = __('Thread updated');
-        header( 'Location: '.addSession($TOOL_ROOT) ) ;
+        header( 'Location: '.addSession($TOOL_ROOT . '/') ) ;
     } else {
         $retval = $THREADS->threadInsert($_POST);
         if ( is_string($retval) ) {
@@ -53,7 +53,7 @@ if ( count($_POST) > 0 ) {
         }
 
         $_SESSION['success'] = __('Thread added');
-        header( 'Location: '.addSession($TOOL_ROOT) ) ;
+        header( 'Location: '.addSession($TOOL_ROOT . '/') ) ;
     }
     return;
 }
@@ -95,7 +95,7 @@ if ( $old_thread ) {
 <p>
 <input type="submit" id="add-thread-submit" value="<?= ($old_thread ? __('Update') : __('+ Thread')) ?>" >
 <input type="submit" id="add-thread-cancel" value="<?= __('Cancel') ?>"
-onclick='window.location.href="<?= addSession($TOOL_ROOT) ?>";return false;'
+onclick='window.location.href="<?= addSession($TOOL_ROOT . '/') ?>";return false;'
 >
 </p>
 </form>
