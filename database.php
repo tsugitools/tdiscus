@@ -209,11 +209,6 @@ array( "{$CFG->dbprefix}tdiscus_closure",
 $DATABASE_UPGRADE = function($oldversion) {
     global $CFG, $PDOX;
 
-    $sql= "UPDATE {$CFG->dbprefix}tdiscus_comment SET parent_id = 0 WHERE parent_id IS NULL";
-    echo("Upgrading: ".$sql."<br/>\n");
-    error_log("Upgrading: ".$sql);
-    $q = $PDOX->queryReturnError($sql);
-
     // This is a place to make sure added fields are present
     // if you add a field to a table, put it in here and it will be auto-added
     $add_some_fields = array(
@@ -222,7 +217,6 @@ $DATABASE_UPGRADE = function($oldversion) {
 
         array('tdiscus_comment', 'cleaned', 'TINYINT(1) NOT NULL DEFAULT 0'),
         array('tdiscus_comment', 'children', 'TINYINT(1) NOT NULL DEFAULT 0'),
-        array('tdiscus_comment', 'parent_id', 'INTEGER DEFAULT 0'),
         array('tdiscus_comment', 'parent_id', 'INTEGER NOT NULL DEFAULT 0'),
         array('tdiscus_comment', 'comment_type', 'TINYINT(2) NOT NULL DEFAULT 0'),
 
@@ -255,8 +249,8 @@ $DATABASE_UPGRADE = function($oldversion) {
             if ( $type == 'DROP' ) {
                 $sql= "ALTER TABLE {$CFG->dbprefix}$table DROP COLUMN $column";
             } else {
-                // continue;
-                $sql= "ALTER TABLE {$CFG->dbprefix}$table MODIFY $column $type";
+                // $sql= "ALTER TABLE {$CFG->dbprefix}$table MODIFY $column $type";
+                continue;
             }
         } else {
             if ( $type == 'DROP' ) continue;
