@@ -12,7 +12,6 @@ $REGISTER_LTI2 = array(
     "languages" => array(
         "English"
     ),
-    "tool_phase" => "new",
     "video" => "https://youtu.be/_be5vBiljng",
     "source_url" => "https://github.com/tsugitools/tdiscus",
     // For now Tsugi tools delegate this to /lti/store
