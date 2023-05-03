@@ -68,7 +68,7 @@ $page_base = $come_back;
 // Does not include start
 $copyparms = array('search', 'sort', 'pagesize');
 foreach ( $copyparms as $parm ) {
-    $val = U::get($_GET, $parm);
+    $val = U::get($_GET, $parm, "");
     if ( strlen($val) == 0 ) continue;
     $page_base = U::add_url_parm($page_base, $parm, $val);
 }

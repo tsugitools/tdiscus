@@ -222,7 +222,7 @@ class Threads {
 
         $subst = array(':UID' => $TSUGI_LAUNCH->user->id, ':LID' => $TSUGI_LAUNCH->link->id);
 
-        $search = U::get($info, "search");
+        $search = U::get($info, "search", "");
 
         $whereclause = "";
         if ( strlen(trim($search)) > 0 ) {
@@ -427,7 +427,7 @@ class Threads {
          //     ':PID' => $parent_id,
         );
 
-        $search = U::get($info, "search");
+        $search = U::get($info, "search", "");
 
         $whereclause = "";
         if ( ! $TSUGI_LAUNCH->user->instructor ) {
