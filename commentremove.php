@@ -18,13 +18,14 @@ $TDISCUS = new Tdiscus();
 $rest_path = U::rest_path();
 
 $old_comment = null;
+$thread_id = null;
 if ( isset($rest_path->action) && is_numeric($rest_path->action) ) {
     $comment_id = intval($rest_path->action);
     $old_comment = $THREADS->commentLoadForUpdate($comment_id);
-    $thread_id = $old_comment['thread_id'];
+    if ( is_array($old_comment) ) $thread_id = $old_comment['thread_id'];
 }
 
-if ( ! $old_comment ) {
+if ( !$old_comment || !$thread_id) {
     $_SESSION['error'] = __('Could not load comment');
     header( 'Location: '.addSession($TOOL_ROOT) ) ;
     return;

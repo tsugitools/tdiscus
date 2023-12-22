@@ -614,9 +614,10 @@ class Threads {
         global $TSUGI_LAUNCH;
 
         $row = self::commentLoad($comment_id);
+        if ( ! is_array($row) ) return null;
         if ( $row['owned'] > 0 || $TSUGI_LAUNCH->user->instructor ) return $row;
 
-        return $null;
+        return null;
     }
 
     public static function commentDelete($comment_id, $thread_id) {
