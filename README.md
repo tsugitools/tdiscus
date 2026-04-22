@@ -1,3 +1,10 @@
+
+
+**As of April 21, 2026 the primary code for this has been folded into https://github.com/tsugiproject/tsugi/tree/master/tool/tdiscus as that it tracks the underlying Tsugi library more closely and is continuously tested against all tsugi check ins.**
+
+This is maintained for existing systems that install this into a `mod` folder.
+
+
 TDISCUS
 -------
 
